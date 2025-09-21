@@ -15,9 +15,9 @@ Route::get('/admin', function () {
     return 'Halaman Admin';
 })->middleware('role:admin');
 
-Route::get('/user', function () {
+Route::get('/kasir', function () {
     return 'Halaman User';
-})->middleware('role:user');
+})->middleware('role:kasir');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

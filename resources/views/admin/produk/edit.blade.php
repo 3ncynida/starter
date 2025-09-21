@@ -1,48 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Produk</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="p-4">
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Edit Produk') }}
+        </h2>
+    </x-slot>
 
-    <div class="container">
-        <h1 class="mb-4">Edit Produk</h1>
+    <div class="py-6">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white p-6 shadow sm:rounded-lg">
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <strong>Ups!</strong> Ada masalah dengan input kamu.<br><br>
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+                {{-- Tampilkan error validasi --}}
+                @if ($errors->any())
+                    <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                        <strong>Ups!</strong> Ada masalah dengan input kamu.<br><br>
+                        <ul class="mt-2 list-disc list-inside text-sm">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('produk.update', $produk->ProdukID) }}" method="POST" class="space-y-6">
+                    @csrf
+                    @method('PUT')
+
+                    {{-- Nama Produk --}}
+                    <div>
+                        <x-input-label for="NamaProduk" :value="__('Nama Produk')" />
+                        <x-text-input id="NamaProduk" name="NamaProduk" type="text"
+                                      class="mt-1 block w-full"
+                                      value="{{ old('NamaProduk', $produk->NamaProduk) }}"
+                                      required autofocus />
+                        <x-input-error :messages="$errors->get('NamaProduk')" class="mt-2" />
+                    </div>
+
+                    {{-- Harga --}}
+                    <div>
+                        <x-input-label for="Harga" :value="__('Harga')" />
+                        <x-text-input id="Harga" name="Harga" type="number"
+                                      class="mt-1 block w-full"
+                                      value="{{ old('Harga', $produk->Harga) }}"
+                                      required />
+                        <x-input-error :messages="$errors->get('Harga')" class="mt-2" />
+                    </div>
+
+                    {{-- Stok --}}
+                    <div>
+                        <x-input-label for="Stok" :value="__('Stok')" />
+                        <x-text-input id="Stok" name="Stok" type="number"
+                                      class="mt-1 block w-full"
+                                      value="{{ old('Stok', $produk->Stok) }}"
+                                      required />
+                        <x-input-error :messages="$errors->get('Stok')" class="mt-2" />
+                    </div>
+
+                    {{-- Tombol --}}
+                    <div class="flex items-center gap-4">
+                        <x-primary-button>
+                            {{ __('Update') }}
+                        </x-primary-button>
+
+                        <a href="{{ route('produk.index') }}"
+                           class="text-sm text-gray-600 hover:text-gray-900">
+                            {{ __('Kembali') }}
+                        </a>
+                    </div>
+                </form>
             </div>
-        @endif
-
-        <form action="{{ route('produk.update', $produk->ProdukID) }}" method="POST">
-            @csrf
-            @method('PUT')
-
-            <div class="mb-3">
-                <label class="form-label">Nama Produk</label>
-                <input type="text" name="NamaProduk" value="{{ $produk->NamaProduk }}" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Harga</label>
-                <input type="number" name="Harga" value="{{ $produk->Harga }}" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Stok</label>
-                <input type="number" name="Stok" value="{{ $produk->Stok }}" class="form-control" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('produk.index') }}" class="btn btn-secondary">Kembali</a>
-        </form>
+        </div>
     </div>
-
-</body>
-</html>
+</x-app-layout>

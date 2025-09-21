@@ -33,17 +33,13 @@
                             <td class="px-6 py-4">Rp {{ number_format($p->Harga, 2, ',', '.') }}</td>
                             <td class="px-6 py-4">{{ $p->Stok }}</td>
                             <td class="px-6 py-4 flex space-x-2">
-                                <a href="{{ route('produk.edit', $p->ProdukID) }}"
-                                   class="text-blue-600 hover:text-blue-900">Edit</a>
+                    <a href="{{ route('produk.edit', $p->ProdukID) }}" class="text-blue-600 hover:text-blue-900">Edit</a> ||
 
-                                <form action="{{ route('produk.destroy', $p->ProdukID) }}" method="POST"
-                                      onsubmit="return confirm('Yakin mau hapus produk ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">
-                                        Hapus
-                                    </button>
-                                </form>
+                                        <form action="{{ route('produk.destroy', $p->ProdukID) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                    </form>
                             </td>
                         </tr>
                     @empty

@@ -33,7 +33,13 @@
                 <td class="px-6 py-4">{{ $item->Alamat }}</td>
                 <td class="px-6 py-4">{{ $item->NomorTelepon }}</td>
                 <td class="px-6 py-4">
-                    <a href="{{ route('pelanggan.edit', $item->PelangganID) }}" class="text-blue-600 hover:text-blue-900">Edit</a>
+                    <a href="{{ route('pelanggan.edit', $item->PelangganID) }}" class="text-blue-600 hover:text-blue-900">Edit</a> ||
+
+                                        <form action="{{ route('pelanggan.destroy', $item->PelangganID) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                    </form>
                 </td>
             </tr>
         @endforeach
