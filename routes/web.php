@@ -1,0 +1,36 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/test', function () {
+    return view('test');
+})->name('test');
+
+Route::get('/admin', function () {
+    return 'Halaman Admin';
+})->middleware('role:admin');
+
+Route::get('/user', function () {
+    return 'Halaman User';
+})->middleware('role:user');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::resource('produk', App\Http\Controllers\ProdukController::class)->middleware('role:admin');
+Route::resource('pelanggan', App\Http\Controllers\PelangganController::class)->middleware('role:admin');
+Route::resource('penjualan', App\Http\Controllers\PenjualanController::class)->middleware('role:admin,user');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
