@@ -18,12 +18,21 @@
                     <x-nav-link :href="route('test')" :active="request()->routeIs('test')">
                         {{ __('Test') }}
                     </x-nav-link>
+
+                    @can(['manage users', 'manage roles'])
+                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                        {{ __('Users') }}
+                    </x-nav-link>
+                    @endcan
+
+                    @can(['manage pelanggan', 'manage produk'])
                     <x-nav-link :href="route('pelanggan.index')" :active="request()->routeIs('pelanggan.index')">
                         {{ __('Pelanggan') }}
                     </x-nav-link>
                     <x-nav-link :href="route('produk.index')" :active="request()->routeIs('produk.index')">
                         {{ __('Produk') }}
                     </x-nav-link>
+                    @endcan
                 </div>
             </div>
 

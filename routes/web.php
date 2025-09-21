@@ -23,8 +23,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::resource('users', App\Http\Controllers\UserController::class)->middleware('role:superAdmin');
+
 Route::resource('produk', App\Http\Controllers\ProdukController::class)->middleware('role:admin');
-Route::resource('pelanggan', App\Http\Controllers\PelangganController::class)->middleware('role:admin');
+Route::resource('pelanggan', App\Http\Controllers\PelangganController::class);
 Route::resource('penjualan', App\Http\Controllers\PenjualanController::class)->middleware('role:admin,user');
 
 Route::middleware('auth')->group(function () {
