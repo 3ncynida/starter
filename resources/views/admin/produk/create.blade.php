@@ -1,46 +1,60 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Tambah Produk</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="p-4">
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Tambah Produk Baru') }}
+        </h2>
+    </x-slot>
 
-    <div class="container">
-        <h1 class="mb-4">Tambah Produk</h1>
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <strong>Ups!</strong> Ada masalah dengan input kamu.<br><br>
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+            <!-- Card Form -->
+            <div class="bg-white p-6 shadow sm:rounded-lg">
+                <section>
+                    <header>
+                        <h2 class="text-lg font-medium text-gray-900">
+                            {{ __('Informasi Produk') }}
+                        </h2>
+
+                        <p class="mt-1 text-sm text-gray-600">
+                            {{ __("Isi detail produk yang ingin ditambahkan.") }}
+                        </p>
+                    </header>
+
+                    <form method="POST" action="{{ route('produk.store') }}" class="mt-6 space-y-6">
+                        @csrf
+
+                        <!-- Nama Produk -->
+                        <div>
+                            <x-input-label for="NamaProduk" :value="__('Nama Produk')" />
+                            <x-text-input id="NamaProduk" name="NamaProduk" type="text" class="mt-1 block w-full" :value="old('NamaProduk')" required autofocus />
+                            <x-input-error class="mt-2" :messages="$errors->get('NamaProduk')" />
+                        </div>
+
+                        <!-- Harga -->
+                        <div>
+                            <x-input-label for="Harga" :value="__('Harga')" />
+                            <x-text-input id="Harga" name="Harga" type="number" step="0.01" class="mt-1 block w-full" :value="old('Harga')" required />
+                            <x-input-error class="mt-2" :messages="$errors->get('Harga')" />
+                        </div>
+
+                        <!-- Stok -->
+                        <div>
+                            <x-input-label for="Stok" :value="__('Stok')" />
+                            <x-text-input id="Stok" name="Stok" type="number" class="mt-1 block w-full" :value="old('Stok')" required />
+                            <x-input-error class="mt-2" :messages="$errors->get('Stok')" />
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <x-primary-button>{{ __('Simpan') }}</x-primary-button>
+                            <a href="{{ route('produk.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
+                                {{ __('Batal') }}
+                            </a>
+                        </div>
+                    </form>
+                </section>
             </div>
-        @endif
 
-        <form action="{{ route('produk.store') }}" method="POST">
-            @csrf
-            <div class="mb-3">
-                <label for="NamaProduk" class="form-label">Nama Produk</label>
-                <input type="text" name="NamaProduk" class="form-control" placeholder="Masukkan nama produk" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="Harga" class="form-label">Harga</label>
-                <input type="number" name="Harga" class="form-control" placeholder="Masukkan harga" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="Stok" class="form-label">Stok</label>
-                <input type="number" name="Stok" class="form-control" placeholder="Masukkan jumlah stok" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Simpan</button>
-            <a href="{{ route('produk.index') }}" class="btn btn-secondary">Kembali</a>
-        </form>
+        </div>
     </div>
-
-</body>
-</html>
+</x-app-layout>
