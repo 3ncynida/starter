@@ -10,9 +10,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             {{-- Tombol Tambah --}}
             <div class="mb-4">
-                <a href="{{ route('produk.create') }}"
+                <a href="{{ route('pelanggan.create') }}"
                    class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
-                    + Tambah Produk
+                    + Tambah Pelanggan
                 </a>
             </div>
 
@@ -26,7 +26,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
         </x-slot>
 
-        @foreach($pelanggan as $item)
+        @forelse($pelanggan as $item)
             <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4">{{ $loop->iteration }}</td>
                 <td class="px-6 py-4">{{ $item->NamaPelanggan }}</td>
@@ -35,14 +35,20 @@
                 <td class="px-6 py-4">
                     <a href="{{ route('pelanggan.edit', $item->PelangganID) }}" class="text-blue-600 hover:text-blue-900">Edit</a> ||
 
-                                        <form action="{{ route('pelanggan.destroy', $item->PelangganID) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                    <form action="{{ route('pelanggan.destroy', $item->PelangganID) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
                     </form>
                 </td>
             </tr>
-        @endforeach
+            @empty
+            <tr>
+                <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                    Tidak ada Pelanggang.
+                </td>
+            </tr>
+        @endforelse
     </x-table>
 </div>
 

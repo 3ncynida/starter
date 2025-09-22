@@ -14,6 +14,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('roles')->get(); // ambil user beserta role-nya
+
         return view('superAdmin.users.index', compact('users'));
     }
 
@@ -23,6 +24,7 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all(); // list role
+
         return view('superAdmin.users.create', compact('roles'));
     }
 
@@ -32,15 +34,15 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
-            'role'     => 'required|exists:roles,name',
+            'role' => 'required|exists:roles,name',
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
 
@@ -56,6 +58,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = Role::all();
+
         return view('superAdmin.users.edit', compact('user', 'roles'));
     }
 
@@ -65,9 +68,9 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role'  => 'required|exists:roles,name',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'role' => 'required|exists:roles,name',
         ]);
 
         $data = $request->only(['name', 'email']);
@@ -94,6 +97,7 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
+
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
     }
 }
