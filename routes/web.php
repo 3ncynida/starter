@@ -28,6 +28,7 @@ Route::resource('users', App\Http\Controllers\UserController::class)->middleware
 Route::resource('produk', App\Http\Controllers\ProdukController::class)->middleware('role:admin');
 Route::resource('pelanggan', App\Http\Controllers\PelangganController::class);
 Route::resource('penjualan', App\Http\Controllers\PenjualanController::class)->middleware('role:kasir');
+Route::resource('detail-penjualan', App\Http\Controllers\DetailPenjualanController::class)->middleware('role:kasir');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

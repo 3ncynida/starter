@@ -29,6 +29,9 @@
                     <x-nav-link :href="route('penjualan.index')" :active="request()->routeIs('penjualan.index')">
                         {{ __('Penjualan') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('detail-penjualan.index')" :active="request()->routeIs('detail-penjualan.index')">
+                        {{ __('Detail penjualan') }}
+                    </x-nav-link>
                     @endcan
 
                     @can(['manage pelanggan', 'manage produk'])

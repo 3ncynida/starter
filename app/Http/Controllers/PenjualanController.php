@@ -10,8 +10,10 @@ class PenjualanController extends Controller
     public function index()
     {
         $penjualan = Penjualan::with('pelanggan')->get();
-        return view('admin.penjualan.index', compact('penjualan'));
+
+        return view('kasir.penjualan.index', compact('penjualan'));
     }
+
     public function store(Request $request)
     {
         // Ambil harga produk dan hitung subtotal
@@ -22,16 +24,15 @@ class PenjualanController extends Controller
         $penjualan = Penjualan::create([
             'TanggalPenjualan' => $request->TanggalPenjualan,
             'PelangganID' => $request->PelangganID,
-            'TotalHarga' => $subtotal
+            'TotalHarga' => $subtotal,
         ]);
-
 
         // Simpan detail penjualan
         \App\Models\DetailPenjualan::create([
             'PenjualanID' => $penjualan->PenjualanID,
             'ProdukID' => $request->ProdukID,
             'JumlahProduk' => $request->JumlahProduk,
-            'Subtotal' => $subtotal
+            'Subtotal' => $subtotal,
         ]);
 
         // Kurangi stok produk
@@ -42,19 +43,23 @@ class PenjualanController extends Controller
 
         return redirect()->route('penjualan.index')->with('success', 'Penjualan berhasil disimpan!');
     }
+
     public function create()
     {
         $pelanggan = \App\Models\Pelanggan::all();
         $produk = \App\Models\Produk::all();
-        return view('admin.penjualan.create', compact('pelanggan', 'produk'));
+
+        return view('kasir.penjualan.create', compact('pelanggan', 'produk'));
     }
+
     public function edit($id)
     {
         $penjualan = \App\Models\Penjualan::findOrFail($id);
         $detail = \App\Models\DetailPenjualan::where('PenjualanID', $id)->first();
         $pelanggan = \App\Models\Pelanggan::all();
         $produk = \App\Models\Produk::all();
-        return view('admin.penjualan.edit', compact('penjualan', 'detail', 'pelanggan', 'produk'));
+
+        return view('kasir.penjualan.edit', compact('penjualan', 'detail', 'pelanggan', 'produk'));
     }
 
     public function update(Request $request, $id)
@@ -86,14 +91,18 @@ class PenjualanController extends Controller
                 // Jika produk sama, update stok berdasarkan selisih
                 $selisih = $request->JumlahProduk - $jumlahLama;
                 $produkBaru->Stok -= $selisih;
-                if ($produkBaru->Stok < 0) $produkBaru->Stok = 0;
+                if ($produkBaru->Stok < 0) {
+                    $produkBaru->Stok = 0;
+                }
                 $produkBaru->save();
             } else {
                 // Jika produk beda, kembalikan stok lama dan kurangi stok baru
                 $produkLama->Stok += $jumlahLama;
                 $produkLama->save();
                 $produkBaru->Stok -= $request->JumlahProduk;
-                if ($produkBaru->Stok < 0) $produkBaru->Stok = 0;
+                if ($produkBaru->Stok < 0) {
+                    $produkBaru->Stok = 0;
+                }
                 $produkBaru->save();
             }
         }
