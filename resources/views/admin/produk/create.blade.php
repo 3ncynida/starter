@@ -21,7 +21,7 @@
                         </p>
                     </header>
 
-<form method="POST" action="{{ route('produk.store') }}" enctype="multipart/form-data">
+<form method="POST" action="{{ route('produk.store') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
 
     @csrf
 
@@ -46,12 +46,13 @@
         <x-input-error class="mt-2" :messages="$errors->get('Stok')" />
     </div>
 
-    <!-- Gambar -->
-    <div>
-        <x-input-label for="Gambar" :value="__('Gambar Produk')" />
-        <input id="Gambar" name="Gambar" type="file" class="mt-1 block w-full" accept="image/*">
-        <x-input-error class="mt-2" :messages="$errors->get('Gambar')" />
-    </div>
+<!-- Gambar -->
+<div>
+    <x-input-label for="Gambar" :value="__('Gambar Produk')" />
+    <input id="Gambar" name="Gambar" type="file" class="mt-1 block w-full border rounded" />
+    <x-input-error class="mt-2" :messages="$errors->get('Gambar')" />
+</div>
+
 
     <div class="flex items-center gap-4">
         <x-primary-button>{{ __('Simpan') }}</x-primary-button>
