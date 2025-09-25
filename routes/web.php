@@ -11,7 +11,6 @@ use App\Http\Controllers\Test;
 
 Route::get('test', [Test::class, 'index'])->name('test');
 
-
 Route::get('/admin', function () {
     return 'Halaman Admin';
 })->middleware('role:admin');

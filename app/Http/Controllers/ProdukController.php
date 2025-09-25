@@ -23,33 +23,31 @@ class ProdukController extends Controller
     }
 
     public function store(Request $request)
-        {
-            // ✅ Validasi input
-            $validated = $request->validate([
-                'NamaProduk' => 'required|string|max:255',
-                'Harga'      => 'required|numeric|min:0',
-                'Stok'       => 'required|integer|min:0',
-                'Satuan'     => 'required|string|max:50',
-                'Gambar'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            ]);
+    {
+        // ✅ Validasi input
+        $validated = $request->validate([
+            'NamaProduk' => 'required|string|max:255',
+            'Harga' => 'required|numeric|min:0',
+            'Stok' => 'required|integer|min:0',
+            'Satuan' => 'required|string|max:50',
+            'Gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
 
-            // ✅ Simpan gambar kalau ada
-            if ($request->hasFile('Gambar')) {
-                // Simpan ke storage/app/public/produk
-                $path = $request->file('Gambar')->store('produk', 'public');
-                $validated['Gambar'] = $path;
-            } else {
-                // Kalau tidak upload gambar → default
-                $validated['Gambar'] = 'produk/default.webp';
-            }
-
-            // ✅ Simpan produk ke database
-            Produk::create($validated);
-
-            return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan.');
+        // ✅ Simpan gambar kalau ada
+        if ($request->hasFile('Gambar')) {
+            // Simpan ke storage/app/public/produk
+            $path = $request->file('Gambar')->store('produk', 'public');
+            $validated['Gambar'] = $path;
+        } else {
+            // Kalau tidak upload gambar → default
+            $validated['Gambar'] = 'produk/default.webp';
         }
 
+        // ✅ Simpan produk ke database
+        Produk::create($validated);
 
+        return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan.');
+    }
 
     public function edit($id)
     {

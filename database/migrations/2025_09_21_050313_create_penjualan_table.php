@@ -16,10 +16,10 @@ return new class extends Migration
 
             // Relasi ke Pelanggan
             $table->foreignId('PelangganID')
-        ->nullable()
-        ->constrained('pelanggan', 'PelangganID')
-        ->cascadeOnUpdate()
-        ->nullOnDelete();
+                ->nullable()
+                ->constrained('pelanggan', 'PelangganID')
+                ->cascadeOnUpdate()
+                ->nullOnDelete();
 
             $table->timestamps();
         });

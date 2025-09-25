@@ -16,32 +16,31 @@ class PenjualanController extends Controller
         return view('kasir.penjualan.index', compact('penjualan', 'products'));
     }
 
-public function store(Request $request)
-{
-    $request->validate([
-        'TanggalPenjualan' => 'required|date',
-        'TotalHarga' => 'required|numeric|min:0',
-        'PelangganID' => 'nullable|exists:pelanggan,PelangganID'
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'TanggalPenjualan' => 'required|date',
+            'TotalHarga' => 'required|numeric|min:0',
+            'PelangganID' => 'nullable|exists:pelanggan,PelangganID',
+        ]);
 
-    $diskon = 0;
+        $diskon = 0;
 
-    // Kalau ada pelanggan, berarti member → diskon 10%
-    if ($request->PelangganID) {
-        $diskon = 0.10 * $request->TotalHarga;
+        // Kalau ada pelanggan, berarti member → diskon 10%
+        if ($request->PelangganID) {
+            $diskon = 0.10 * $request->TotalHarga;
+        }
+
+        $penjualan = \App\Models\Penjualan::create([
+            'TanggalPenjualan' => $request->TanggalPenjualan,
+            'PelangganID' => $request->PelangganID,
+            'TotalHarga' => $request->TotalHarga - $diskon,
+            'Diskon' => $diskon,
+        ]);
+
+        return redirect()->route('penjualan.index')
+            ->with('success', 'Penjualan berhasil disimpan!');
     }
-
-    $penjualan = \App\Models\Penjualan::create([
-        'TanggalPenjualan' => $request->TanggalPenjualan,
-        'PelangganID' => $request->PelangganID,
-        'TotalHarga' => $request->TotalHarga - $diskon,
-        'Diskon' => $diskon,
-    ]);
-
-    return redirect()->route('penjualan.index')
-        ->with('success', 'Penjualan berhasil disimpan!');
-}
-
 
     public function create()
     {
