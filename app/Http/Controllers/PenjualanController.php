@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Penjualan;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 
 class PenjualanController extends Controller
@@ -10,39 +11,37 @@ class PenjualanController extends Controller
     public function index()
     {
         $penjualan = Penjualan::with('pelanggan')->get();
+        $products = Produk::all();
 
-        return view('kasir.penjualan.index', compact('penjualan'));
+        return view('kasir.penjualan.index', compact('penjualan', 'products'));
     }
 
-    public function store(Request $request)
-    {
-        // Ambil harga produk dan hitung subtotal
-        $produk = \App\Models\Produk::find($request->ProdukID);
-        $subtotal = $produk ? $produk->Harga * $request->JumlahProduk : 0;
+public function store(Request $request)
+{
+    $request->validate([
+        'TanggalPenjualan' => 'required|date',
+        'TotalHarga' => 'required|numeric|min:0',
+        'PelangganID' => 'nullable|exists:pelanggan,PelangganID'
+    ]);
 
-        // Simpan data penjualan
-        $penjualan = Penjualan::create([
-            'TanggalPenjualan' => $request->TanggalPenjualan,
-            'PelangganID' => $request->PelangganID,
-            'TotalHarga' => $subtotal,
-        ]);
+    $diskon = 0;
 
-        // Simpan detail penjualan
-        \App\Models\DetailPenjualan::create([
-            'PenjualanID' => $penjualan->PenjualanID,
-            'ProdukID' => $request->ProdukID,
-            'JumlahProduk' => $request->JumlahProduk,
-            'Subtotal' => $subtotal,
-        ]);
-
-        // Kurangi stok produk
-        if ($produk) {
-            $produk->Stok = max(0, $produk->Stok - $request->JumlahProduk);
-            $produk->save();
-        }
-
-        return redirect()->route('penjualan.index')->with('success', 'Penjualan berhasil disimpan!');
+    // Kalau ada pelanggan, berarti member → diskon 10%
+    if ($request->PelangganID) {
+        $diskon = 0.10 * $request->TotalHarga;
     }
+
+    $penjualan = \App\Models\Penjualan::create([
+        'TanggalPenjualan' => $request->TanggalPenjualan,
+        'PelangganID' => $request->PelangganID,
+        'TotalHarga' => $request->TotalHarga - $diskon,
+        'Diskon' => $diskon,
+    ]);
+
+    return redirect()->route('penjualan.index')
+        ->with('success', 'Penjualan berhasil disimpan!');
+}
+
 
     public function create()
     {

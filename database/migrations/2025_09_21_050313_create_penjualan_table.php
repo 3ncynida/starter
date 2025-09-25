@@ -12,12 +12,14 @@ return new class extends Migration
             $table->id('PenjualanID');
             $table->date('TanggalPenjualan');
             $table->decimal('TotalHarga', 10, 2)->default(0);
+            $table->decimal('Diskon', 10, 2)->default(0);
 
             // Relasi ke Pelanggan
             $table->foreignId('PelangganID')
-                ->constrained('pelanggan', 'PelangganID')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+        ->nullable()
+        ->constrained('pelanggan', 'PelangganID')
+        ->cascadeOnUpdate()
+        ->nullOnDelete();
 
             $table->timestamps();
         });

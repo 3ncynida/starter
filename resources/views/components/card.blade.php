@@ -2,8 +2,8 @@
     <!-- Gambar -->
     <div class="h-56 w-full">
         <a href="#">
-            <img class="mx-auto h-full dark:hidden" src="{{ asset('storage/' . $product->Gambar) }}" 
-     alt="{{ $product->NamaProduk }}" />
+            <img class="mx-auto h-full" src="{{ asset('storage/' . $product->Gambar) }}" 
+            alt="{{ $product->NamaProduk }}" />
         </a>
     </div>
 
@@ -22,7 +22,7 @@
 
         <!-- Stok -->
         <div class="mt-2 flex items-center gap-2">
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">({{ $product->Stok }})</p>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Stok : {{ $product->Stok }} ({{$product->Satuan}})</p>
         </div>
 
         <!-- Harga -->

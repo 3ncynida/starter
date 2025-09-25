@@ -23,6 +23,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Produk</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stok</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Satuan</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                     </x-slot>
 
@@ -32,6 +33,7 @@
                             <td class="px-6 py-4">{{ $p->NamaProduk }}</td>
                             <td class="px-6 py-4">Rp {{ number_format($p->Harga, 2, ',', '.') }}</td>
                             <td class="px-6 py-4">{{ $p->Stok }}</td>
+                            <td class="px-6 py-4">{{ $p->Satuan }}</td>
                             <td class="px-6 py-4 flex space-x-2">
                     <a href="{{ route('produk.edit', $p->ProdukID) }}" class="text-blue-600 hover:text-blue-900">Edit</a> ||
 

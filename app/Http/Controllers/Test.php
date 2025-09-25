@@ -11,8 +11,6 @@ class Test extends Controller
 {
     $products = Produk::all();
 
-    dd('products');
-
     return view('test', compact('products'));
 }
 
