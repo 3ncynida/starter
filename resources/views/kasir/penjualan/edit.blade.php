@@ -49,14 +49,16 @@
                            class="w-full border-gray-300 rounded-lg" required>
                 </div>
 
-                <button type="submit"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                    Update
-                </button>
-                <a href="{{ route('penjualan.index') }}"
-                   class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-                    Kembali
-                </a>
+<a href="{{ route('penjualan.index') }}"
+   class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+    Kembali
+</a>
+
+<button type="submit"
+        class="ml-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+    Update
+</button>
+
             </form>
         </div>
     </div>

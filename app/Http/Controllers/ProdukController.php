@@ -22,18 +22,28 @@ class ProdukController extends Controller
         return view('admin.produk.create');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'NamaProduk' => 'required|string|max:255',
-            'Harga' => 'required|numeric',
-            'Stok' => 'required|integer',
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'NamaProduk' => 'required|string|max:255',
+        'Harga' => 'required|numeric|min:0',
+        'Stok' => 'required|integer|min:0',
+        'Gambar' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+    ]);
 
-        Produk::create($request->all());
-
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan!');
+    if ($request->hasFile('Gambar')) {
+        $path = $request->file('Gambar')->store('produk', 'public');
+        $validated['Gambar'] = $path;
+    } else {
+        $validated['Gambar'] = 'produk/default.jpg';
     }
+
+    \App\Models\Produk::create($validated);
+
+    return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan');
+}
+
+
 
     public function edit($id)
     {

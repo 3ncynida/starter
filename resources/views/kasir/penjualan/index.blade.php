@@ -44,4 +44,12 @@
             </x-table>
         </div>
     </div>
+    <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <div class="grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
+        @foreach($products as $product)
+            <x-card :product="$product" />
+        @endforeach
+    </div>
+</div>
+
 </x-app-layout>

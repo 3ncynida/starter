@@ -7,9 +7,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test', function () {
-    return view('test');
-})->name('test');
+use App\Http\Controllers\Test;
+
+Route::get('test', [Test::class, 'index'])->name('test');
+
 
 Route::get('/admin', function () {
     return 'Halaman Admin';

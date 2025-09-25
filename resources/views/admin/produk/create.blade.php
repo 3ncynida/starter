@@ -21,37 +21,47 @@
                         </p>
                     </header>
 
-                    <form method="POST" action="{{ route('produk.store') }}" class="mt-6 space-y-6">
-                        @csrf
+<form method="POST" action="{{ route('produk.store') }}" enctype="multipart/form-data">
 
-                        <!-- Nama Produk -->
-                        <div>
-                            <x-input-label for="NamaProduk" :value="__('Nama Produk')" />
-                            <x-text-input id="NamaProduk" name="NamaProduk" type="text" class="mt-1 block w-full" :value="old('NamaProduk')" required autofocus />
-                            <x-input-error class="mt-2" :messages="$errors->get('NamaProduk')" />
-                        </div>
+    @csrf
 
-                        <!-- Harga -->
-                        <div>
-                            <x-input-label for="Harga" :value="__('Harga')" />
-                            <x-text-input id="Harga" name="Harga" type="number" step="0.01" class="mt-1 block w-full" :value="old('Harga')" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('Harga')" />
-                        </div>
+    <!-- Nama Produk -->
+    <div>
+        <x-input-label for="NamaProduk" :value="__('Nama Produk')" />
+        <x-text-input id="NamaProduk" name="NamaProduk" type="text" class="mt-1 block w-full" :value="old('NamaProduk')" required autofocus />
+        <x-input-error class="mt-2" :messages="$errors->get('NamaProduk')" />
+    </div>
 
-                        <!-- Stok -->
-                        <div>
-                            <x-input-label for="Stok" :value="__('Stok')" />
-                            <x-text-input id="Stok" name="Stok" type="number" class="mt-1 block w-full" :value="old('Stok')" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('Stok')" />
-                        </div>
+    <!-- Harga -->
+    <div>
+        <x-input-label for="Harga" :value="__('Harga')" />
+        <x-text-input id="Harga" name="Harga" type="number" step="0.01" class="mt-1 block w-full" :value="old('Harga')" required />
+        <x-input-error class="mt-2" :messages="$errors->get('Harga')" />
+    </div>
 
-                        <div class="flex items-center gap-4">
-                            <x-primary-button>{{ __('Simpan') }}</x-primary-button>
-                            <a href="{{ route('produk.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
-                                {{ __('Batal') }}
-                            </a>
-                        </div>
-                    </form>
+    <!-- Stok -->
+    <div>
+        <x-input-label for="Stok" :value="__('Stok')" />
+        <x-text-input id="Stok" name="Stok" type="number" class="mt-1 block w-full" :value="old('Stok')" required />
+        <x-input-error class="mt-2" :messages="$errors->get('Stok')" />
+    </div>
+
+    <!-- Gambar -->
+    <div>
+        <x-input-label for="Gambar" :value="__('Gambar Produk')" />
+        <input id="Gambar" name="Gambar" type="file" class="mt-1 block w-full" accept="image/*">
+        <x-input-error class="mt-2" :messages="$errors->get('Gambar')" />
+    </div>
+
+    <div class="flex items-center gap-4">
+        <x-primary-button>{{ __('Simpan') }}</x-primary-button>
+        <a href="{{ route('produk.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
+            {{ __('Batal') }}
+        </a>
+    </div>
+</form>
+
+
                 </section>
             </div>
 
