@@ -29,9 +29,6 @@
                     <x-nav-link :href="route('penjualan.index')" :active="request()->routeIs('penjualan.index')">
                         {{ __('Penjualan') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('detail-penjualan.index')" :active="request()->routeIs('detail-penjualan.index')">
-                        {{ __('Detail penjualan') }}
-                    </x-nav-link>
                     @endcan
 
                     @can(['manage pelanggan', 'manage produk'])
@@ -41,7 +38,14 @@
                     <x-nav-link :href="route('produk.index')" :active="request()->routeIs('produk.index')">
                         {{ __('Produk') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('settings.edit')" :active="request()->routeIs('settings.edit')">
+                        {{ __('Diskon') }}
+                    </x-nav-link>
                     @endcan
+
+                    <x-nav-link :href="route('detail-penjualan.index')" :active="request()->routeIs('detail-penjualan.index')">
+                        {{ __('Detail penjualan') }}
+                    </x-nav-link>
                 </div>
             </div>
 

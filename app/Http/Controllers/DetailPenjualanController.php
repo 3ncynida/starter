@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailPenjualan;
+use App\Models\Penjualan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 
@@ -11,8 +12,9 @@ class DetailPenjualanController extends Controller
     public function index()
     {
         $detail = DetailPenjualan::with(['penjualan.pelanggan', 'produk'])->get();
+        $penjualan = Penjualan::all();
 
-        return view('kasir.detail_penjualan.index', compact('detail'));
+        return view('kasir.detail_penjualan.index', compact('detail', 'penjualan'));
     }
 
     public function edit($id)

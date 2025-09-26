@@ -13,21 +13,29 @@
 
                     <!-- Tanggal Penjualan -->
                     <div class="mb-4">
-                        <label for="TanggalPenjualan" class="block text-sm font-medium text-gray-700">Tanggal Penjualan</label>
+                        <label for="TanggalPenjualan" class="block text-sm font-medium text-gray-700">
+                            Tanggal Penjualan
+                        </label>
                         <input type="date" name="TanggalPenjualan" id="TanggalPenjualan" 
+                               value="{{ date('Y-m-d') }}"
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                     </div>
 
-                    <!-- Pelanggan -->
+                    <!-- Pelanggan (Opsional, hanya member yang terdaftar) -->
                     <div class="mb-4">
-                        <label for="PelangganID" class="block text-sm font-medium text-gray-700">Pelanggan</label>
+                        <label for="PelangganID" class="block text-sm font-medium text-gray-700">
+                            Pelanggan (Member)
+                        </label>
                         <select name="PelangganID" id="PelangganID" 
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-                            <option value="">-- Pilih Pelanggan --</option>
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">-- Non Member --</option>
                             @foreach($pelanggan as $p)
                                 <option value="{{ $p->PelangganID }}">{{ $p->NamaPelanggan }}</option>
                             @endforeach
                         </select>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Kosongkan jika pelanggan bukan member.
+                        </p>
                     </div>
 
                     <!-- Produk -->
@@ -37,7 +45,9 @@
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                             <option value="">-- Pilih Produk --</option>
                             @foreach($produk as $p)
-                                <option value="{{ $p->ProdukID }}">{{ $p->NamaProduk }} (Stok: {{ $p->Stok }})</option>
+                                <option value="{{ $p->ProdukID }}">
+                                    {{ $p->NamaProduk }} ({{ $p->Satuan }}) - Stok: {{ $p->Stok }}
+                                </option>
                             @endforeach
                         </select>
                     </div>

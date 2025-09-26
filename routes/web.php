@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,15 +26,23 @@ Route::get('/dashboard', function () {
 
 Route::resource('users', App\Http\Controllers\UserController::class)->middleware('role:superAdmin');
 
+Route::get('/setting', [App\Http\Controllers\SettingController::class, 'edit'])->name('settings.edit')->middleware('role:admin');
+Route::put('/setting', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update')->middleware('role"admin');
+
 Route::resource('produk', App\Http\Controllers\ProdukController::class)->middleware('role:admin');
 Route::resource('pelanggan', App\Http\Controllers\PelangganController::class);
 Route::resource('penjualan', App\Http\Controllers\PenjualanController::class)->middleware('role:kasir');
-Route::resource('detail-penjualan', App\Http\Controllers\DetailPenjualanController::class)->middleware('role:kasir');
+Route::resource('detail-penjualan', App\Http\Controllers\DetailPenjualanController::class);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::post('/cart/set-customer', [CartController::class, 'setCustomer'])->name('cart.setCustomer');
 
 require __DIR__.'/auth.php';

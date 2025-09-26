@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Penjualan;
+use App\MOdels\DetailPenjualan;
 use App\Models\Produk;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class PenjualanController extends Controller
@@ -16,31 +18,54 @@ class PenjualanController extends Controller
         return view('kasir.penjualan.index', compact('penjualan', 'products'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'TanggalPenjualan' => 'required|date',
-            'TotalHarga' => 'required|numeric|min:0',
-            'PelangganID' => 'nullable|exists:pelanggan,PelangganID',
-        ]);
+public function store(Request $request)
+{
+    // ✅ Validasi input
+    $validated = $request->validate([
+        'PelangganID'   => 'nullable|exists:pelanggan,PelangganID', // boleh kosong (non-member)
+        'ProdukID'      => 'required|exists:produk,ProdukID',
+        'JumlahProduk'  => 'required|integer|min:1',
+    ]);
 
-        $diskon = 0;
+    // ✅ Ambil produk
+    $produk = Produk::findOrFail($validated['ProdukID']);
 
-        // Kalau ada pelanggan, berarti member → diskon 10%
-        if ($request->PelangganID) {
-            $diskon = 0.10 * $request->TotalHarga;
-        }
+    // ✅ Hitung subtotal
+    $subtotal = $produk->Harga * $validated['JumlahProduk'];
 
-        $penjualan = \App\Models\Penjualan::create([
-            'TanggalPenjualan' => $request->TanggalPenjualan,
-            'PelangganID' => $request->PelangganID,
-            'TotalHarga' => $request->TotalHarga - $diskon,
-            'Diskon' => $diskon,
-        ]);
-
-        return redirect()->route('penjualan.index')
-            ->with('success', 'Penjualan berhasil disimpan!');
+    // ✅ Ambil diskon dari settings
+    $diskonPersen = 0;
+    if (!empty($validated['PelangganID'])) {
+        $diskonPersen = Setting::get('diskon_member', 0); // misal default 0
     }
+
+    // ✅ Hitung total & diskon nominal
+    $diskonNominal = ($subtotal * $diskonPersen) / 100;
+    $total = $subtotal - $diskonNominal;
+
+    // ✅ Simpan penjualan
+    $penjualan = Penjualan::create([
+        'PelangganID'       => $validated['PelangganID'] ?? null,
+        'TanggalPenjualan'  => now(),
+        'TotalHarga'        => $total,
+        'Diskon'            => $diskonNominal, // pastikan field ada di tabel penjualan
+    ]);
+
+    // ✅ Simpan detail penjualan
+    DetailPenjualan::create([
+        'PenjualanID'  => $penjualan->PenjualanID,
+        'ProdukID'     => $produk->ProdukID,
+        'JumlahProduk' => $validated['JumlahProduk'],
+        'Subtotal'     => $subtotal,
+    ]);
+
+    // ✅ Update stok
+    $produk->decrement('Stok', $validated['JumlahProduk']);
+
+    return redirect()->route('penjualan.index')
+        ->with('success', 'Penjualan berhasil disimpan.');
+}
+
 
     public function create()
     {

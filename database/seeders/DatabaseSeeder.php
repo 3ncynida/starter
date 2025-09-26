@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Setting; // ✅ tambahin ini
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -11,12 +12,11 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buat role
+        // ====== ROLE & PERMISSION ======
         $superAdminRole = Role::firstOrCreate(['name' => 'superAdmin']);
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $kasirRole = Role::firstOrCreate(['name' => 'kasir']);
 
-        // Buat permissions
         $permissions = [
             'manage users',
             'manage roles',
@@ -31,31 +31,43 @@ class DatabaseSeeder extends Seeder
             Permission::firstOrCreate(['name' => $perm]);
         }
 
-        // buat super admin
-        $superAdmin = User::create([
-            'name' => 'Super Admin',
-            'email' => 'superAdmin@email.com',
-            'password' => bcrypt('password'),
-        ]);
+        // ====== SUPER ADMIN ======
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'superAdmin@email.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => bcrypt('password'),
+            ]
+        );
         $superAdmin->assignRole($superAdminRole);
         $superAdmin->givePermissionTo(['manage users', 'manage roles', 'manage permissions']);
 
-        // Buat admin
-        $admin = User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@email.com',
-            'password' => bcrypt('password'),
-        ]);
+        // ====== ADMIN ======
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@email.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('password'),
+            ]
+        );
         $admin->assignRole($adminRole);
         $admin->givePermissionTo(['manage produk', 'manage pelanggan']);
 
-        // Buat kasir
-        $kasir = User::create([
-            'name' => 'Regular Kasir',
-            'email' => 'kasir@email.com',
-            'password' => bcrypt('password'),
-        ]);
+        // ====== KASIR ======
+        $kasir = User::firstOrCreate(
+            ['email' => 'kasir@email.com'],
+            [
+                'name' => 'Regular Kasir',
+                'password' => bcrypt('password'),
+            ]
+        );
         $kasir->assignRole($kasirRole);
         $kasir->givePermissionTo(['view produk', 'manage penjualan']);
+
+        // ====== SETTINGS DEFAULT ======
+        Setting::firstOrCreate(
+            ['key' => 'diskon_member'],
+            ['value' => '10'] // default diskon 10%
+        );
     }
 }

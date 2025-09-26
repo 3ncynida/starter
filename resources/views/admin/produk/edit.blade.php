@@ -55,6 +55,26 @@
                         <x-input-error :messages="$errors->get('Stok')" class="mt-2" />
                     </div>
 
+                        <!-- Satuan -->
+    <div>
+        <x-input-label for="Satuan" :value="__('Satuan')" />
+                <select name="Satuan" id="Satuan" class="w-full border rounded p-2" required>
+                <option value="pcs">Pcs</option>
+                <option value="kg">Kg</option>
+                <option value="pack">Pack</option>
+                <option value="dus">Dus</option>
+            </select>
+        <x-input-error class="mt-2" :messages="$errors->get('Satuan')" />
+    </div>
+
+<!-- Gambar -->
+<div>
+    <x-input-label for="Gambar" :value="__('Gambar Produk')" />
+    <input id="Gambar" name="Gambar" type="file" class="mt-1 block w-full border rounded" value="{{ old('Gambar', $produk->Gambar) }}" />
+    <x-input-error class="mt-2" :messages="$errors->get('Gambar')" />
+</div>
+
+
                     {{-- Tombol --}}
                     <div class="flex items-center gap-4">
                         <x-primary-button>
