@@ -40,9 +40,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
-Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
-Route::post('/cart/set-customer', [CartController::class, 'setCustomer'])->name('cart.setCustomer');
+Route::prefix('cart')->group(function () {
+    Route::post('/add/{id}', [CartController::class, 'add'])->name('cart.add');
+    Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/clear', [CartController::class, 'clear'])->name('cart.clear');
+    Route::post('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/set-customer', [CartController::class, 'setCustomer'])->name('cart.set-customer');
+});
 
 require __DIR__.'/auth.php';

@@ -28,6 +28,19 @@ class CartController extends Controller
         return back()->with('success', 'Produk ditambahkan!');
     }
 
+    // Tambahkan method remove() ini
+    public function remove($id)
+    {
+        $cart = session()->get('cart', []);
+        
+        if (isset($cart[$id])) {
+            unset($cart[$id]);
+            session()->put('cart', $cart);
+        }
+
+        return back()->with('success', 'Produk dihapus dari keranjang!');
+    }
+
     public function clear()
     {
         session()->forget('cart');
@@ -64,15 +77,13 @@ class CartController extends Controller
     }
 
     public function setCustomer(Request $request)
-{
-    if ($request->pelanggan_id) {
-        session(['cart_customer' => $request->pelanggan_id]);
-    } else {
-        session()->forget('cart_customer');
+    {
+        if ($request->pelanggan_id) {
+            session(['cart_customer' => $request->pelanggan_id]);
+        } else {
+            session()->forget('cart_customer');
+        }
+
+        return back()->with('success', 'Pelanggan berhasil dipilih.');
     }
-
-    return back()->with('success', 'Pelanggan berhasil dipilih.');
 }
-
-}
-
