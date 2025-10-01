@@ -78,12 +78,17 @@ class CartController extends Controller
 
     public function setCustomer(Request $request)
     {
+        $request->validate([
+            'pelanggan_id' => 'nullable|exists:pelanggan,PelangganID'
+        ]);
+
+        // Set atau hapus session cart_customer
         if ($request->pelanggan_id) {
             session(['cart_customer' => $request->pelanggan_id]);
         } else {
             session()->forget('cart_customer');
         }
 
-        return back()->with('success', 'Pelanggan berhasil dipilih.');
+        return back()->with('success', 'Pelanggan berhasil dipilih');
     }
 }

@@ -16,30 +16,42 @@
                 @endif
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 border">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">No</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Tanggal</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Pelanggan</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Produk</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Jumlah</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Subtotal</th>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr class="bg-[#0f172a]">
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">No</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tanggal</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Pelanggan</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Produk</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Jumlah</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Subtotal</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @forelse ($detail as $d)
-                                <tr>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $loop->iteration }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $d->penjualan->TanggalPenjualan }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $d->penjualan->pelanggan->NamaPelanggan }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $d->produk->NamaProduk }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $d->JumlahProduk }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">Rp {{ number_format($d->Subtotal, 0, ',', '.') }}</td>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @forelse ($detail as $index => $d)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $index + 1 }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $d->penjualan->TanggalPenjualan ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $d->penjualan?->pelanggan?->NamaPelanggan ?? 'Non Member' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $d->produk->NamaProduk }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $d->JumlahProduk }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        Rp {{ number_format($d->Subtotal, 0, ',', '.') }}
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-4 py-4 text-center text-gray-500">
+                                    <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                         Belum ada data detail penjualan
                                     </td>
                                 </tr>

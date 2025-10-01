@@ -6,59 +6,65 @@
     </x-slot>
 
     <div class="py-6 max-w-3xl mx-auto">
-        <div class="bg-white p-6 shadow-sm rounded-lg">
-            <form action="{{ route('penjualan.update', $penjualan->PenjualanID) }}" method="POST">
+        <div class="bg-white p-6 shadow-sm rounded-xl border border-gray-100">
+            <form action="{{ route('penjualan.update', $penjualan->PenjualanID) }}" method="POST" class="space-y-5">
                 @csrf
                 @method('PUT')
 
-                <div class="mb-4">
-                    <label class="block mb-2">Tanggal Penjualan</label>
-                    <input type="date" name="TanggalPenjualan"
-                           value="{{ $penjualan->TanggalPenjualan }}"
-                           class="w-full border-gray-300 rounded-lg" required>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700" for="TanggalPenjualan">Tanggal Penjualan</label>
+                        <input type="date" id="TanggalPenjualan" name="TanggalPenjualan"
+                               value="{{ $penjualan->TanggalPenjualan }}"
+                               class="mt-1 w-full rounded-lg border-gray-300 focus:border-black focus:ring-black" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700" for="PelangganID">Pelanggan</label>
+                        <select id="PelangganID" name="PelangganID"
+                                class="mt-1 w-full rounded-lg border-gray-300 focus:border-black focus:ring-black" required>
+                            @foreach($pelanggan as $p)
+                                <option value="{{ $p->PelangganID }}"
+                                    {{ $penjualan->PelangganID == $p->PelangganID ? 'selected' : '' }}>
+                                    {{ $p->NamaPelanggan }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block mb-2">Pelanggan</label>
-                    <select name="PelangganID" class="w-full border-gray-300 rounded-lg" required>
-                        @foreach($pelanggan as $p)
-                            <option value="{{ $p->PelangganID }}"
-                                {{ $penjualan->PelangganID == $p->PelangganID ? 'selected' : '' }}>
-                                {{ $p->NamaPelanggan }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700" for="ProdukID">Produk</label>
+                        <select id="ProdukID" name="ProdukID"
+                                class="mt-1 w-full rounded-lg border-gray-300 focus:border-black focus:ring-black" required>
+                            @foreach($produk as $pr)
+                                <option value="{{ $pr->ProdukID }}"
+                                    {{ $detail->ProdukID == $pr->ProdukID ? 'selected' : '' }}>
+                                    {{ $pr->NamaProduk }} (Stok: {{ $pr->Stok }}) - Rp {{ number_format($pr->Harga, 0, ',', '.') }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700" for="JumlahProduk">Jumlah Produk</label>
+                        <input id="JumlahProduk" type="number" name="JumlahProduk"
+                               value="{{ $detail->JumlahProduk }}"
+                               class="mt-1 w-full rounded-lg border-gray-300 focus:border-black focus:ring-black" required>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block mb-2">Produk</label>
-                    <select name="ProdukID" class="w-full border-gray-300 rounded-lg" required>
-                        @foreach($produk as $pr)
-                            <option value="{{ $pr->ProdukID }}"
-                                {{ $detail->ProdukID == $pr->ProdukID ? 'selected' : '' }}>
-                                {{ $pr->NamaProduk }} (Stok: {{ $pr->Stok }}) - Rp {{ number_format($pr->Harga, 0, ',', '.') }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <a href="{{ route('penjualan.index') }}"
+                       class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+                        Kembali
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800">
+                        Update
+                    </button>
                 </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2">Jumlah Produk</label>
-                    <input type="number" name="JumlahProduk"
-                           value="{{ $detail->JumlahProduk }}"
-                           class="w-full border-gray-300 rounded-lg" required>
-                </div>
-
-<a href="{{ route('penjualan.index') }}"
-   class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-    Kembali
-</a>
-
-<button type="submit"
-        class="ml-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-    Update
-</button>
-
             </form>
         </div>
     </div>

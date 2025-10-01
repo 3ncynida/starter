@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Penjualan;
-use App\MOdels\DetailPenjualan;
+use App\Models\Pelanggan;
 use App\Models\Produk;
+use App\Models\Penjualan;
+use App\Models\DetailPenjualan;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class PenjualanController extends Controller
 {
-    public function index()
-    {
-        $penjualan = Penjualan::with('pelanggan')->get();
-        $products = Produk::all();
+public function index()
+{
+    $products  = Produk::all();
+    $penjualan = Penjualan::with('pelanggan')->get();
+    $pelanggan = Pelanggan::orderBy('NamaPelanggan')->get(); // ambil data pelanggan
 
-        return view('kasir.penjualan.index', compact('penjualan', 'products'));
-    }
+    return view('kasir.penjualan.index', compact('products', 'penjualan', 'pelanggan'));
+}
 
 public function store(Request $request)
 {
@@ -83,6 +85,18 @@ public function store(Request $request)
         $produk = \App\Models\Produk::all();
 
         return view('kasir.penjualan.edit', compact('penjualan', 'detail', 'pelanggan', 'produk'));
+    }
+
+    // Method untuk menyimpan pelanggan ke session cart
+    public function setCartCustomer(Request $request)
+    {
+        $request->validate([
+            'pelanggan_id' => 'nullable|exists:pelanggan,PelangganID'
+        ]);
+
+        session(['cart_customer' => $request->pelanggan_id]);
+        
+        return redirect()->back()->with('success', 'Pelanggan berhasil dipilih');
     }
 
     public function update(Request $request, $id)
