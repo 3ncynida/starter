@@ -50,6 +50,6 @@ Route::prefix('cart')->group(function () {
     Route::post('/set-customer', [CartController::class, 'setCustomer'])->name('cart.set-customer');
 });
 
-Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware('role:admin');
+Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
 
 require __DIR__.'/auth.php';

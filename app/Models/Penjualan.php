@@ -17,8 +17,13 @@ class Penjualan extends Model
         'PelangganID',
     ];
 
-    public function pelanggan()
-    {
-        return $this->belongsTo(Pelanggan::class, 'PelangganID', 'PelangganID');
-    }
+public function detailPenjualan()
+{
+    return $this->hasMany(DetailPenjualan::class, 'PenjualanID');
+}
+
+public function pelanggan()
+{
+    return $this->belongsTo(Pelanggan::class, 'PelangganID');
+}
 }
