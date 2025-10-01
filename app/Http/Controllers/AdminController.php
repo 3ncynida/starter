@@ -28,6 +28,10 @@ public function dashboard()
 
     // Get recent sales with eager loading
     $recentSales = Penjualan::with('pelanggan')
+        ->select('penjualan.*')
+        ->addSelect(DB::raw('(SELECT COALESCE(SUM(Subtotal), 0) 
+            FROM detail_penjualan 
+            WHERE detail_penjualan.PenjualanID = penjualan.PenjualanID) as total'))
         ->latest('TanggalPenjualan')
         ->take(5)
         ->get();
@@ -48,12 +52,19 @@ public function dashboard()
     // Get top customers with their total transactions
     $topCustomers = DB::table('pelanggan')
         ->leftJoin('penjualan', 'pelanggan.PelangganID', '=', 'penjualan.PelangganID')
+        ->leftJoin('detail_penjualan', 'penjualan.PenjualanID', '=', 'detail_penjualan.PenjualanID')
         ->select(
             'pelanggan.*',
-            DB::raw('COUNT(penjualan.PenjualanID) as total_transactions'),
-            DB::raw('COALESCE(SUM(penjualan.TotalHarga), 0) as total_spent')
+            DB::raw('COUNT(DISTINCT penjualan.PenjualanID) as total_transactions'),
+            DB::raw('COALESCE(SUM(detail_penjualan.Subtotal), 0) as total_spent')
         )
-        ->groupBy('pelanggan.PelangganID')
+        ->groupBy(
+            'pelanggan.PelangganID',
+            'pelanggan.NamaPelanggan',
+            'pelanggan.Alamat',
+            'pelanggan.created_at',
+            'pelanggan.updated_at'
+        )
         ->orderByDesc('total_spent')
         ->take(5)
         ->get();

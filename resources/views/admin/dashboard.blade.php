@@ -100,9 +100,9 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                                             {{ $sale->pelanggan->NamaPelanggan ?? 'Non-Member' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
-                                            Rp {{ number_format($sale->TotalHarga, 0, ',', '.') }}
-                                        </td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+    Rp {{ number_format($sale->total, 0, ',', '.') }}
+</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-700">
                                                 Selesai
