@@ -20,6 +20,8 @@ Route::get('/kasir', function () {
     return 'Halaman User';
 })->middleware('role:kasir');
 
+Route::post('/cart/set-customer', [CartController::class, 'setCustomer'])->name('cart.set-customer');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -47,5 +49,7 @@ Route::prefix('cart')->group(function () {
     Route::post('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::post('/set-customer', [CartController::class, 'setCustomer'])->name('cart.set-customer');
 });
+
+Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware('role:admin');
 
 require __DIR__.'/auth.php';

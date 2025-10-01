@@ -47,48 +47,53 @@ class CartController extends Controller
         return back();
     }
 
-    public function checkout(Request $request)
-    {
-        $cart = session()->get('cart', []);
-        if (!$cart) return back()->with('error', 'Keranjang kosong!');
+public function checkout(Request $request)
+{
+    $cart = session()->get('cart', []);
 
-        $penjualan = Penjualan::create([
-            'TanggalPenjualan' => now(),
-            'PelangganID'      => $request->PelangganID ?? null,
-            'TotalHarga'       => 0,
-        ]);
-
-        $total = 0;
-        foreach ($cart as $id => $item) {
-            $subtotal = $item['harga'] * $item['qty'];
-            DetailPenjualan::create([
-                'PenjualanID'  => $penjualan->PenjualanID,
-                'ProdukID'     => $id,
-                'JumlahProduk' => $item['qty'],
-                'Subtotal'     => $subtotal,
-            ]);
-            $total += $subtotal;
-        }
-
-        $penjualan->update(['TotalHarga' => $total]);
-        session()->forget('cart');
-
-        return redirect()->route('penjualan.index')->with('success', 'Penjualan berhasil disimpan!');
+    if (empty($cart)) {
+        return redirect()->back()->with('error', 'Keranjang kosong!');
     }
 
-    public function setCustomer(Request $request)
-    {
-        $request->validate([
-            'pelanggan_id' => 'nullable|exists:pelanggan,PelangganID'
+    // Ambil pelanggan dari session (kalau tidak ada = NULL / Non Member)
+    $pelangganId = session('cart_customer', null);
+
+    // Buat transaksi penjualan
+    $penjualan = Penjualan::create([
+        'TanggalPenjualan' => now(),
+        'PelangganID' => $pelangganId, // ✅ ambil dari session
+        'Total' => collect($cart)->sum(fn($item) => $item['harga'] * $item['qty']),
+    ]);
+
+    // Masukkan detail penjualan
+    foreach ($cart as $productId => $item) {
+        DetailPenjualan::create([
+            'PenjualanID' => $penjualan->PenjualanID,
+            'ProdukID' => $productId,
+            'JumlahProduk' => $item['qty'],
+            'Subtotal' => $item['harga'] * $item['qty'],
         ]);
-
-        // Set atau hapus session cart_customer
-        if ($request->pelanggan_id) {
-            session(['cart_customer' => $request->pelanggan_id]);
-        } else {
-            session()->forget('cart_customer');
-        }
-
-        return back()->with('success', 'Pelanggan berhasil dipilih');
     }
+
+    // Kosongkan cart dan pelanggan di session
+    session()->forget(['cart', 'cart_customer']);
+
+    return redirect()->route('penjualan.index')->with('success', 'Checkout berhasil!');
+}
+
+
+
+
+public function setCustomer(Request $request)
+{
+    $request->validate([
+        'pelanggan_id' => 'nullable|exists:pelanggan,PelangganID',
+    ]);
+
+    // Simpan ID pelanggan di session
+    session(['cart_customer' => $request->pelanggan_id]);
+
+    return back()->with('success', 'Pelanggan berhasil dipilih');
+}
+
 }
