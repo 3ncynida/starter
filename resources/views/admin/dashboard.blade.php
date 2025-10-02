@@ -162,9 +162,6 @@
                                 @endphp
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 rounded-full bg-slate-100 p-3">
-                                            <i class="fas fa-user text-slate-500"></i>
-                                        </div>
                                         <div class="ml-3">
                                             <p class="text-sm font-medium text-slate-900">{{ $customer->NamaPelanggan }}</p>
                                             <p class="text-sm text-slate-500">{{ $customer->total_transactions }} transaksi</p>
