@@ -9,7 +9,6 @@
         
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
         
         <!-- Scripts -->
@@ -30,46 +29,44 @@
                 color: var(--text-color);
             }
 
-            .bg-primary {
-                background-color: var(--primary-color);
+            .header-glass {
+                background-color: rgba(255, 255, 255, 0.85);
+                backdrop-filter: saturate(180%) blur(8px);
             }
 
-            .text-primary {
-                color: var(--primary-color);
-            }
+            /* Buttons */
+            .bg-primary { background-color: var(--primary-color); }
+            .text-primary { color: var(--primary-color); }
 
             .btn-primary {
                 background-color: var(--primary-color);
                 color: white;
                 padding: 0.75rem 1.5rem;
-                border-radius: 0.5rem;
-                font-weight: 500;
-                transition: all 0.3s ease;
+                border-radius: 0.75rem; /* slightly rounder */
+                font-weight: 600;
+                transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+                box-shadow: 0 6px 20px rgba(76, 175, 80, 0.15);
             }
-
-            .btn-primary:hover {
-                background-color: #388E3C;
-                transform: translateY(-2px);
-            }
+            .btn-primary:hover { background-color: #388E3C; transform: translateY(-2px); }
 
             .btn-secondary {
                 background-color: var(--secondary-color);
                 color: white;
                 padding: 0.75rem 1.5rem;
-                border-radius: 0.5rem;
-                font-weight: 500;
-                transition: all 0.3s ease;
+                border-radius: 0.75rem;
+                font-weight: 600;
+                transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+                box-shadow: 0 6px 20px rgba(255, 152, 0, 0.15);
             }
+            .btn-secondary:hover { background-color: #F57C00; transform: translateY(-2px); }
 
-            .btn-secondary:hover {
-                background-color: #F57C00;
-                transform: translateY(-2px);
-            }
+            /* Hide Contact section entirely */
+            #contact { display: none !important; }
         </style>
     </head>
     <body class="font-sans antialiased">
         <!-- Header/Navigation -->
-        <header class="bg-white py-4 fixed w-full top-0 left-0 z-50 shadow-md">
+        <header class="header-glass py-4 fixed w-full top-0 left-0 z-50 shadow-md">
             <div class="container mx-auto px-6">
                 <div class="flex items-center justify-between">
                     <!-- Logo -->
@@ -112,7 +109,6 @@
                         <a href="#home" class="block text-gray-600 hover:text-primary transition">Home</a>
                         <a href="#products" class="block text-gray-600 hover:text-primary transition">Products</a>
                         <a href="#about" class="block text-gray-600 hover:text-primary transition">About</a>
-                        <a href="#contact" class="block text-gray-600 hover:text-primary transition">Contact</a>
                         @if (Route::has('login'))
                             @auth
                                 <a href="{{ url('/dashboard') }}" class="block text-gray-600 hover:text-primary transition">Dashboard</a>
@@ -139,7 +135,7 @@
                     <div class="flex flex-col lg:flex-row items-center">
                         <!-- Hero Content -->
                         <div class="lg:w-1/2 text-center lg:text-left">
-                            <h1 class="text-4xl lg:text-6xl font-bold text-gray-800 leading-tight mb-6">
+                            <h1 class="text-4xl lg:text-6xl font-bold text-gray-800 leading-tight mb-6 text-balance">
                                 Fresh Fruits for a <span class="text-primary">Healthy Life</span>
                             </h1>
                             <p class="text-lg text-gray-600 mb-8">
@@ -168,7 +164,7 @@
                         
                         <!-- Hero Image -->
                         <div class="lg:w-1/2 mt-10 lg:mt-0">
-                            <img src="https://th.bing.com/th/id/OIP.v9F6lcxlyV4tMOMdfJ7FYAHaE8?w=274&h=183&c=7&r=0&o=7&pid=1.7&rm=3" alt="Fresh fruits arrangement" class="rounded-lg shadow-xl w-full h-auto">
+                            <img src="https://via.placeholder.com/600x400" alt="Fresh fruits arrangement" class="rounded-xl shadow-xl w-full h-auto">
                         </div>
                     </div>
                 </div>
@@ -184,8 +180,8 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <!-- Product Card -->
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 hover:shadow-xl">
-                            <img src="https://cdn-brilio-net.akamaized.net/news/2024/10/07/305490/300x200-7-buah-yang-rendah-kalori-enak-dan-aman-dikonsumsi-saat-diet-2410077.jpg" alt="Fresh Apples" class="w-full h-48 object-cover">
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition duration-300 hover:shadow-lg hover:-translate-y-1">
+                            <img src="https://via.placeholder.com/300x200" alt="Fresh Apples" class="w-full h-48 object-cover">
                             <div class="p-6">
                                 <h3 class="text-xl font-semibold text-gray-800 mb-2">Fresh Apples</h3>
                                 <p class="text-gray-600 mb-4">Sweet and crispy apples fresh from the orchard</p>
@@ -195,7 +191,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <!-- More Product Cards... -->
                     </div>
 
@@ -215,7 +210,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <!-- Benefits -->
-                        <div class="bg-white rounded-lg p-8 shadow-md">
+                        <div class="bg-white rounded-xl p-8 border border-gray-200 shadow-sm hover:shadow-md transition">
                             <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                                 <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -224,8 +219,17 @@
                             <h3 class="text-xl font-semibold text-gray-800 mb-4">Fresh Quality</h3>
                             <p class="text-gray-600">We ensure that all our fruits are fresh, handpicked, and of the highest quality.</p>
                         </div>
-
                         <!-- More Benefits... -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section class="py-14 bg-primary">
+                <div class="container mx-auto px-6">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-white">
+                        <h3 class="text-2xl md:text-3xl font-semibold">Get fresh, premium fruits delivered today</h3>
+                        <a href="#products" class="btn-secondary bg-white text-gray-900 hover:bg-gray-100">Shop Now</a>
                     </div>
                 </div>
             </section>
@@ -256,7 +260,6 @@
                             <li><a href="#home" class="text-gray-400 hover:text-white transition">Home</a></li>
                             <li><a href="#products" class="text-gray-400 hover:text-white transition">Products</a></li>
                             <li><a href="#about" class="text-gray-400 hover:text-white transition">About Us</a></li>
-                            <li><a href="#contact" class="text-gray-400 hover:text-white transition">Contact</a></li>
                         </ul>
                     </div>
 
@@ -264,25 +267,15 @@
                         <h4 class="text-lg font-semibold mb-4">Opening Hours</h4>
                         <ul class="space-y-2 text-gray-400">
                             <li>Monday - Friday: 9am - 10pm</li>
-                            <li>Saturday: 10am - 8pm</li>
-                            <li>Sunday: 10am - 6pm</li>
+                            <li>Saturday - Sunday: Closed</li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="text-lg font-semibold mb-4">Newsletter</h4>
-                        <p class="text-gray-400 text-sm mb-4">Subscribe to our newsletter for updates and exclusive offers.</p>
-                        <form class="flex gap-2">
-                            <input type="email" placeholder="Your email" class="flex-1 px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-primary">
-                            <button type="submit" class="btn-primary">Subscribe</button>
-                        </form>
+                        <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                        <p class="text-gray-400 text-sm">Email: contact@freshfruitmarket.com</p>
+                        <p class="text-gray-400 text-sm">Phone: +1 555 1234</p>
                     </div>
-                </div>
-
-                <div class="mt-12 pt-8 border-t border-gray-800">
-                    <p class="text-center text-gray-400 text-sm">
-                        © {{ date('Y') }} Fresh Fruit Market. All rights reserved.
-                    </p>
                 </div>
             </div>
         </footer>
