@@ -1,66 +1,106 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Detail Penjualan') }}
-        </h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Detail Penjualan</h2>
     </x-slot>
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm rounded-lg p-6">
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div class="p-6">
+                    @if (session('success'))
+                        <div class="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
-                @if (session('success'))
-                    <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
-                        {{ session('success') }}
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <h3 class="text-lg font-semibold text-gray-800">Daftar Transaksi</h3>
+                        <form action="{{ route('detail-penjualan.index') }}" method="GET" class="relative w-full max-w-sm">
+                            <input
+                                id="search"
+                                name="search"
+                                type="text"
+                                placeholder="Cari pelanggan atau produk..."
+                                value="{{ request('search') }}"
+                                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:border-gray-600 focus:outline-none"
+                            />
+                            <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/></svg>
+                            </span>
+                        </div>
                     </div>
-                @endif
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
-                            <tr class="bg-[#0f172a]">
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">No</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tanggal</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Pelanggan</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Produk</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Jumlah</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse ($detail as $index => $d)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $index + 1 }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $d->penjualan->TanggalPenjualan ?? '-' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $d->penjualan?->pelanggan?->NamaPelanggan ?? 'Non Member' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $d->produk->NamaProduk }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $d->JumlahProduk }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        Rp {{ number_format($d->Subtotal, 0, ',', '.') }}
-                                    </td>
-                                </tr>
-                            @empty
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead class="sticky top-0 bg-slate-900 text-white">
                                 <tr>
-                                    <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                        Belum ada data detail penjualan
-                                    </td>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Tanggal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Pelanggan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Produk</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Jumlah</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Subtotal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Aksi</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody id="table-body" class="divide-y divide-gray-200 bg-white">
+                                @forelse ($detail as $i => $row)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $i + 1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                            {{ \Carbon\Carbon::parse($row->penjualan->TanggalPenjualan ?? $row->created_at)->format('d/m/Y H:i') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                            {{ $row->penjualan?->pelanggan?->NamaPelanggan ?? 'Non Member' }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                            {{ $row->produk->NamaProduk }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                            {{ $row->JumlahProduk }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                            Rp {{ number_format($row->Subtotal, 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <a
+                                                href="{{ route('detail-penjualan.show', $row->penjualan->PenjualanID) }}"
+                                                class="inline-flex items-center gap-2 rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-800 hover:bg-gray-100"
+                                            >
+                                                 eye icon 
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">
+                                            Belum ada data detail penjualan
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
+                    <!-- Pagination -->
+                    <div class="mt-4 px-4">
+                        {{ $detail->links() }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </x-app-layout>
+
+<script>
+// Auto-submit search form after typing stops
+let timeout;
+document.getElementById('search').addEventListener('input', function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        this.closest('form').submit();
+    }, 500);
+});
+</script>

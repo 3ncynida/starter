@@ -22,10 +22,6 @@ Route::get('/kasir', function () {
 
 Route::post('/cart/set-customer', [CartController::class, 'setCustomer'])->name('cart.set-customer');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::resource('users', App\Http\Controllers\UserController::class)->middleware('role:superAdmin');
 
 Route::get('/setting', [App\Http\Controllers\SettingController::class, 'edit'])->name('settings.edit')->middleware('role:admin');
@@ -50,6 +46,6 @@ Route::prefix('cart')->group(function () {
     Route::post('/set-customer', [CartController::class, 'setCustomer'])->name('cart.set-customer');
 });
 
-Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
 
 require __DIR__.'/auth.php';

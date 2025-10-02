@@ -99,6 +99,15 @@ public function store(Request $request)
         return redirect()->back()->with('success', 'Pelanggan berhasil dipilih');
     }
 
+    public function show($id)
+    {
+        $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])->findOrFail($id);
+        return view('kasir.penjualan.show', [
+            'penjualan' => $penjualan,
+            'details' => $penjualan->detailPenjualan
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $penjualan = \App\Models\Penjualan::findOrFail($id);

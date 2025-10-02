@@ -9,13 +9,37 @@ use Illuminate\Http\Request;
 
 class DetailPenjualanController extends Controller
 {
-    public function index()
-    {
-        $detail = DetailPenjualan::with(['penjualan.pelanggan', 'produk'])->get();
-        $penjualan = Penjualan::all();
+public function index(Request $request)
+{
+    $query = DetailPenjualan::with(['penjualan.pelanggan', 'produk'])
+        ->orderBy('created_at', 'desc');
 
-        return view('kasir.detail_penjualan.index', compact('detail', 'penjualan'));
+    // Handle search
+    if ($request->has('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->whereHas('penjualan.pelanggan', function($q) use ($search) {
+                $q->where('NamaPelanggan', 'like', '%' . $search . '%');
+            })
+            ->orWhereHas('produk', function($q) use ($search) {
+                $q->where('NamaProduk', 'like', '%' . $search . '%');
+            });
+        });
     }
+
+    $detail = $query->paginate(10)->withQueryString(); // Add withQueryString to maintain search parameter in pagination links
+
+    return view('kasir.detail_penjualan.index', compact('detail'));
+}
+
+public function show($id)
+{
+    $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])->findOrFail($id);
+    return view('kasir.detail_penjualan.show', [
+        'penjualan' => $penjualan,
+        'details' => $penjualan->detailPenjualan
+    ]);
+}
 
     public function edit($id)
     {
