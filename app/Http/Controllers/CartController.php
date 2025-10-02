@@ -58,21 +58,40 @@ public function checkout(Request $request)
     // Ambil pelanggan dari session (kalau tidak ada = NULL / Non Member)
     $pelangganId = session('cart_customer', null);
 
+    // Hitung subtotal
+    $subtotal = collect($cart)->sum(fn($item) => $item['harga'] * $item['qty']);
+
+    // Hitung diskon jika member
+    $diskonPersen = 0;
+    if ($pelangganId) {
+        $diskonPersen = \App\Models\Setting::get('diskon_member', 0);
+    }
+    
+    // Hitung nominal diskon dan total setelah diskon
+    $diskonNominal = ($subtotal * $diskonPersen) / 100;
+    $total = $subtotal - $diskonNominal;
+
     // Buat transaksi penjualan
     $penjualan = Penjualan::create([
         'TanggalPenjualan' => now(),
-        'PelangganID' => $pelangganId, // ✅ ambil dari session
-        'Total' => collect($cart)->sum(fn($item) => $item['harga'] * $item['qty']),
+        'PelangganID' => $pelangganId,
+        'TotalHarga' => $total,
+        'Diskon' => $diskonNominal,
     ]);
 
-    // Masukkan detail penjualan
+    // Masukkan detail penjualan dan update stok
     foreach ($cart as $productId => $item) {
+        // Create detail penjualan
         DetailPenjualan::create([
             'PenjualanID' => $penjualan->PenjualanID,
             'ProdukID' => $productId,
             'JumlahProduk' => $item['qty'],
             'Subtotal' => $item['harga'] * $item['qty'],
         ]);
+
+        // Update stok produk
+        $produk = Produk::findOrFail($productId);
+        $produk->decrement('Stok', $item['qty']);
     }
 
     // Kosongkan cart dan pelanggan di session

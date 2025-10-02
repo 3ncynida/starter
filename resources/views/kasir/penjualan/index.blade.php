@@ -130,9 +130,32 @@
                                     </button>
                                 </form>
 
-                                <div class="flex items-center justify-between py-3 border-t border-gray-200">
-                                    <span class="text-sm font-semibold text-gray-700">Total:</span>
-                                    <span class="text-xl font-bold text-gray-900">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                <div class="flex flex-col gap-2 py-3 border-t border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-700">Subtotal:</span>
+                                        <span class="text-sm font-medium text-gray-900">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                    </div>
+
+                                    @if(session('cart_customer'))
+                                        @php
+                                            $diskonPersen = App\Models\Setting::get('diskon_member', 0);
+                                            $diskonNominal = ($total * $diskonPersen) / 100;
+                                            $totalSetelahDiskon = $total - $diskonNominal;
+                                        @endphp
+                                        <div class="flex items-center justify-between text-green-600">
+                                            <span class="text-sm">Diskon Member ({{ $diskonPersen }}%):</span>
+                                            <span class="text-sm font-medium">- Rp {{ number_format($diskonNominal, 0, ',', '.') }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between pt-2 border-t border-gray-200">
+                                            <span class="text-sm font-semibold text-gray-700">Total Akhir:</span>
+                                            <span class="text-xl font-bold text-gray-900">Rp {{ number_format($totalSetelahDiskon, 0, ',', '.') }}</span>
+                                        </div>
+                                    @else
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm font-semibold text-gray-700">Total:</span>
+                                            <span class="text-xl font-bold text-gray-900">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="space-y-2">
