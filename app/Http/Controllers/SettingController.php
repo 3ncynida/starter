@@ -24,6 +24,6 @@ class SettingController extends Controller
             ['value' => $request->diskon_member]
         );
 
-        return redirect()->route('settings.edit')->with('success', 'Diskon berhasil diperbarui!');
+        return redirect()->route('pelanggan.index')->with('success', 'Diskon berhasil diperbarui!');
     }
 }

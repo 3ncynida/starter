@@ -12,7 +12,24 @@ class DetailPenjualanController extends Controller
 public function index(Request $request)
 {
     $query = DetailPenjualan::with(['penjualan.pelanggan', 'produk'])
-        ->orderBy('created_at', 'desc');
+        ->select('detail_penjualan.DetailID', 
+                'detail_penjualan.PenjualanID',
+                'detail_penjualan.ProdukID',
+                'detail_penjualan.JumlahProduk',
+                'detail_penjualan.Subtotal',
+                'detail_penjualan.created_at',
+                'detail_penjualan.updated_at')
+        ->join('penjualan', 'detail_penjualan.PenjualanID', '=', 'penjualan.PenjualanID')
+        ->groupBy(
+            'detail_penjualan.DetailID',
+            'detail_penjualan.PenjualanID',
+            'detail_penjualan.ProdukID',
+            'detail_penjualan.JumlahProduk',
+            'detail_penjualan.Subtotal',
+            'detail_penjualan.created_at',
+            'detail_penjualan.updated_at'
+        )
+        ->orderBy('penjualan.TanggalPenjualan', 'desc');
 
     // Handle search
     if ($request->has('search')) {
@@ -27,7 +44,7 @@ public function index(Request $request)
         });
     }
 
-    $detail = $query->paginate(10)->withQueryString(); // Add withQueryString to maintain search parameter in pagination links
+    $detail = $query->paginate(10)->withQueryString();
 
     return view('kasir.detail_penjualan.index', compact('detail'));
 }

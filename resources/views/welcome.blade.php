@@ -92,7 +92,7 @@
                     <div class="hidden md:flex items-center space-x-4">
                         @if (Route::has('login'))
                             @auth
-                                <a href="{{ url('/dashboard') }}" class="btn-primary">Dashboard</a>
+                                <a href="{{ url('/admin/dashboard') }}" class="btn-primary">Dashboard</a>
                             @else
                                 <a href="{{ route('login') }}" class="btn-secondary">Log in</a>
                                 @if (Route::has('register'))
@@ -111,7 +111,7 @@
                         <a href="#about" class="block text-gray-600 hover:text-primary transition">About</a>
                         @if (Route::has('login'))
                             @auth
-                                <a href="{{ url('/dashboard') }}" class="block text-gray-600 hover:text-primary transition">Dashboard</a>
+                                <a href="{{ url('/admin/dashboard') }}" class="block text-gray-600 hover:text-primary transition">Dashboard</a>
                             @else
                                 <a href="{{ route('login') }}" class="block text-gray-600 hover:text-primary transition">Log in</a>
                                 @if (Route::has('register'))

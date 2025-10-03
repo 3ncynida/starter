@@ -10,8 +10,9 @@ class PelangganController extends Controller
     public function index()
     {
         $pelanggan = Pelanggan::all();
+        $diskon = \App\Models\Setting::get('diskon_member', 0);
 
-        return view('admin.pelanggan.index', compact('pelanggan'));
+        return view('admin.pelanggan.index', compact('pelanggan', 'diskon'));
     }
 
     public function create()

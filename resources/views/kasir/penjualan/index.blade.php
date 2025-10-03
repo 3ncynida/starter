@@ -10,17 +10,10 @@
             <!-- Main Content (Left Side) -->
             <div class="flex-1">
                 <!-- Action Bar -->
-                <div class="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <a href="{{ route('penjualan.create') }}"
-                       class="inline-flex items-center justify-center rounded-lg px-4 py-2 bg-black text-white shadow hover:bg-gray-800 transition">
-                        + Tambah Penjualan
-                    </a>
+<div class="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <h1 class="text-3xl font-bold text-gray-900">Cari Produk</h1>
+</div>
 
-                    <div class="flex items-center gap-2 text-sm text-gray-600">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>{{ session('cart') ? count(session('cart')) : 0 }} items di keranjang</span>
-                    </div>
-                </div>
 
                 <!-- Search Produk (client-side) -->
                 <div class="mb-5">

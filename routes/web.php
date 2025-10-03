@@ -24,8 +24,7 @@ Route::post('/cart/set-customer', [CartController::class, 'setCustomer'])->name(
 
 Route::resource('users', App\Http\Controllers\UserController::class)->middleware('role:superAdmin');
 
-Route::get('/setting', [App\Http\Controllers\SettingController::class, 'edit'])->name('settings.edit')->middleware('role:admin');
-Route::put('/setting', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update')->middleware('role"admin');
+Route::put('/setting', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update')->middleware('role:admin');
 
 Route::resource('produk', App\Http\Controllers\ProdukController::class)->middleware('role:admin');
 Route::resource('pelanggan', App\Http\Controllers\PelangganController::class);

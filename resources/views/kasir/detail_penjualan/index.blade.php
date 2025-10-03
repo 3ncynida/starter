@@ -48,7 +48,7 @@
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $i + 1 }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                            {{ \Carbon\Carbon::parse($row->penjualan->TanggalPenjualan ?? $row->created_at)->format('d/m/Y H:i') }}
+                                            {{ \Carbon\Carbon::parse($row->penjualan->TanggalPenjualan ?? $row->created_at)->setTimezone('Asia/Jakarta')->format('d/m/Y H:i') }} WIB
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                             {{ $row->penjualan?->pelanggan?->NamaPelanggan ?? 'Non Member' }}
