@@ -6,7 +6,7 @@ use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 use App\Http\Controllers\Test;
 

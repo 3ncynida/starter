@@ -181,7 +181,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <!-- Product Card -->
                         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition duration-300 hover:shadow-lg hover:-translate-y-1">
-                            <img src="https://via.placeholder.com/300x200" alt="Fresh Apples" class="w-full h-48 object-cover">
+                            <img src=" {{asset('apel.png')}} " alt="Fresh Apples" class="w-full h-48 object-cover">
                             <div class="p-6">
                                 <h3 class="text-xl font-semibold text-gray-800 mb-2">Fresh Apples</h3>
                                 <p class="text-gray-600 mb-4">Sweet and crispy apples fresh from the orchard</p>

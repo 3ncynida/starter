@@ -1,58 +1,85 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Daftar Produk') }}
-        </h2>
-    </x-slot>
+  <x-slot name="header">
+    {{-- judul halaman --}}
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+      {{ __('Daftar Produk') }}
+    </h2>
+  </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Tombol Tambah --}}
-            <div class="mb-4">
-                <a href="{{ route('produk.create') }}"
-                   class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
-                    + Tambah Produk
-                </a>
-            </div>
+  <div class="py-6">
+    <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+      {{-- Toolbar: Tambah + Pencarian --}}
+      <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {{-- tombol tambah dengan warna hijau "keranjang" --}}
+        <a
+          href="{{ route('produk.create') }}"
+          class="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          + Tambah Produk
+        </a>
 
-            {{-- Card Pembungkus Tabel --}}
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-                <x-table class="w-full">
-                    <x-slot name="head">
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Produk</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stok</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Satuan</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
-                    </x-slot>
-
-                    @forelse($produks as $p)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                            <td class="px-6 py-4">{{ $p->NamaProduk }}</td>
-                            <td class="px-6 py-4">Rp {{ number_format($p->Harga, 2, ',', '.') }}</td>
-                            <td class="px-6 py-4">{{ $p->Stok }}</td>
-                            <td class="px-6 py-4">{{ $p->Satuan }}</td>
-                            <td class="px-6 py-4 flex space-x-2">
-                    <a href="{{ route('produk.edit', $p->ProdukID) }}" class="text-blue-600 hover:text-blue-900">Edit</a> ||
-
-                                        <form action="{{ route('produk.destroy', $p->ProdukID) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
-                    </form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                                Tidak ada produk tersedia.
-                            </td>
-                        </tr>
-                    @endforelse
-                </x-table>
-            </div>
+        {{-- Search --}}
+        <div class="relative w-full sm:w-80">
+          <label for="product-search" class="sr-only">Cari produk</label>
+          <input
+            id="product-search"
+            type="text"
+            placeholder="Cari produk (tekan / untuk fokus)"
+            aria-label="Cari produk"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
+            </svg>
+          </div>
         </div>
+      </div>
+
+      {{-- Grid Kartu Produk --}}
+      <div id="productGrid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+        @forelse($produks as $p)
+          {{-- gunakan kartu manage yang baru --}}
+          <x-product-card-manage :product="$p" />
+        @empty
+          {{-- Empty state --}}
+          <div class="col-span-full">
+            <div class="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="mb-2 h-10 w-10 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7h18M5 7l1.5 12h11L19 7M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M10 11h4M9 15h6"/>
+              </svg>
+              <p class="text-sm text-gray-600">Belum ada produk.</p>
+              <a href="{{ route('produk.create') }}" class="mt-3 inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                Tambah Produk
+              </a>
+            </div>
+          </div>
+        @endforelse
+      </div>
+
+      {{-- skrip pencarian client-side yg ringan --}}
+      <script>
+        (function () {
+          const input = document.getElementById('product-search');
+          const cards = document.querySelectorAll('#productGrid .product-card');
+
+          // Fokus cepat dengan tombol "/"
+          window.addEventListener('keydown', (e) => {
+            if (e.key === '/') {
+              e.preventDefault();
+              input.focus();
+            }
+          });
+
+          input?.addEventListener('input', () => {
+            const q = input.value.trim().toLowerCase();
+            cards.forEach(card => {
+              const name = card.getAttribute('data-name') || '';
+              card.style.display = name.includes(q) ? '' : 'none';
+            });
+          });
+        })();
+      </script>
     </div>
+  </div>
 </x-app-layout>
