@@ -151,7 +151,7 @@
                                 <div class="flex flex-col gap-2 py-3 border-t border-gray-200">
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm text-gray-700">Subtotal:</span>
-                                        <span class="text-sm font-medium text-gray-900">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                        <span class="text-sm font-medium text-gray-900  ">Rp {{ number_format($total, 0, ',', '.') }}</span>
                                     </div>
 
                                     @if(session('cart_customer'))

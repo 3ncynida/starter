@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Welcome to Fresh Fruit Market - Your destination for fresh, high-quality fruits. We offer a wide selection of seasonal fruits delivered fresh to your door.">
         <meta name="keywords" content="fruit market, fresh fruits, organic fruits, fruit delivery, seasonal fruits">
-        <title>Fresh Fruit Market - Premium Quality Fresh Fruits</title>
+        <title>{{ config('app.name', 'Laravel') }}</title>
         
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -71,7 +71,7 @@
                 <div class="flex items-center justify-between">
                     <!-- Logo -->
                     <div class="flex items-center">
-                        <span class="text-primary text-2xl font-bold">Fresh Fruit Market</span>
+                        <span class="text-primary text-2xl font-bold">{{ config('app.name', 'Laravel') }}</span>
                     </div>
 
                     <!-- Navigation Menu -->
@@ -95,9 +95,6 @@
                                 <a href="{{ url('/admin/dashboard') }}" class="btn-primary">Dashboard</a>
                             @else
                                 <a href="{{ route('login') }}" class="btn-secondary">Log in</a>
-                                @if (Route::has('register'))
-                                    <a href="{{ route('register') }}" class="btn-primary">Register</a>
-                                @endif
                             @endauth
                         @endif
                     </div>
