@@ -9,18 +9,31 @@ use App\Models\DetailPenjualan;
 
 class CartController extends Controller
 {
-    public function add($id)
+    public function add(Request $request, $id)
     {
         $produk = Produk::findOrFail($id);
         $cart = session()->get('cart', []);
+        
+        // Ambil quantity dari request, default 1 jika tidak ada
+        $requestQty = $request->qty ?? 1;
+        
+        // Cek stok yang tersedia
+        $currentQty = isset($cart[$id]) ? $cart[$id]['qty'] : 0;
+        $totalQty = $currentQty + $requestQty;
+        
+        // Validasi stok
+        if ($totalQty > $produk->Stok) {
+            return back()->with('error', 'Stok tidak mencukupi! Stok tersedia: ' . $produk->Stok);
+        }
 
         if (isset($cart[$id])) {
-            $cart[$id]['qty']++;
+            $cart[$id]['qty'] = $totalQty;
         } else {
             $cart[$id] = [
                 'nama'  => $produk->NamaProduk,
                 'harga' => $produk->Harga,
-                'qty'   => 1,
+                'qty'   => $requestQty,
+                'stok'  => $produk->Stok, // Tambah info stok
             ];
         }
 
@@ -39,6 +52,31 @@ class CartController extends Controller
         }
 
         return back()->with('success', 'Produk dihapus dari keranjang!');
+    }
+
+    public function updateQty(Request $request, $id)
+    {
+        $request->validate([
+            'qty' => 'required|integer|min:1'
+        ]);
+
+        $cart = session()->get('cart', []);
+        
+        if (!isset($cart[$id])) {
+            return back()->with('error', 'Produk tidak ditemukan di keranjang!');
+        }
+
+        // Cek stok produk
+        $produk = Produk::findOrFail($id);
+        if ($request->qty > $produk->Stok) {
+            return back()->with('error', 'Stok tidak mencukupi! Stok tersedia: ' . $produk->Stok);
+        }
+
+        // Update qty
+        $cart[$id]['qty'] = $request->qty;
+        session()->put('cart', $cart);
+
+        return back()->with('success', 'Jumlah produk diperbarui!');
     }
 
     public function clear()

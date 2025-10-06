@@ -47,4 +47,6 @@ Route::prefix('cart')->group(function () {
 
 Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
 
+Route::post('/cart/{id}/update-qty', [CartController::class, 'updateQty'])->name('cart.updateQty');
+
 require __DIR__.'/auth.php';

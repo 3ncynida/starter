@@ -62,10 +62,23 @@ class ProdukController extends Controller
             'NamaProduk' => 'required|string|max:255',
             'Harga' => 'required|numeric',
             'Stok' => 'required|integer',
+            'Gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'Satuan' => 'required|string|max:50',
         ]);
 
         $produk = Produk::findOrFail($id);
-        $produk->update($request->all());
+        
+        // Siapkan data untuk update
+        $data = $request->only(['NamaProduk', 'Harga', 'Stok', 'Satuan']);
+        
+        // Handle gambar hanya jika ada file baru
+        if ($request->hasFile('Gambar')) {
+            // Simpan ke storage/app/public/produk
+            $path = $request->file('Gambar')->store('produk', 'public');
+            $data['Gambar'] = $path;
+        }
+        
+        $produk->update($data);
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil diupdate!');
     }

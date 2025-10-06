@@ -40,6 +40,20 @@
                         <!-- Bungkus kartu dengan data-name untuk filter -->
                         <div class="product-card" data-name="{{ strtolower($product->NamaProduk) }}">
                             <x-card :product="$product" />
+                            <form action="{{ route('cart.add', $product->ProdukID) }}" method="POST" class="mt-2 flex gap-2">
+                                @csrf
+                                <input type="number" 
+                                       name="qty" 
+                                       value="1" 
+                                       min="1" 
+                                       max="{{ $product->Stok }}"
+                                       class="w-20 rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black">
+                                <button type="submit" 
+                                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        {{ $product->Stok < 1 ? 'disabled' : '' }}>
+                                    <i class="fas fa-cart-plus mr-1"></i> Tambah
+                                </button>
+                            </form>
                         </div>
                     @endforeach
                 </div>
@@ -73,9 +87,18 @@
                                                 <div class="flex-1">
                                                     <h4 class="text-sm font-semibold text-gray-900 mb-1">{{ $item['nama'] }}</h4>
                                                     <div class="flex items-center gap-2 mb-1">
-                                                        <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-medium">
-                                                            Qty: {{ $item['qty'] }}
-                                                        </span>
+                                                        <form action="{{ route('cart.updateQty', $id) }}" method="POST" class="flex items-center gap-2">
+                                                            @csrf
+                                                            <input type="number" 
+                                                                   name="qty" 
+                                                                   value="{{ $item['qty'] }}" 
+                                                                   min="1" 
+                                                                   max="{{ $item['stok'] ?? 999999 }}"
+                                                                   class="w-16 h-6 rounded border-gray-300 text-xs focus:ring-black focus:border-black">
+                                                            <button type="submit" class="text-xs text-blue-600 hover:text-blue-800">
+                                                                <i class="fas fa-sync-alt"></i>
+                                                            </button>
+                                                        </form>
                                                         <span class="text-xs text-gray-500">
                                                             @ Rp {{ number_format($item['harga'], 0, ',', '.') }}
                                                         </span>
@@ -84,13 +107,15 @@
                                                         Rp {{ number_format($subtotal, 0, ',', '.') }}
                                                     </div>
                                                 </div>
-                                                <form action="{{ route('cart.remove', $id) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors p-1">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </form>
+                                                <div class="flex items-center gap-1">
+                                                    <form action="{{ route('cart.remove', $id) }}" method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors p-1">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </li>
                                     @endforeach

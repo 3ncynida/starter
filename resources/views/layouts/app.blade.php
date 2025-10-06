@@ -20,7 +20,7 @@
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white/70 backdrop-blur border-b border-green-100 sticky top-0 z-40" role="banner" aria-label="Header">
+                <header class="bg-white/70 backdrop-blur border-b border-green-100 sticky top-0 z-30" role="banner" aria-label="Header">
                     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>

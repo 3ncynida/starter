@@ -2,31 +2,49 @@
 {{-- new reusable card with Edit & Hapus actions for the Produk index --}}
 @props(['product'])
 
+@php
+  $isOut = (int)($product->Stok ?? 0) <= 0;
+@endphp
+
 <div
-  class="product-card group rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md focus-within:shadow-md"
+  // add conditional border color when habis and data-stock for future filters
+  class="product-card group rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md focus-within:shadow-md {{ $isOut ? 'border-orange-300' : 'border-gray-200' }}"
   data-name="{{ strtolower($product->NamaProduk) }}"
+  data-stock="{{ (int)($product->Stok ?? 0) }}"
 >
   {{-- Gambar --}}
-  <div class="h-40 w-full overflow-hidden rounded-lg bg-gray-50">
+  <div class="relative h-40 w-full overflow-hidden rounded-lg bg-gray-50">
+    {{-- HABIS badge --}}
+    @if($isOut)
+      <span class="pointer-events-none absolute left-2 top-2 rounded-md bg-orange-500 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">Habis</span>
+    @endif
+
     @if(!empty($product->Gambar))
       <img
         src="{{ asset('storage/' . $product->Gambar) }}"
         alt="{{ $product->NamaProduk }}"
-        class="mx-auto h-full object-contain"
+        class="mx-auto h-full object-contain {{ $isOut ? 'opacity-60 grayscale' : '' }}"
       />
     @else
       <img
         src="{{ asset('/placeholder.svg?height=160&width=240') }}"
         alt="{{ $product->NamaProduk }}"
-        class="mx-auto h-full object-contain"
+        class="mx-auto h-full object-contain {{ $isOut ? 'opacity-60 grayscale' : '' }}"
       />
     @endif
   </div>
 
   {{-- Info --}}
   <div class="mt-4">
-    <h3 class="text-sm font-semibold text-gray-900 line-clamp-2">{{ $product->NamaProduk }}</h3>
-    <p class="mt-1 text-xs text-gray-500">Stok: <span class="font-medium text-gray-700">{{ $product->Stok }}</span> {{ $product->Satuan }}</p>
+    {{-- ensure consistent title height --}}
+    <h3 class="min-h-[2.75rem] text-sm font-semibold text-gray-900 line-clamp-2">{{ $product->NamaProduk }}</h3>
+
+    {{-- stok label switches to HABIS style --}}
+    @if($isOut)
+      <p class="mt-1 text-xs font-medium text-orange-700">Stok: Habis</p>
+    @else
+      <p class="mt-1 text-xs text-gray-500">Stok: <span class="font-medium text-gray-700">{{ $product->Stok }}</span> {{ $product->Satuan }}</p>
+    @endif
 
     <p class="mt-2 text-lg font-bold text-gray-900">
       Rp {{ number_format($product->Harga, 0, ',', '.') }}
