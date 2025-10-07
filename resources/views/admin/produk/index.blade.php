@@ -57,6 +57,19 @@
         @endforelse
       </div>
 
+      {{-- Pagination --}}
+      @if($produks instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="mt-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <p class="text-sm text-gray-600">
+            Menampilkan <span class="font-medium">{{ $produks->firstItem() }}</span>–<span class="font-medium">{{ $produks->lastItem() }}</span>
+            dari <span class="font-medium">{{ $produks->total() }}</span> produk
+          </p>
+          <div class="w-full sm:w-auto">
+            {{ $produks->onEachSide(1)->links() }}
+          </div>
+        </div>
+      @endif
+
       {{-- skrip pencarian client-side yg ringan --}}
       <script>
         (function () {

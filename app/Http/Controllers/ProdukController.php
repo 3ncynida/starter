@@ -12,8 +12,7 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        $produks = Produk::all();
-
+        $produks = Produk::when(request('q'), fn($q,$s)=>$q->where('NamaProduk','like',"%$s%"))->orderBy('NamaProduk')->paginate(10)->withQueryString();
         return view('admin.produk.index', compact('produks'));
     }
 

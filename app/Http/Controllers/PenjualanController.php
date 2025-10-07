@@ -13,11 +13,12 @@ class PenjualanController extends Controller
 {
 public function index()
 {
-    $products  = Produk::all();
+    $allProducts = Produk::orderBy('NamaProduk')->get(); // For search functionality
+    $products  = Produk::orderBy('NamaProduk')->paginate(8)->withQueryString();
     $penjualan = Penjualan::with('pelanggan')->get();
     $pelanggan = Pelanggan::orderBy('NamaPelanggan')->get(); // ambil data pelanggan
 
-    return view('kasir.penjualan.index', compact('products', 'penjualan', 'pelanggan'));
+    return view('kasir.penjualan.index', compact('products', 'penjualan', 'pelanggan', 'allProducts'));
 }
 
 public function store(Request $request)

@@ -3,7 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Setting; // ✅ tambahin ini
+use App\Models\Produk;
+use App\Models\Setting;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -69,5 +70,41 @@ class DatabaseSeeder extends Seeder
             ['key' => 'diskon_member'],
             ['value' => '10'] // default diskon 10%
         );
+
+        // ====== PRODUK DEFAULT ======
+        $products = [
+            ['nama' => 'Apel Fuji', 'harga' => 25000, 'stok' => 100, 'satuan' => 'kg'],
+            ['nama' => 'Jeruk Mandarin', 'harga' => 20000, 'stok' => 150, 'satuan' => 'kg'],
+            ['nama' => 'Pisang Cavendish', 'harga' => 15000, 'stok' => 200, 'satuan' => 'sisir'],
+            ['nama' => 'Mangga Harum Manis', 'harga' => 30000, 'stok' => 80, 'satuan' => 'kg'],
+            ['nama' => 'Anggur Merah', 'harga' => 45000, 'stok' => 50, 'satuan' => 'kg'],
+            ['nama' => 'Semangka Merah', 'harga' => 18000, 'stok' => 30, 'satuan' => 'buah'],
+            ['nama' => 'Nanas Madu', 'harga' => 12000, 'stok' => 60, 'satuan' => 'buah'],
+            ['nama' => 'Pir Ya Lie', 'harga' => 35000, 'stok' => 75, 'satuan' => 'kg'],
+            ['nama' => 'Melon Honey Dew', 'harga' => 22000, 'stok' => 40, 'satuan' => 'buah'],
+            ['nama' => 'Strawberry Fresh', 'harga' => 40000, 'stok' => 45, 'satuan' => 'pack'],
+            ['nama' => 'Kiwi Hijau', 'harga' => 50000, 'stok' => 35, 'satuan' => 'kg'],
+            ['nama' => 'Pepaya California', 'harga' => 16000, 'stok' => 55, 'satuan' => 'buah'],
+            ['nama' => 'Jambu Kristal', 'harga' => 28000, 'stok' => 65, 'satuan' => 'kg'],
+            ['nama' => 'Salak Pondoh', 'harga' => 15000, 'stok' => 90, 'satuan' => 'kg'],
+            ['nama' => 'Duku Palembang', 'harga' => 25000, 'stok' => 70, 'satuan' => 'kg'],
+            ['nama' => 'Rambutan Binjai', 'harga' => 18000, 'stok' => 85, 'satuan' => 'kg'],
+            ['nama' => 'Durian Montong', 'harga' => 75000, 'stok' => 25, 'satuan' => 'buah'],
+            ['nama' => 'Alpukat Mentega', 'harga' => 32000, 'stok' => 60, 'satuan' => 'kg'],
+            ['nama' => 'Manggis Super', 'harga' => 28000, 'stok' => 75, 'satuan' => 'kg'],
+            ['nama' => 'Lemon Import', 'harga' => 45000, 'stok' => 40, 'satuan' => 'kg'],
+        ];
+
+        foreach ($products as $product) {
+            Produk::firstOrCreate(
+                ['NamaProduk' => $product['nama']],
+                [
+                    'Harga' => $product['harga'],
+                    'Stok' => $product['stok'],
+                    'Satuan' => $product['satuan'],
+                    'Gambar' => 'produk/default.webp'
+                ]
+            );
+        }
     }
 }
