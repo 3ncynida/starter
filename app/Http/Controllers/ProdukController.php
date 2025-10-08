@@ -12,8 +12,19 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        $produks = Produk::when(request('q'), fn($q,$s)=>$q->where('NamaProduk','like',"%$s%"))->orderBy('NamaProduk')->paginate(10)->withQueryString();
-        return view('admin.produk.index', compact('produks'));
+        // Get all products for search functionality
+        $allProducts = Produk::all();
+        
+        // Get paginated products for display
+        $produks = Produk::when(
+            request('q'), 
+            fn($q, $s) => $q->where('NamaProduk', 'like', "%$s%")
+        )
+        ->orderBy('NamaProduk')
+        ->paginate(8)
+        ->withQueryString();
+
+        return view('admin.produk.index', compact('produks', 'allProducts'));
     }
 
     public function create()
