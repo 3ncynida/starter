@@ -65,4 +65,14 @@ class PelangganController extends Controller
             ->route('pelanggan.index')
             ->with('success', 'Pelanggan berhasil diperbarui');
     }
+
+    public function destroy($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+        $pelanggan->delete();
+
+        return redirect()
+            ->route('pelanggan.index')
+            ->with('success', 'Pelanggan berhasil dihapus');
+    }
 }

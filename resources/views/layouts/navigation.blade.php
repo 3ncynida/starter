@@ -23,6 +23,9 @@
                     @endcan
 
                     @can(['manage penjualan'])
+                    <x-nav-link :href="route('pelanggan.index')" :active="request()->routeIs('pelanggan.index')">
+                        {{ __('Pelanggan') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('penjualan.index')" :active="request()->routeIs('penjualan.index')">
                         {{ __('Penjualan') }}
                     </x-nav-link>

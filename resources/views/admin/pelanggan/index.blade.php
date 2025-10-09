@@ -6,8 +6,9 @@
     </x-slot>
 
     <div class="py-6">
-
+        
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @can(['manage pelanggan', 'manage produk'])
             {{-- Pengaturan Diskon --}}
             <div class="mb-6 bg-white shadow-sm rounded-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Pengaturan Diskon Member</h3>
@@ -15,7 +16,6 @@
                 @if(session('success'))
                     <div class="mb-4 text-green-600">{{ session('success') }}</div>
                 @endif
-
                 <form action="{{ route('settings.update') }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
@@ -48,6 +48,7 @@
                     </div>
                 </form>
             </div>
+            @endcan
 
             {{-- Tombol Tambah --}}
             <div class="mb-4">

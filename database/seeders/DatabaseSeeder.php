@@ -63,7 +63,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
         $kasir->assignRole($kasirRole);
-        $kasir->givePermissionTo(['view produk', 'manage penjualan']);
+        $kasir->givePermissionTo(['view produk', 'manage penjualan', 'manage pelanggan']);
 
         // ====== SETTINGS DEFAULT ======
         Setting::firstOrCreate(
