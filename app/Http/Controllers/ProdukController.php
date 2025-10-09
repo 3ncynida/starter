@@ -21,7 +21,7 @@ class ProdukController extends Controller
             fn($q, $s) => $q->where('NamaProduk', 'like', "%$s%")
         )
         ->orderBy('NamaProduk')
-        ->paginate(8)
+        ->paginate(10)
         ->withQueryString();
 
         return view('admin.produk.index', compact('produks', 'allProducts'));
@@ -78,7 +78,7 @@ class ProdukController extends Controller
 
         $produk = Produk::findOrFail($id);
         
-        // Siapkan data untuk update
+        // Siapkan data untuk update (tanpa gambar)
         $data = $request->only(['NamaProduk', 'Harga', 'Stok', 'Satuan']);
         
         // Handle gambar hanya jika ada file baru

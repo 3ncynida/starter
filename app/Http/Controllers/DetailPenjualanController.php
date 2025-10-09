@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailPenjualan;
+use App\Models\Setting;
 use App\Models\Penjualan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ public function index(Request $request)
             'detail_penjualan.created_at',
             'detail_penjualan.updated_at'
         )
-        ->orderBy('penjualan.TanggalPenjualan', 'desc');
+        ->orderBy('penjualan.TanggalPenjualan', 'desc')->latest();
 
     // Handle search
     if ($request->has('search')) {
@@ -51,9 +52,11 @@ public function index(Request $request)
 
 public function show($id)
 {
+    $diskon = Setting::get('diskon_member', 0);
     $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])->findOrFail($id);
     return view('kasir.detail_penjualan.show', [
         'penjualan' => $penjualan,
+        'diskon' => $diskon,
         'details' => $penjualan->detailPenjualan
     ]);
 }

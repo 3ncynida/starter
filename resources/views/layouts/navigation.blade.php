@@ -15,9 +15,6 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('test')" :active="request()->routeIs('test')">
-                        {{ __('Test') }}
-                    </x-nav-link>
 
                     @can(['manage users', 'manage roles'])
                     <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
@@ -97,9 +94,6 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-green-800">
                 {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('test')" :active="request()->routeIs('test')" class="text-green-800">
-                {{ __('Test') }}
             </x-responsive-nav-link>
 
             @can(['manage users', 'manage roles'])

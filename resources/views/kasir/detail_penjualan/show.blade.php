@@ -18,7 +18,13 @@
                             </p>
                             <p class="text-gray-600">
                                 <span class="font-medium">Pelanggan:</span>
-                                {{ $penjualan->pelanggan->NamaPelanggan ?? 'Non Member' }}
+                                @php $isMember = isset($penjualan->pelanggan) && !empty($penjualan->pelanggan->NamaPelanggan); @endphp
+                                <span class="ml-1">{{ $penjualan->pelanggan->NamaPelanggan ?? 'Non Member' }}</span>
+                                @if($isMember)
+                                    <span class="ml-2 inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Member</span>
+                                @else
+                                    <span class="ml-2 inline-flex items-center rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Non Member</span>
+                                @endif
                             </p>
                         </div>
                         <div class="text-left md:text-right">
@@ -28,10 +34,24 @@
                                     Rp {{ number_format($penjualan->TotalHarga, 0, ',', '.') }}
                                 </span>
                             </p>
-                            @if($penjualan->Diskon > 0)
+                            @php
+                              $__subtotal = $details->sum('Subtotal');
+                              $__diskon = $penjualan->Diskon ?? 0;
+                              if ((int)($__diskon) === 0 && $__subtotal > 0 && isset($penjualan->TotalHarga)) {
+                                  $calc = $__subtotal - ($penjualan->TotalHarga ?? $__subtotal);
+                                  if ($calc > 0) { $__diskon = $calc; }
+                              }
+                              $__discPct = $__subtotal > 0 ? round((($__diskon / $__subtotal) * 100)) : 0;
+                            @endphp
+                            @if($__diskon > 0)
                                 <p class="text-gray-600">
                                     <span class="font-medium">Diskon:</span>
-                                    <span class="text-green-600">- Rp {{ number_format($penjualan->Diskon, 0, ',', '.') }}</span>
+                                    <span class="text-green-600">
+                                        - Rp {{ number_format($__diskon, 0, ',', '.') }}
+                                        @if($__discPct > 0)
+                                            <span class="ml-1 text-xs text-emerald-700">({{ $__discPct }}%)</span>
+                                        @endif
+                                    </span>
                                 </p>
                             @endif
                         </div>
@@ -63,14 +83,24 @@
                                 @endforeach
                             </tbody>
                             <tfoot>
+                                @php
+                                  $subtotal = $details->sum('Subtotal');
+                                  $diskon   = $__diskon;
+                                  $discPct  = $subtotal > 0 ? round(($diskon / $subtotal) * 100) : 0;
+                                @endphp
                                 <tr class="bg-gray-50">
                                     <td colspan="4" class="px-6 py-4 text-right text-sm font-medium text-gray-900">Subtotal</td>
-                                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">Rp {{ number_format($details->sum('Subtotal'), 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
                                 </tr>
-                                @if($penjualan->Diskon > 0)
+                                @if($diskon > 0)
                                     <tr class="bg-gray-50">
-                                        <td colspan="4" class="px-6 py-4 text-right text-sm font-medium text-gray-900">Diskon Member</td>
-                                        <td class="px-6 py-4 text-sm font-medium text-green-600">- Rp {{ number_format($penjualan->Diskon, 0, ',', '.') }}</td>
+                                        <td colspan="4" class="px-6 py-4 text-right text-sm font-medium text-gray-900">
+                                            Diskon Member
+                                            @if($discPct > 0)
+                                                <span class="ml-1 text-xs text-emerald-700">({{ $discPct }}%)</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4 text-sm font-semibold text-emerald-600">- Rp {{ number_format($diskon, 0, ',', '.') }}</td>
                                     </tr>
                                 @endif
                                 <tr class="bg-gray-50">
@@ -175,10 +205,10 @@
         <span>Total Item</span>
         <span>{{ $details->sum('JumlahProduk') }}</span>
       </div>
-      @if(($penjualan->Diskon ?? 0) > 0)
+      @if((($__diskon ?? 0) > 0))
         <div class="row small">
           <span>Total Disc.</span>
-          <span>-{{ number_format($penjualan->Diskon, 0, ',', '.') }}</span>
+          <span>-{{ number_format($__diskon, 0, ',', '.') }}</span>
         </div>
       @endif
       <div class="row bold">
