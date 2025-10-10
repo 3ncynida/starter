@@ -19,7 +19,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-slate-500">Total Penjualan</p>
+                    <p class="text-sm font-medium text-slate-500">Total Penjualan (bulan ini)</p>
                     <p class="text-2xl font-semibold text-slate-900">{{ number_format($totalPenjualan, 0, ',', '.') }}</p>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-slate-500">Total Pendapatan</p>
+                    <p class="text-sm font-medium text-slate-500">Total Pendapatan (bulan ini)</p>
                     <p class="text-2xl font-semibold text-slate-900">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
                 </div>
             </div>
