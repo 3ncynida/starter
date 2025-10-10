@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Welcome to Fresh Fruit Market - Your destination for fresh, high-quality fruits. We offer a wide selection of seasonal fruits delivered fresh to your door.">
         <meta name="keywords" content="fruit market, fresh fruits, organic fruits, fruit delivery, seasonal fruits">
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>Fresh Fruit Market - Premium Quality Fresh Fruits</title>
         
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -62,6 +62,8 @@
 
             /* Hide Contact section entirely */
             #contact { display: none !important; }
+            /* Hide Products section entirely */
+            #products { display: none !important; }
         </style>
     </head>
     <body class="font-sans antialiased">
@@ -71,13 +73,12 @@
                 <div class="flex items-center justify-between">
                     <!-- Logo -->
                     <div class="flex items-center">
-                        <span class="text-primary text-2xl font-bold">{{ config('app.name', 'Laravel') }}</span>
+                        <span class="text-primary text-2xl font-bold">Fresh Fruit Market</span>
                     </div>
 
                     <!-- Navigation Menu -->
                     <nav class="hidden md:flex space-x-8">
                         <a href="#home" class="text-gray-600 hover:text-primary transition">Home</a>
-                        <a href="#products" class="text-gray-600 hover:text-primary transition">Products</a>
                         <a href="#about" class="text-gray-600 hover:text-primary transition">About</a>
                     </nav>
 
@@ -92,9 +93,12 @@
                     <div class="hidden md:flex items-center space-x-4">
                         @if (Route::has('login'))
                             @auth
-                                <a href="{{ url('/admin/dashboard') }}" class="btn-primary">Dashboard</a>
+                                <a href="{{ url('/dashboard') }}" class="btn-primary">Dashboard</a>
                             @else
                                 <a href="{{ route('login') }}" class="btn-secondary">Log in</a>
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}" class="btn-primary">Register</a>
+                                @endif
                             @endauth
                         @endif
                     </div>
@@ -104,11 +108,10 @@
                 <div class="md:hidden hidden" id="mobile-menu">
                     <div class="px-4 py-3 space-y-4">
                         <a href="#home" class="block text-gray-600 hover:text-primary transition">Home</a>
-                        <a href="#products" class="block text-gray-600 hover:text-primary transition">Products</a>
                         <a href="#about" class="block text-gray-600 hover:text-primary transition">About</a>
                         @if (Route::has('login'))
                             @auth
-                                <a href="{{ url('/admin/dashboard') }}" class="block text-gray-600 hover:text-primary transition">Dashboard</a>
+                                <a href="{{ url('/dashboard') }}" class="block text-gray-600 hover:text-primary transition">Dashboard</a>
                             @else
                                 <a href="{{ route('login') }}" class="block text-gray-600 hover:text-primary transition">Log in</a>
                                 @if (Route::has('register'))
@@ -140,8 +143,8 @@
                                 Experience premium quality and taste that nature has to offer.
                             </p>
                             <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                                <a href="#products" class="btn-primary text-center">Shop Now</a>
-                                <a href="#about" class="btn-secondary text-center">Learn More</a>
+                                <a href="#about" class="btn-primary text-center">Lihat Keunggulan</a>
+                                <a href="{{ Route::has('login') ? route('login') : '#about' }}" class="btn-secondary text-center">Masuk</a>
                             </div>
                             <div class="mt-12 grid grid-cols-3 gap-8">
                                 <div class="text-center">
@@ -169,32 +172,7 @@
 
             <!-- Featured Products Section -->
             <section id="products" class="py-20">
-                <div class="container mx-auto px-6">
-                    <div class="text-center mb-16">
-                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Featured Products</h2>
-                        <p class="text-gray-600">Discover our handpicked selection of fresh fruits</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        <!-- Product Card -->
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition duration-300 hover:shadow-lg hover:-translate-y-1">
-                            <img src=" {{asset('apel.png')}} " alt="Fresh Apples" class="w-full h-48 object-cover">
-                            <div class="p-6">
-                                <h3 class="text-xl font-semibold text-gray-800 mb-2">Fresh Apples</h3>
-                                <p class="text-gray-600 mb-4">Sweet and crispy apples fresh from the orchard</p>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-2xl font-bold text-primary">$4.99/kg</span>
-                                    <button class="btn-secondary">Add to Cart</button>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- More Product Cards... -->
-                    </div>
-
-                    <div class="text-center mt-12">
-                        <a href="#" class="btn-primary inline-block">View All Products</a>
-                    </div>
-                </div>
+                <!-- content kept for future use but hidden -->
             </section>
 
             <!-- Benefits Section -->
@@ -226,7 +204,7 @@
                 <div class="container mx-auto px-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-white">
                         <h3 class="text-2xl md:text-3xl font-semibold">Get fresh, premium fruits delivered today</h3>
-                        <a href="#products" class="btn-secondary bg-white text-gray-900 hover:bg-gray-100">Shop Now</a>
+                        <a href="#about" class="btn-secondary bg-white text-gray-900 hover:bg-gray-100">Lihat Keunggulan</a>
                     </div>
                 </div>
             </section>
@@ -255,7 +233,6 @@
                         <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
                         <ul class="space-y-2">
                             <li><a href="#home" class="text-gray-400 hover:text-white transition">Home</a></li>
-                            <li><a href="#products" class="text-gray-400 hover:text-white transition">Products</a></li>
                             <li><a href="#about" class="text-gray-400 hover:text-white transition">About Us</a></li>
                         </ul>
                     </div>

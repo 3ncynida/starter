@@ -103,4 +103,17 @@ document.getElementById('search').addEventListener('input', function() {
         this.closest('form').submit();
     }, 500);
 });
+
+            const input = document.getElementById('search');
+            // Keyboard shortcuts
+            window.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement !== input) {
+                    e.preventDefault();
+                    input?.focus();
+                }
+                if (e.key === 'Escape' && document.activeElement === input) {
+                    input.value = '';
+                    resetSearch();
+                }
+            });
 </script>

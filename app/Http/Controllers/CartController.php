@@ -138,9 +138,6 @@ public function checkout(Request $request)
     return redirect()->route('penjualan.index')->with('success', 'Checkout berhasil!');
 }
 
-
-
-
 public function setCustomer(Request $request)
 {
     $request->validate([

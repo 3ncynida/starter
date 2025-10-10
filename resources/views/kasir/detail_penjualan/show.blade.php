@@ -136,19 +136,26 @@
           header, nav, .no-print, .backdrop, .shadow-sm { display: none !important; }
           body { background: #fff !important; }
 
-          /* Paper size for 80mm thermal roll */
-          @page { size: 80mm auto; margin: 0; }
+          /* set exact thermal paper size to 75mm x 65mm and remove margins */
+          @page { size: 75mm 65mm; margin: 0; }
 
-          /* Receipt container */
+          /* force the print page box to the same size to avoid browser scaling */
+          html, body { width: 75mm; height: 65mm; margin: 0; padding: 0; }
+
+          /* adjust receipt box to fit 75x65mm */
           #receipt {
             display: block !important;
-            width: 80mm;
-            padding: 12px;
+            width: 75mm;
+            min-height: 75mm;
+            max-height: 75mm;
+            overflow: hidden;
+            padding: 8px;               /* tighter padding to fit height */
             margin: 0;
             color: #000;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-size: 12px;
-            line-height: 1.45;
+            font-size: 11px;             /* slightly smaller to fit */
+            line-height: 1.35;
+            box-sizing: border-box;
           }
           #receipt hr {
             border: 0;
@@ -159,7 +166,7 @@
           #receipt .row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
           #receipt .muted { opacity: .9; }
           #receipt .bold { font-weight: 700; }
-          #receipt .small { font-size: 11px; }
+          #receipt .small { font-size: 10px; }
         }
     </style>
 
