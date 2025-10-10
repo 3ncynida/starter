@@ -14,7 +14,7 @@
                             <h3 class="mb-2 text-lg font-semibold text-gray-800">Informasi Penjualan</h3>
                             <p class="text-gray-600">
                                 <span class="font-medium">Tanggal:</span>
-                                {{ \Carbon\Carbon::parse($penjualan->TanggalPenjualan)->format('d/m/Y H:i') }}
+                                {{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i') }}
                             </p>
                             <p class="text-gray-600">
                                 <span class="font-medium">Pelanggan:</span>
@@ -131,43 +131,52 @@
         .print-only { display: none; }
 
         /* Print styles */
-        @media print {
-          /* Hide global app UI */
-          header, nav, .no-print, .backdrop, .shadow-sm { display: none !important; }
-          body { background: #fff !important; }
+@media print {
+  header, nav, .no-print, .backdrop, .shadow-sm {
+    display: none !important;
+  }
 
-          /* set exact thermal paper size to 75mm x 65mm and remove margins */
-          @page { size: 75mm 65mm; margin: 0; }
+  body {
+    background: #fff !important;
+  }
 
-          /* force the print page box to the same size to avoid browser scaling */
-          html, body { width: 75mm; height: 65mm; margin: 0; padding: 0; }
+  /* Tetap ukurannya 75mm tapi tinggi fleksibel */
+  @page {
+    size: 75mm auto;
+    margin: 0;
+  }
 
-          /* adjust receipt box to fit 75x65mm */
-          #receipt {
-            display: block !important;
-            width: 75mm;
-            min-height: 75mm;
-            max-height: 75mm;
-            overflow: hidden;
-            padding: 8px;               /* tighter padding to fit height */
-            margin: 0;
-            color: #000;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-size: 11px;             /* slightly smaller to fit */
-            line-height: 1.35;
-            box-sizing: border-box;
-          }
-          #receipt hr {
-            border: 0;
-            border-top: 1px dashed #000;
-            margin: 6px 0;
-          }
-          #receipt .center { text-align: center; }
-          #receipt .row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-          #receipt .muted { opacity: .9; }
-          #receipt .bold { font-weight: 700; }
-          #receipt .small { font-size: 10px; }
-        }
+  html, body {
+    width: 75mm;
+    margin: 0 auto; /* supaya muncul di tengah preview */
+    padding: 0;
+  }
+
+  #receipt {
+    display: block !important;
+    width: 75mm;
+    padding: 6px 8px;
+    margin: 0 auto;
+    color: #000;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 11px;
+    line-height: 1.35;
+    box-sizing: border-box;
+  }
+
+  #receipt hr {
+    border: 0;
+    border-top: 1px dashed #000;
+    margin: 6px 0;
+  }
+
+  #receipt .center { text-align: center; }
+  #receipt .row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  #receipt .muted { opacity: .9; }
+  #receipt .bold { font-weight: 700; }
+  #receipt .small { font-size: 10px; }
+}
+
     </style>
 
     <div id="receipt" class="print-only">
@@ -189,7 +198,7 @@
       </div>
       <div class="row small">
         <span>Tanggal</span>
-        <span>{{ \Carbon\Carbon::parse($penjualan->TanggalPenjualan)->format('d/m/Y H:i') }}</span>
+        <span>{{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i') }}</span>
       </div>
       <div class="row small">
         <span>Kasir</span>
