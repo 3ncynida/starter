@@ -73,7 +73,7 @@
                 <div class="flex items-center justify-between">
                     <!-- Logo -->
                     <div class="flex items-center">
-                        <span class="text-primary text-2xl font-bold">Fresh Fruit Market</span>
+                        <span class="text-primary text-2xl font-bold">{{ env('APP_NAME') }}</span>
                     </div>
 
                     <!-- Navigation Menu -->

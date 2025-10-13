@@ -19,5 +19,9 @@ class Produk extends Model
         'Stok',
         'Satuan',
         'Gambar',
+        'Promosi',
+'DiskonPersen',
+'TanggalMulaiPromosi',
+'TanggalSelesaiPromosi',
     ];
 }

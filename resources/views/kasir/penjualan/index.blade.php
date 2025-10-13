@@ -32,10 +32,10 @@
                     </div>
                 </div>
                 <!-- end Search -->
-
+                 
                 <!-- Produk Section -->
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Daftar Produk</h3>
-                <div class="grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
+                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
                     @foreach($products as $product)
                         <!-- Bungkus kartu dengan data-name untuk filter -->
                         <div class="product-card" data-name="{{ strtolower($product->NamaProduk) }}">

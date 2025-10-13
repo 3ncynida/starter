@@ -67,6 +67,45 @@
         <x-input-error class="mt-2" :messages="$errors->get('Satuan')" />
     </div>
 
+    <!-- Promosi -->
+<div class="flex items-center mt-2">
+    <input id="Promosi" name="Promosi" type="checkbox"
+           class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+           value="1" {{ old('Promosi', $produk->Promosi) ? 'checked' : '' }}>
+    <label for="Promosi" class="ml-2 text-sm text-gray-700">Aktifkan promosi untuk produk ini</label>
+</div>
+<x-input-error :messages="$errors->get('Promosi')" class="mt-2" />
+
+
+<!-- Diskon Persen -->
+<div>
+    <x-input-label for="DiskonPersen" :value="__('Diskon (%)')" />
+    <x-text-input id="DiskonPersen" name="DiskonPersen" type="number"
+                  class="mt-1 block w-full"
+                  value="{{ old('DiskonPersen', $produk->DiskonPersen) }}"
+                  min="0" max="100" placeholder="Misal: 10 untuk 10%" />
+    <x-input-error :messages="$errors->get('DiskonPersen')" class="mt-2" />
+</div>
+
+<!-- Tanggal Mulai Promosi -->
+<div>
+    <x-input-label for="TanggalMulaiPromosi" :value="__('Tanggal Mulai Promosi')" />
+    <x-text-input id="TanggalMulaiPromosi" name="TanggalMulaiPromosi" type="date"
+                  class="mt-1 block w-full"
+                  value="{{ old('TanggalMulaiPromosi', $produk->TanggalMulaiPromosi) }}" />
+    <x-input-error :messages="$errors->get('TanggalMulaiPromosi')" class="mt-2" />
+</div>
+
+<!-- Tanggal Selesai Promosi -->
+<div>
+    <x-input-label for="TanggalSelesaiPromosi" :value="__('Tanggal Selesai Promosi')" />
+    <x-text-input id="TanggalSelesaiPromosi" name="TanggalSelesaiPromosi" type="date"
+                  class="mt-1 block w-full"
+                  value="{{ old('TanggalSelesaiPromosi', $produk->TanggalSelesaiPromosi) }}" />
+    <x-input-error :messages="$errors->get('TanggalSelesaiPromosi')" class="mt-2" />
+</div>
+
+
 <!-- Gambar -->
 <div>
     <x-input-label for="Gambar" :value="__('Gambar Produk')" />

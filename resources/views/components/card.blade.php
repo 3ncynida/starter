@@ -26,9 +26,22 @@
 
         <!-- Price and Action -->
         <div class="flex items-center justify-between gap-2">
-            <p class="text-lg font-bold">
-                Rp {{ number_format($product->Harga, 0, ',', '.') }}
-            </p>
+@if($isPromo)
+    <div class="flex flex-col leading-tight">
+        <p class="text-xs text-gray-400 line-through mb-0.5">
+            Rp {{ number_format($product->Harga, 0, ',', '.') }}
+        </p>
+        <p class="text-lg font-extrabold text-red-400">
+            Rp {{ number_format($hargaPromo, 0, ',', '.') }}
+        </p>
+    </div>
+@else
+    <div class="h-4"></div> <!-- Spacer biar tinggi seragam -->
+    <p class="text-lg font-bold text-white">
+        Rp {{ number_format($product->Harga, 0, ',', '.') }}
+    </p>
+@endif
+
 
             <!-- Add to Cart Button -->
             <form action="{{ route('cart.add', $product->ProdukID) }}" method="POST">
