@@ -15,6 +15,9 @@ class Penjualan extends Model
         'TanggalPenjualan',
         'TotalHarga',
         'PelangganID',
+        'UangTunai',
+        'Kembalian',
+        'MetodePembayaran',
     ];
 
 public function detailPenjualan()

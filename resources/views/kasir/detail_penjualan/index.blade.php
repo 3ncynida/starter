@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout> 
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Detail Penjualan</h2>
     </x-slot>
@@ -15,6 +15,8 @@
 
                     <div class="mb-4 flex items-center justify-between gap-3">
                         <h3 class="text-lg font-semibold text-gray-800">Daftar Transaksi</h3>
+
+                        {{-- ✅ Form pencarian sudah ditutup dengan benar --}}
                         <form action="{{ route('detail-penjualan.index') }}" method="GET" class="relative w-full max-w-sm">
                             <input
                                 id="search"
@@ -25,9 +27,11 @@
                                 class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:border-gray-600 focus:outline-none"
                             />
                             <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/>
+                                </svg>
                             </span>
-                        </div>
+                        </form>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -48,7 +52,8 @@
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $i + 1 }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                            {{ \Carbon\Carbon::parse($row->penjualan->TanggalPenjualan ?? $row->created_at)->format('d/m/Y H:i') }}
+                                            {{ \Carbon\Carbon::parse($row->penjualan->created_at ?? $row->created_at)
+                                                ->setTimezone('Asia/Jakarta')->format('d/m/Y H:i') }} WIB
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                             {{ $row->penjualan?->pelanggan?->NamaPelanggan ?? 'Non Member' }}
@@ -67,8 +72,11 @@
                                                 href="{{ route('detail-penjualan.show', $row->penjualan->PenjualanID) }}"
                                                 class="inline-flex items-center gap-2 rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-800 hover:bg-gray-100"
                                             >
-                                                 eye icon 
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                {{-- Eye Icon --}}
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                </svg>
                                                 Detail
                                             </a>
                                         </td>
@@ -95,12 +103,32 @@
 </x-app-layout>
 
 <script>
-// Auto-submit search form after typing stops
-let timeout;
-document.getElementById('search').addEventListener('input', function() {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-        this.closest('form').submit();
-    }, 500);
-});
+    // ✅ Auto-submit setelah mengetik berhenti 0.5 detik
+    let timeout;
+    const input = document.getElementById('search');
+
+    input.addEventListener('input', function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            this.closest('form').submit();
+        }, 500);
+    });
+
+    // ✅ Shortcut keyboard
+    window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== input) {
+            e.preventDefault();
+            input.focus();
+        }
+
+        if (e.altKey && e.key.toLowerCase() === 'c') {
+            const cb = document.getElementById('checkout-button');
+            if (cb) cb.focus();
+        }
+
+        if (e.key === 'Escape' && document.activeElement === input) {
+            input.value = '';
+            input.closest('form').submit();
+        }
+    });
 </script>

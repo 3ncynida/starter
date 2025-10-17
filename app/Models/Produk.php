@@ -24,4 +24,21 @@ class Produk extends Model
 'TanggalMulaiPromosi',
 'TanggalSelesaiPromosi',
     ];
+
+public function getHargaAktifAttribute()
+{
+    $sekarang = now()->toDateString();
+
+    if (
+        $this->Promosi &&
+        $this->TanggalMulaiPromosi &&
+        $this->TanggalSelesaiPromosi &&
+        $sekarang >= $this->TanggalMulaiPromosi &&
+        $sekarang <= $this->TanggalSelesaiPromosi
+    ) {
+        return $this->Harga - ($this->Harga * $this->DiskonPersen / 100);
+    }
+
+    return $this->Harga;
+}
 }

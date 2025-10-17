@@ -21,20 +21,22 @@ public function index()
     return view('kasir.penjualan.index', compact('products', 'penjualan', 'pelanggan', 'allProducts'));
 }
 
+
 public function store(Request $request)
 {
     // ✅ Validasi input
     $validated = $request->validate([
-        'PelangganID'   => 'nullable|exists:pelanggan,PelangganID', // boleh kosong (non-member)
-        'ProdukID'      => 'required|exists:produk,ProdukID',
-        'JumlahProduk'  => 'required|integer|min:1',
+        'PelangganID'       => 'nullable|exists:pelanggan,PelangganID', // boleh kosong (non-member)
+        'ProdukID'          => 'required|exists:produk,ProdukID',
+        'JumlahProduk'      => 'required|integer|min:1',
+        'UangTunai'         => 'required|numeric|min:0', // input baru
     ]);
 
     // ✅ Ambil produk
     $produk = Produk::findOrFail($validated['ProdukID']);
 
     // ✅ Harga dasar
-$hargaProduk = $produk->HargaAktif;
+    $hargaProduk = $produk->HargaAktif;
 
     // ✅ Cek apakah produk sedang promosi
     $sekarang = now()->toDateString();
@@ -65,12 +67,21 @@ $hargaProduk = $produk->HargaAktif;
     // ✅ Total akhir
     $total = $subtotal - $diskonMemberNominal;
 
+    // ✅ Hitung kembalian
+    $uangTunai = $validated['UangTunai'];
+    $kembalian = $uangTunai - $total;
+    if ($kembalian < 0) {
+        return back()->withErrors(['UangTunai' => 'Uang tunai tidak cukup untuk membayar total belanja.']);
+    }
+
     // ✅ Simpan penjualan
     $penjualan = Penjualan::create([
         'PelangganID'       => $validated['PelangganID'] ?? null,
         'TanggalPenjualan'  => now(),
         'TotalHarga'        => $total,
         'Diskon'            => $diskonMemberNominal, // catat diskon member
+        'UangTunai'         => $uangTunai,
+        'Kembalian'         => $kembalian,
     ]);
 
     // ✅ Simpan detail penjualan
@@ -84,12 +95,9 @@ $hargaProduk = $produk->HargaAktif;
     // ✅ Update stok
     $produk->decrement('Stok', $validated['JumlahProduk']);
 
-    return redirect()->route('penjualan.index')
+    return redirect()->route('penjualan.show', $penjualan->PenjualanID)
         ->with('success', 'Penjualan berhasil disimpan.');
 }
-
-
-
     public function create()
     {
         $pelanggan = \App\Models\Pelanggan::all();

@@ -95,6 +95,11 @@ class DatabaseSeeder extends Seeder
             ['nama' => 'Lemon Import', 'harga' => 45000, 'stok' => 40, 'satuan' => 'kg'],
         ];
 
+        $pelanggan = \App\Models\Pelanggan::firstOrCreate(
+            ['NamaPelanggan' => 'Budi'],
+            ['Alamat' => 'Jl. Merdeka No. 1']
+        );
+
         foreach ($products as $product) {
             Produk::firstOrCreate(
                 ['NamaProduk' => $product['nama']],

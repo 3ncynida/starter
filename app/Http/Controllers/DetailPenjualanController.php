@@ -52,14 +52,45 @@ public function index(Request $request)
 
 public function show($id)
 {
+    // Ambil pengaturan diskon member
     $diskon = Setting::get('diskon_member', 0);
+
+    // Ambil data penjualan beserta detail dan produk
     $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])->findOrFail($id);
+
+    // Hitung subtotal (total harga sebelum promo)
+    $subtotal = $penjualan->detailPenjualan->sum(function ($detail) {
+        return $detail->Jumlah * $detail->produk->Harga;
+    });
+
+    // Inisialisasi variabel promo
+    $diskonPromo = 0;
+    $persenPromo = 0;
+
+    // Cek apakah ada produk yang sedang promosi
+    $promosiAktif = $penjualan->detailPenjualan->first(function ($detail) {
+        return $detail->produk->Promosi === true;
+    });
+
+    if ($promosiAktif) {
+        $persenPromo = $promosiAktif->produk->DiskonPersen; // ambil kolom diskon persen produk
+        $diskonPromo = ($persenPromo / 100) * $subtotal;
+    }
+
+    // Total setelah diskon promo
+    $totalSetelahDiskonPromo = $subtotal - $diskonPromo;
+
     return view('kasir.detail_penjualan.show', [
         'penjualan' => $penjualan,
         'diskon' => $diskon,
-        'details' => $penjualan->detailPenjualan
+        'details' => $penjualan->detailPenjualan,
+        'diskonPromo' => $diskonPromo,
+        'persenPromo' => $persenPromo,
+        'subtotal' => $subtotal,
+        'totalSetelahDiskonPromo' => $totalSetelahDiskonPromo,
     ]);
 }
+
 
     public function edit($id)
     {

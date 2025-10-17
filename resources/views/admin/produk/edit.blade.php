@@ -69,10 +69,14 @@
 
     <!-- Promosi -->
 <div class="flex items-center mt-2">
-    <input id="Promosi" name="Promosi" type="checkbox"
-           class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-           value="1" {{ old('Promosi', $produk->Promosi) ? 'checked' : '' }}>
-    <label for="Promosi" class="ml-2 text-sm text-gray-700">Aktifkan promosi untuk produk ini</label>
+<input type="hidden" name="Promosi" value="0">
+
+<label class="inline-flex items-center">
+    <input type="checkbox" name="Promosi" value="1"
+        class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500"
+        {{ old('Promosi', $produk->Promosi) ? 'checked' : '' }}>
+    <span class="ml-2 text-sm text-gray-700">Aktifkan Promosi</span>
+</label>
 </div>
 <x-input-error :messages="$errors->get('Promosi')" class="mt-2" />
 
