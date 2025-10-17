@@ -12,43 +12,34 @@ class DetailPenjualanController extends Controller
 {
 public function index(Request $request)
 {
-    $query = DetailPenjualan::with(['penjualan.pelanggan', 'produk'])
-        ->select('detail_penjualan.DetailID', 
-                'detail_penjualan.PenjualanID',
-                'detail_penjualan.ProdukID',
-                'detail_penjualan.JumlahProduk',
-                'detail_penjualan.Subtotal',
-                'detail_penjualan.created_at',
-                'detail_penjualan.updated_at')
-        ->join('penjualan', 'detail_penjualan.PenjualanID', '=', 'penjualan.PenjualanID')
-        ->groupBy(
-            'detail_penjualan.DetailID',
-            'detail_penjualan.PenjualanID',
-            'detail_penjualan.ProdukID',
-            'detail_penjualan.JumlahProduk',
-            'detail_penjualan.Subtotal',
-            'detail_penjualan.created_at',
-            'detail_penjualan.updated_at'
-        )
-        ->orderBy('penjualan.TanggalPenjualan', 'desc')->latest();
+    // Ambil data penjualan beserta relasi pelanggan & detail
+    $query = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])
+        ->orderBy('created_at', 'desc'); // 🔥 Menampilkan data terbaru di atas
 
-    // Handle search
-    if ($request->has('search')) {
+    // 🔍 Fitur pencarian
+    if ($request->has('search') && !empty($request->search)) {
         $search = $request->search;
-        $query->where(function($q) use ($search) {
-            $q->whereHas('penjualan.pelanggan', function($q) use ($search) {
+
+        $query->where(function ($q) use ($search) {
+            // Cari berdasarkan nama pelanggan
+            $q->whereHas('pelanggan', function ($q) use ($search) {
                 $q->where('NamaPelanggan', 'like', '%' . $search . '%');
             })
-            ->orWhereHas('produk', function($q) use ($search) {
+            // atau berdasarkan nama produk
+            ->orWhereHas('detailPenjualan.produk', function ($q) use ($search) {
                 $q->where('NamaProduk', 'like', '%' . $search . '%');
             });
         });
     }
 
-    $detail = $query->paginate(10)->withQueryString();
+    // Ambil data terbaru
+    $penjualan = $query->paginate(10)->withQueryString();
 
-    return view('kasir.detail_penjualan.index', compact('detail'));
+    // Kirim ke view
+    return view('kasir.detail_penjualan.index', compact('penjualan'));
 }
+
+
 
 public function show($id)
 {
