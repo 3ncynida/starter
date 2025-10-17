@@ -10,10 +10,17 @@
             <!-- Main Content (Left Side) -->
             <div class="flex-1">
                 <!-- Action Bar -->
-<div class="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-    <h1 class="text-3xl font-bold text-gray-900">Cari Produk</h1>
-</div>
+                <div class="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <a href="{{ route('penjualan.create') }}"
+                       class="inline-flex items-center justify-center rounded-lg px-4 py-2 bg-black text-white shadow hover:bg-gray-800 transition">
+                        + Tambah Penjualan
+                    </a>
 
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>{{ session('cart') ? count(session('cart')) : 0 }} items di keranjang</span>
+                    </div>
+                </div>
 
                 <!-- Search Produk (client-side) -->
                 <div class="mb-5">
@@ -32,35 +39,16 @@
                     </div>
                 </div>
                 <!-- end Search -->
-                 
+
                 <!-- Produk Section -->
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Daftar Produk</h3>
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+                <div class="grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
                     @foreach($products as $product)
                         <!-- Bungkus kartu dengan data-name untuk filter -->
                         <div class="product-card" data-name="{{ strtolower($product->NamaProduk) }}">
                             <x-card :product="$product" />
-                            <form action="{{ route('cart.add', $product->ProdukID) }}" method="POST" class="mt-2 flex gap-2">
-                                @csrf
-                                <input type="number" 
-                                       name="qty" 
-                                       value="1" 
-                                       min="1" 
-                                       max="{{ $product->Stok }}"
-                                       class="w-20 rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black">
-                                <button type="submit" 
-                                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                        {{ $product->Stok < 1 ? 'disabled' : '' }}>
-                                    <i class="fas fa-cart-plus mr-1"></i> Tambah
-                                </button>
-                            </form>
                         </div>
                     @endforeach
-                </div>
-
-                <!-- Add Pagination Links -->
-                <div class="mt-6">
-                    {{ $products->links() }}
                 </div>
             </div>
 
@@ -92,18 +80,9 @@
                                                 <div class="flex-1">
                                                     <h4 class="text-sm font-semibold text-gray-900 mb-1">{{ $item['nama'] }}</h4>
                                                     <div class="flex items-center gap-2 mb-1">
-                                                        <form action="{{ route('cart.updateQty', $id) }}" method="POST" class="flex items-center gap-2">
-                                                            @csrf
-                                                            <input type="number" 
-                                                                   name="qty" 
-                                                                   value="{{ $item['qty'] }}" 
-                                                                   min="1" 
-                                                                   max="{{ $item['stok'] ?? 999999 }}"
-                                                                   class="w-16 h-6 rounded border-gray-300 text-xs focus:ring-black focus:border-black">
-                                                            <button type="submit" class="text-xs text-blue-600 hover:text-blue-800">
-                                                                <i class="fas fa-sync-alt"></i>
-                                                            </button>
-                                                        </form>
+                                                        <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-medium">
+                                                            Qty: {{ $item['qty'] }}
+                                                        </span>
                                                         <span class="text-xs text-gray-500">
                                                             @ Rp {{ number_format($item['harga'], 0, ',', '.') }}
                                                         </span>
@@ -112,15 +91,13 @@
                                                         Rp {{ number_format($subtotal, 0, ',', '.') }}
                                                     </div>
                                                 </div>
-                                                <div class="flex items-center gap-1">
-                                                    <form action="{{ route('cart.remove', $id) }}" method="POST">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors p-1">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
+                                                <form action="{{ route('cart.remove', $id) }}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors p-1">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </li>
                                     @endforeach
@@ -156,7 +133,7 @@
                                 <div class="flex flex-col gap-2 py-3 border-t border-gray-200">
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm text-gray-700">Subtotal:</span>
-                                        <span class="text-sm font-medium text-gray-900  ">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                        <span class="text-sm font-medium text-gray-900">Rp {{ number_format($total, 0, ',', '.') }}</span>
                                     </div>
 
                                     @if(session('cart_customer'))
@@ -223,109 +200,35 @@
     <script>
         (function () {
             const input = document.getElementById('product-search');
-            const productGrid = document.querySelector('.grid');
-            const products = @json($allProducts); // Get all products from controller
-            
-            // Updated template function with proper HTML structure
-            const template = product => `
-                <div class="product-card" data-name="${product.NamaProduk.toLowerCase()}">
-                    <div class="bg-[#0f172a] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                        <div class="aspect-square w-full relative">
-                            <img class="w-full h-full object-cover ${product.Stok < 1 ? 'opacity-50' : ''}" 
-                                 src="/storage/${product.Gambar}" 
-                                 alt="${product.NamaProduk}" />
-                            ${product.Stok < 1 ? `
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45">
-                                        HABIS
-                                    </span>
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="p-3 text-white">
-                            <h3 class="text-base font-medium mb-0.5 truncate">${product.NamaProduk}</h3>
-                            <p class="text-xs mb-2 ${product.Stok < 1 ? 'text-red-400' : 'text-gray-400'}">
-                                Stok: ${product.Stok} ${product.Satuan}
-                            </p>
-                            <div class="flex items-center justify-between gap-2">
-                                <p class="text-lg font-bold">
-                                    Rp ${Number(product.Harga).toLocaleString('id-ID')}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <form action="/cart/add/${product.ProdukID}" method="POST" class="mt-2 flex gap-2">
-                        @csrf
-                        <input type="number" 
-                               name="qty" 
-                               value="1" 
-                               min="1" 
-                               max="${product.Stok}"
-                               class="w-20 rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black">
-                        <button type="submit" 
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                ${product.Stok < 1 ? 'disabled' : ''}>
-                            <i class="fas fa-cart-plus mr-1"></i> Tambah
-                        </button>
-                    </form>
-                </div>
-            `;
+            const cards = Array.from(document.querySelectorAll('.product-card'));
 
-            // Search filter function
-            const filter = (term) => {
-                const q = (term || '').toLowerCase().trim();
-                
-                if (!q) {
-                    showPaginated();
-                    return;
-                }
-
-                // Hide pagination when searching
-                document.querySelector('.mt-6').style.display = 'none';
-                
-                // Filter and display matching products
-                const filtered = products.filter(product => 
-                    product.NamaProduk.toLowerCase().includes(q)
-                );
-
-                productGrid.innerHTML = filtered.map(template).join('');
-            };
-
-            // Function to show paginated view
-            const showPaginated = () => {
-                document.querySelector('.mt-6').style.display = 'block';
-                location.reload(); // Reload to restore pagination view
-            };
-
-            // Search input handler with debounce
-            let timeout;
-            input?.addEventListener('input', (e) => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    const term = e.target.value;
-                    if (!term) {
-                        showPaginated();
-                        return;
-                    }
-                    filter(term);
-                }, 300);
-            });
-
-            // Keep existing keyboard shortcuts
+            // Fokus cepat: tekan '/' untuk fokus ke search
             window.addEventListener('keydown', (e) => {
                 if (e.key === '/' && document.activeElement !== input) {
                     e.preventDefault();
                     input?.focus();
                 }
+                // Alt + C = fokus tombol checkout
                 if (e.altKey && (e.key.toLowerCase() === 'c')) {
                     const cb = document.getElementById('checkout-button');
                     if (cb) cb.focus();
                 }
+                // Escape = kosongkan pencarian
                 if (e.key === 'Escape' && document.activeElement === input) {
                     input.value = '';
-                    showPaginated();
+                    filter('');
                 }
             });
+
+            const filter = (term) => {
+                const q = (term || '').toLowerCase().trim();
+                cards.forEach((el) => {
+                    const name = (el.getAttribute('data-name') || '').toLowerCase();
+                    el.style.display = name.includes(q) ? '' : 'none';
+                });
+            };
+
+            input?.addEventListener('input', (e) => filter(e.target.value));
         })();
     </script>
 </x-app-layout>
