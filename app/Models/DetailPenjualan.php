@@ -10,17 +10,16 @@ class DetailPenjualan extends Model
 
     protected $primaryKey = 'DetailID';
 
-// App/Models/DetailPenjualan.php
-protected $fillable = [
-    'PenjualanID',
-    'ProdukID',
-    'JumlahProduk',
-    'Subtotal',
-    'Harga', // baru
-    'DiskonPromoNominal', // baru
-    'DiskonPromoPersen', // baru
-];
-
+    // App/Models/DetailPenjualan.php
+    protected $fillable = [
+        'PenjualanID',
+        'ProdukID',
+        'JumlahProduk',
+        'Subtotal',
+        'Harga', // baru
+        'DiskonPromoNominal', // baru
+        'DiskonPromoPersen', // baru
+    ];
 
     public function penjualan()
     {

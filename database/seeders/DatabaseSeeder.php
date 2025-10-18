@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Produk;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -107,7 +107,7 @@ class DatabaseSeeder extends Seeder
                     'Harga' => $product['harga'],
                     'Stok' => $product['stok'],
                     'Satuan' => $product['satuan'],
-                    'Gambar' => 'produk/default.webp'
+                    'Gambar' => 'produk/default.webp',
                 ]
             );
         }

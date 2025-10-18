@@ -15,8 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
-
-        // Tambahan custom
+    // Tambahan custom
     'company' => env('APP_COMPANY', 'Nama Perusahaan'),
     'company_address' => env('APP_COMPANY_ADDRESS', 'Alamat Perusahaan'),
     'company_phone' => env('APP_COMPANY_PHONE', '08xxxxxxx'),

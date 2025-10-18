@@ -20,25 +20,25 @@ class Produk extends Model
         'Satuan',
         'Gambar',
         'Promosi',
-'DiskonPersen',
-'TanggalMulaiPromosi',
-'TanggalSelesaiPromosi',
+        'DiskonPersen',
+        'TanggalMulaiPromosi',
+        'TanggalSelesaiPromosi',
     ];
 
-public function getHargaAktifAttribute()
-{
-    $sekarang = now()->toDateString();
+    public function getHargaAktifAttribute()
+    {
+        $sekarang = now()->toDateString();
 
-    if (
-        $this->Promosi &&
-        $this->TanggalMulaiPromosi &&
-        $this->TanggalSelesaiPromosi &&
-        $sekarang >= $this->TanggalMulaiPromosi &&
-        $sekarang <= $this->TanggalSelesaiPromosi
-    ) {
-        return $this->Harga - ($this->Harga * $this->DiskonPersen / 100);
+        if (
+            $this->Promosi &&
+            $this->TanggalMulaiPromosi &&
+            $this->TanggalSelesaiPromosi &&
+            $sekarang >= $this->TanggalMulaiPromosi &&
+            $sekarang <= $this->TanggalSelesaiPromosi
+        ) {
+            return $this->Harga - ($this->Harga * $this->DiskonPersen / 100);
+        }
+
+        return $this->Harga;
     }
-
-    return $this->Harga;
-}
 }

@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pelanggan;
 use App\Models\Penjualan;
 use App\Models\Produk;
-use App\Models\Pelanggan;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -15,7 +14,7 @@ class AdminController extends Controller
     {
         // Define this month's date range
         $startOfMonth = Carbon::now()->startOfMonth()->startOfDay();
-        $endOfMonth   = Carbon::now()->endOfMonth()->endOfDay();
+        $endOfMonth = Carbon::now()->endOfMonth()->endOfDay();
 
         $totalPenjualan = Penjualan::whereBetween('TanggalPenjualan', [$startOfMonth, $endOfMonth])->count();
 

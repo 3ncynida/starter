@@ -15,15 +15,15 @@ class ProdukController extends Controller
     {
         // Get all products for search functionality
         $allProducts = Produk::all();
-        
+
         // Get paginated products for display
         $produks = Produk::when(
-            request('q'), 
-            fn($q, $s) => $q->where('NamaProduk', 'like', "%$s%")
+            request('q'),
+            fn ($q, $s) => $q->where('NamaProduk', 'like', "%$s%")
         )
-        ->orderBy('NamaProduk')
-        ->paginate(10)
-        ->withQueryString();
+            ->orderBy('NamaProduk')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.produk.index', compact('produks', 'allProducts'));
     }
@@ -72,40 +72,40 @@ class ProdukController extends Controller
     public function edit($id)
     {
         $produk = Produk::findOrFail($id);
+
         return view('admin.produk.edit', compact('produk'));
     }
 
     /**
      * Update produk.
      */
-public function update(Request $request, Produk $produk)
-{
-    $validated = $request->validate([
-        'NamaProduk' => 'required|string|max:255',
-        'Harga' => 'required|numeric|min:0',
-        'Stok' => 'required|integer|min:0',
-        'Promosi' => 'boolean',
-        'DiskonPersen' => 'nullable|numeric|min:0|max:100',
-        'TanggalMulaiPromosi' => 'nullable|date',
-        'TanggalSelesaiPromosi' => 'nullable|date|after_or_equal:TanggalMulaiPromosi',
-        'Satuan' => 'required|string|max:50',
-        'Gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-    ]);
-    // Handle gambar
-    if ($request->hasFile('Gambar')) {
-        // Hapus gambar lama jika bukan default
-        if ($produk->Gambar && $produk->Gambar !== 'produk/default.webp') {
-            Storage::disk('public')->delete($produk->Gambar);
+    public function update(Request $request, Produk $produk)
+    {
+        $validated = $request->validate([
+            'NamaProduk' => 'required|string|max:255',
+            'Harga' => 'required|numeric|min:0',
+            'Stok' => 'required|integer|min:0',
+            'Promosi' => 'boolean',
+            'DiskonPersen' => 'nullable|numeric|min:0|max:100',
+            'TanggalMulaiPromosi' => 'nullable|date',
+            'TanggalSelesaiPromosi' => 'nullable|date|after_or_equal:TanggalMulaiPromosi',
+            'Satuan' => 'required|string|max:50',
+            'Gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+        // Handle gambar
+        if ($request->hasFile('Gambar')) {
+            // Hapus gambar lama jika bukan default
+            if ($produk->Gambar && $produk->Gambar !== 'produk/default.webp') {
+                Storage::disk('public')->delete($produk->Gambar);
+            }
+            // Simpan gambar baru
+            $validated['Gambar'] = $request->file('Gambar')->store('produk', 'public');
         }
-        // Simpan gambar baru
-        $validated['Gambar'] = $request->file('Gambar')->store('produk', 'public');
+        // Update produk
+        $produk->update($validated);
+
+        return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui.');
     }
-    // Update produk
-    $produk->update($validated);
-
-    return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui.');
-}
-
 
     /**
      * Hapus produk.

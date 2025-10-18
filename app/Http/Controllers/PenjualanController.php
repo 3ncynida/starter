@@ -2,102 +2,102 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pelanggan;
-use App\Models\Produk;
-use App\Models\Penjualan;
 use App\Models\DetailPenjualan;
+use App\Models\Pelanggan;
+use App\Models\Penjualan;
+use App\Models\Produk;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class PenjualanController extends Controller
 {
-public function index()
-{
-    $allProducts = Produk::orderBy('NamaProduk')->get(); // For search functionality
-    $products  = Produk::orderBy('NamaProduk')->paginate(10)->withQueryString();
-    $penjualan = Penjualan::with('pelanggan')->get();
-    $pelanggan = Pelanggan::orderBy('NamaPelanggan')->get(); // ambil data pelanggan
+    public function index()
+    {
+        $allProducts = Produk::orderBy('NamaProduk')->get(); // For search functionality
+        $products = Produk::orderBy('NamaProduk')->paginate(10)->withQueryString();
+        $penjualan = Penjualan::with('pelanggan')->get();
+        $pelanggan = Pelanggan::orderBy('NamaPelanggan')->get(); // ambil data pelanggan
 
-    return view('kasir.penjualan.index', compact('products', 'penjualan', 'pelanggan', 'allProducts'));
-}
-
-
-public function store(Request $request)
-{
-    // ✅ Validasi input
-    $validated = $request->validate([
-        'PelangganID'       => 'nullable|exists:pelanggan,PelangganID', // boleh kosong (non-member)
-        'ProdukID'          => 'required|exists:produk,ProdukID',
-        'JumlahProduk'      => 'required|integer|min:1',
-        'UangTunai'         => 'required|numeric|min:0', // input baru
-    ]);
-
-    // ✅ Ambil produk
-    $produk = Produk::findOrFail($validated['ProdukID']);
-
-    // ✅ Harga dasar
-    $hargaProduk = $produk->HargaAktif;
-
-    // ✅ Cek apakah produk sedang promosi
-    $sekarang = now()->toDateString();
-    if (
-        $produk->Promosi &&
-        $produk->TanggalMulaiPromosi &&
-        $produk->TanggalSelesaiPromosi &&
-        $sekarang >= $produk->TanggalMulaiPromosi &&
-        $sekarang <= $produk->TanggalSelesaiPromosi
-    ) {
-        // Jika sedang promo, hitung diskon promo
-        $diskonPromo = ($hargaProduk * $produk->DiskonPersen) / 100;
-        $hargaProduk -= $diskonPromo;
+        return view('kasir.penjualan.index', compact('products', 'penjualan', 'pelanggan', 'allProducts'));
     }
 
-    // ✅ Hitung subtotal
-    $subtotal = $hargaProduk * $validated['JumlahProduk'];
+    public function store(Request $request)
+    {
+        // ✅ Validasi input
+        $validated = $request->validate([
+            'PelangganID' => 'nullable|exists:pelanggan,PelangganID', // boleh kosong (non-member)
+            'ProdukID' => 'required|exists:produk,ProdukID',
+            'JumlahProduk' => 'required|integer|min:1',
+            'UangTunai' => 'required|numeric|min:0', // input baru
+        ]);
 
-    // ✅ Diskon member (kalau ada)
-    $diskonPersenMember = 0;
-    if (!empty($validated['PelangganID'])) {
-        $diskonPersenMember = Setting::get('diskon_member', 0); // misal default 0
+        // ✅ Ambil produk
+        $produk = Produk::findOrFail($validated['ProdukID']);
+
+        // ✅ Harga dasar
+        $hargaProduk = $produk->HargaAktif;
+
+        // ✅ Cek apakah produk sedang promosi
+        $sekarang = now()->toDateString();
+        if (
+            $produk->Promosi &&
+            $produk->TanggalMulaiPromosi &&
+            $produk->TanggalSelesaiPromosi &&
+            $sekarang >= $produk->TanggalMulaiPromosi &&
+            $sekarang <= $produk->TanggalSelesaiPromosi
+        ) {
+            // Jika sedang promo, hitung diskon promo
+            $diskonPromo = ($hargaProduk * $produk->DiskonPersen) / 100;
+            $hargaProduk -= $diskonPromo;
+        }
+
+        // ✅ Hitung subtotal
+        $subtotal = $hargaProduk * $validated['JumlahProduk'];
+
+        // ✅ Diskon member (kalau ada)
+        $diskonPersenMember = 0;
+        if (! empty($validated['PelangganID'])) {
+            $diskonPersenMember = Setting::get('diskon_member', 0); // misal default 0
+        }
+
+        // ✅ Hitung diskon member nominal
+        $diskonMemberNominal = ($subtotal * $diskonPersenMember) / 100;
+
+        // ✅ Total akhir
+        $total = $subtotal - $diskonMemberNominal;
+
+        // ✅ Hitung kembalian
+        $uangTunai = $validated['UangTunai'];
+        $kembalian = $uangTunai - $total;
+        if ($kembalian < 0) {
+            return back()->withErrors(['UangTunai' => 'Uang tunai tidak cukup untuk membayar total belanja.']);
+        }
+
+        // ✅ Simpan penjualan
+        $penjualan = Penjualan::create([
+            'PelangganID' => $validated['PelangganID'] ?? null,
+            'TanggalPenjualan' => now(),
+            'TotalHarga' => $total,
+            'Diskon' => $diskonMemberNominal, // catat diskon member
+            'UangTunai' => $uangTunai,
+            'Kembalian' => $kembalian,
+        ]);
+
+        // ✅ Simpan detail penjualan
+        DetailPenjualan::create([
+            'PenjualanID' => $penjualan->PenjualanID,
+            'ProdukID' => $produk->ProdukID,
+            'JumlahProduk' => $validated['JumlahProduk'],
+            'Subtotal' => $subtotal,
+        ]);
+
+        // ✅ Update stok
+        $produk->decrement('Stok', $validated['JumlahProduk']);
+
+        return redirect()->route('penjualan.show', $penjualan->PenjualanID)
+            ->with('success', 'Penjualan berhasil disimpan.');
     }
 
-    // ✅ Hitung diskon member nominal
-    $diskonMemberNominal = ($subtotal * $diskonPersenMember) / 100;
-
-    // ✅ Total akhir
-    $total = $subtotal - $diskonMemberNominal;
-
-    // ✅ Hitung kembalian
-    $uangTunai = $validated['UangTunai'];
-    $kembalian = $uangTunai - $total;
-    if ($kembalian < 0) {
-        return back()->withErrors(['UangTunai' => 'Uang tunai tidak cukup untuk membayar total belanja.']);
-    }
-
-    // ✅ Simpan penjualan
-    $penjualan = Penjualan::create([
-        'PelangganID'       => $validated['PelangganID'] ?? null,
-        'TanggalPenjualan'  => now(),
-        'TotalHarga'        => $total,
-        'Diskon'            => $diskonMemberNominal, // catat diskon member
-        'UangTunai'         => $uangTunai,
-        'Kembalian'         => $kembalian,
-    ]);
-
-    // ✅ Simpan detail penjualan
-    DetailPenjualan::create([
-        'PenjualanID'  => $penjualan->PenjualanID,
-        'ProdukID'     => $produk->ProdukID,
-        'JumlahProduk' => $validated['JumlahProduk'],
-        'Subtotal'     => $subtotal,
-    ]);
-
-    // ✅ Update stok
-    $produk->decrement('Stok', $validated['JumlahProduk']);
-
-    return redirect()->route('penjualan.show', $penjualan->PenjualanID)
-        ->with('success', 'Penjualan berhasil disimpan.');
-}
     public function create()
     {
         $pelanggan = \App\Models\Pelanggan::all();
@@ -120,20 +120,21 @@ public function store(Request $request)
     public function setCartCustomer(Request $request)
     {
         $request->validate([
-            'pelanggan_id' => 'nullable|exists:pelanggan,PelangganID'
+            'pelanggan_id' => 'nullable|exists:pelanggan,PelangganID',
         ]);
 
         session(['cart_customer' => $request->pelanggan_id]);
-        
+
         return redirect()->back()->with('success', 'Pelanggan berhasil dipilih');
     }
 
     public function show($id)
     {
         $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])->findOrFail($id);
+
         return view('kasir.penjualan.show', [
             'penjualan' => $penjualan,
-            'details' => $penjualan->detailPenjualan
+            'details' => $penjualan->detailPenjualan,
         ]);
     }
 

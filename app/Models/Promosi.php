@@ -10,7 +10,9 @@ class Promosi extends Model
     use HasFactory;
 
     protected $table = 'promosi';
+
     protected $primaryKey = 'PromosiID';
+
     public $timestamps = true;
 
     protected $fillable = [

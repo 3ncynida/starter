@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Setting;
+use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
     public function edit()
     {
         $diskon = Setting::get('diskon_member', 0);
+
         return view('settings.edit', compact('diskon'));
     }
 
