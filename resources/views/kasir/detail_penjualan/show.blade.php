@@ -83,18 +83,22 @@
     <tr class="hover:bg-gray-50">
         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $detail->produk->NamaProduk }}</td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-            @if($diskonPromoNominalPerUnit > 0)
-                <span class="line-through text-gray-400">
-                    Rp {{ number_format($hargaAsli, 0, ',', '.') }}
-                </span>
-                <span class="ml-2 font-semibold text-green-600">
-                    Rp {{ number_format($hargaSetelahPromo, 0, ',', '.') }}
-                </span>
-            @else
-                Rp {{ number_format($hargaAsli, 0, ',', '.') }}
-            @endif
-        </td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+    @if($diskonPromoNominalPerUnit > 0)
+        <span class="line-through text-gray-400">
+            Rp {{ number_format($hargaAsli, 0, ',', '.') }}
+        </span>
+        <span class="ml-2 font-semibold text-green-600">
+            Rp {{ number_format($hargaSetelahPromo, 0, ',', '.') }}
+        </span>
+        <span class="ml-1 text-xs text-emerald-600">
+            (Diskon     {{ $diskonPromoPersen }}%)
+        </span>
+    @else
+        Rp {{ number_format($hargaAsli, 0, ',', '.') }}
+    @endif
+</td>
+
         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $detail->JumlahProduk }}</td>
         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
             Rp {{ number_format($detail->Subtotal, 0, ',', '.') }}
