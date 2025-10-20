@@ -302,124 +302,113 @@
 
     </style>
 
-    <div id="receipt" class="print-only">
-      <div class="center bold" style="text-transform: uppercase;">
-        {{ config('app.name', 'Toko') }}
-      </div>
-      <div class="center small muted">
-        {{ config('app.company_address', 'Alamat Toko') }}
-      </div>
-      <div class="center small muted">
-        {{ config('app.company_phone', '-') }}
-      </div>
-
-      <hr>
-
-      <div class="row small">
-        <span>Nota</span>
-        <span>#{{ $penjualan->PenjualanID }}</span>
-      </div>
-      <div class="row small">
-        <span>Tanggal</span>
-        <span>{{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i') }}</span>
-      </div>
-      <div class="row small">
-        <span>Kasir</span>
-        <span>{{ auth()->user()->name ?? '-' }}</span>
-      </div>
-
-      <hr>
-
-@foreach($details as $d)
-  @php
-      $hargaAsli = $d->produk->Harga;
-      $diskonPromo = 0;
-      $sekarang = now();
-
-      // cek apakah produk sedang promo
-      if ($d->produk->Promosi 
-          && $d->produk->TanggalMulaiPromosi 
-          && $d->produk->TanggalSelesaiPromosi
-          && $sekarang->between($d->produk->TanggalMulaiPromosi, $d->produk->TanggalSelesaiPromosi)
-      ) {
-          $diskonPromo = ($d->produk->DiskonPersen / 100) * $hargaAsli;
-      }
-
-      $hargaSetelahDiskon = $hargaAsli - $diskonPromo;
-  @endphp
-
-
-  <div class="bold">{{ $d->produk->NamaProduk }}</div>
-  <div class="row small">
-    <span>{{ $d->JumlahProduk }} x {{ number_format($hargaAsli, 0, ',', '.') }}</span>
-    <span>{{ number_format($d->Subtotal, 0, ',', '.') }}</span>
+<div id="receipt" class="print-only">
+  <div class="center bold" style="text-transform: uppercase;">
+    {{ config('app.name', 'Toko') }}
+  </div>
+  <div class="center small muted">
+    {{ config('app.company_address', 'Alamat Toko') }}
+  </div>
+  <div class="center small muted">
+    {{ config('app.company_phone', '-') }}
   </div>
 
-  @if($diskonPromo > 0)
-    <div class="row small muted">
-      <span>Diskon Promo</span>
-      <span>-{{ number_format($diskonPromo * $d->JumlahProduk, 0, ',', '.') }}</span>
-    </div>
-  @endif
-@endforeach
+  <hr>
 
-      <hr>
+  <div class="row small">
+    <span>Nota</span>
+    <span>#{{ $penjualan->PenjualanID }}</span>
+  </div>
+  <div class="row small">
+    <span>Tanggal</span>
+    <span>{{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i') }}</span>
+  </div>
+  <div class="row small">
+    <span>Kasir</span>
+    <span>{{ auth()->user()->name ?? '-' }}</span>
+  </div>
 
-      <div class="row small">
-        <span>Total Item</span>
-        <span>{{ $details->sum('JumlahProduk') }}</span>
-      </div>
-      @if((($__diskon ?? 0) > 0))
-        <div class="row small">
-          <span>Diskon Member.</span>
-          <span>-{{ number_format($__diskon, 0, ',', '.') }}</span>
-        </div>
-      @endif
+  <hr>
 
-@php
-    $totalDiskonPromo = $details->sum(function($d) {
+  {{-- 🔹 Daftar Produk --}}
+  @foreach($details as $d)
+    @php
+        $hargaAsli = $d->produk->Harga;
+        $diskonPromo = 0;
         $sekarang = now();
+
+        // Cek apakah sedang promo
         if ($d->produk->Promosi 
             && $d->produk->TanggalMulaiPromosi 
             && $d->produk->TanggalSelesaiPromosi
             && $sekarang->between($d->produk->TanggalMulaiPromosi, $d->produk->TanggalSelesaiPromosi)
         ) {
-            $diskon = ($d->produk->DiskonPersen / 100) * $d->produk->Harga;
-            return $diskon * $d->JumlahProduk;
+            $diskonPromo = ($d->produk->DiskonPersen / 100) * $hargaAsli;
         }
-        return 0;
-    });
-@endphp
 
-@if($totalDiskonPromo > 0)
+        $hargaSetelahDiskon = $hargaAsli - $diskonPromo;
+    @endphp
+
+    <div class="bold">{{ $d->produk->NamaProduk }}</div>
     <div class="row small">
-        <span>Promo</span>
-        <span>-{{ number_format($totalDiskonPromo, 0, ',', '.') }}</span>
+      <span>{{ $d->JumlahProduk }} x {{ number_format($hargaSetelahDiskon, 0, ',', '.') }}</span>
+      <span>{{ number_format($d->Subtotal, 0, ',', '.') }}</span>
     </div>
-@endif
 
-      <div class="row bold">
-        <span>Total Belanja</span>
-        <span>Rp {{ number_format($penjualan->TotalHarga, 0, ',', '.') }}</span>
+    @if($diskonPromo > 0)
+      <div class="row small muted">
+        <span>Promo {{ $d->produk->DiskonPersen }}%</span>
+        <span>-{{ number_format($diskonPromo * $d->JumlahProduk, 0, ',', '.') }}</span>
       </div>
+    @endif
+  @endforeach
 
-      @if(isset($penjualan->UangTunai))
-        <div class="row small">
-          <span>Tunai</span>
-          <span>Rp {{ number_format($penjualan->UangTunai, 0, ',', '.') }}</span>
-        </div>
-      @endif
-      @if(isset($penjualan->Kembalian))
-        <div class="row small">
-          <span>Kembalian</span>
-          <span>Rp {{ number_format($penjualan->Kembalian, 0, ',', '.') }}</span>
-        </div>
-      @endif
+  <hr>
 
-      <hr>
+  {{-- 🔹 Ringkasan Pembayaran --}}
+  <div class="row small">
+    <span>Total Item</span>
+    <span>{{ $details->sum('JumlahProduk') }}</span>
+  </div>
 
-      <div class="center small muted">
-        Terima kasih telah berbelanja
-      </div>
+  @if($totalDiskonPromo > 0)
+    <div class="row small">
+      <span>Total Diskon Promo</span>
+      <span>Rp -{{ number_format($totalDiskonPromo, 0, ',', '.') }}</span>
     </div>
+  @endif
+
+  @if(($__diskon ?? 0) > 0)
+    <div class="row small">
+      <span>Diskon Member</span>
+      <span>Rp -{{ number_format($__diskon, 0, ',', '.') }}</span>
+    </div>
+  @endif
+
+  <div class="row bold">
+    <span>Total Bayar</span>
+    <span>Rp {{ number_format($totalBayar, 0, ',', '.') }}</span>
+  </div>
+
+  @if($tunai > 0)
+    <div class="row small">
+      <span>Tunai</span>
+      <span>Rp {{ number_format($tunai, 0, ',', '.') }}</span>
+    </div>
+  @endif
+
+  @if($kembalian > 0)
+    <div class="row small">
+      <span>Kembalian</span>
+      <span>Rp {{ number_format($kembalian, 0, ',', '.') }}</span>
+    </div>
+  @endif
+
+  <hr>
+
+  <div class="center small muted">
+    Terima kasih telah berbelanja ❤️
+  </div>
+</div>
+
 </x-app-layout>
