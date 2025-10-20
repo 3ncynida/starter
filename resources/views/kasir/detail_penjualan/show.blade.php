@@ -161,19 +161,38 @@
 @endif
 
 
-    @if($totalDiskonPromo > 0)
+{{-- ✅ Tampilkan semua diskon promo produk --}}
+@php
+    $adaPromo = false;
+@endphp
+
+@foreach($penjualan->detailPenjualan as $detail)
+    @if($detail->produk && $detail->produk->DiskonPersen > 0)
+        @php $adaPromo = true; @endphp
         <tr>
             <td colspan="4" class="px-6 py-3 text-right font-medium text-gray-800">
-                Diskon Promo 
-                @if($rataRataPersenPromo > 0)
-                    ({{ number_format($rataRataPersenPromo, 0) }}%)
-                @endif
+                Diskon Promo — {{ $detail->produk->NamaProduk }}
+                ({{ $detail->produk->DiskonPersen }}%)
             </td>
             <td class="px-6 py-3 text-right font-semibold text-green-600">
-                - Rp {{ number_format($totalDiskonPromo, 0, ',', '.') }}
+                - Rp {{ number_format(($detail->DiskonPromoPersen / 100) * $detail->Harga * $detail->JumlahProduk, 0, ',', '.') }}
             </td>
         </tr>
     @endif
+@endforeach
+
+{{-- ✅ Jika ada total semua diskon promo, tampilkan totalnya juga di bawah --}}
+@if($adaPromo)
+    <tr class="border-t border-gray-200">
+        <td colspan="4" class="px-6 py-3 text-right font-semibold text-gray-900">
+            Total Diskon Promo
+        </td>
+        <td class="px-6 py-3 text-right font-bold text-green-700">
+            - Rp {{ number_format($totalDiskonPromo, 0, ',', '.') }}
+        </td>
+    </tr>
+@endif
+
 
     @if($diskonMember > 0)
         <tr>

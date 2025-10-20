@@ -32,59 +32,79 @@
 
 
                 <!-- Grid Produk -->
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Daftar Produk</h3>
-                <div id="productGrid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
-                    @foreach($products as $product)
-                        <div class="product-card" data-name="{{ strtolower($product->NamaProduk) }}">
-                            <div class="bg-[#0f172a] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                                <div class="aspect-square relative">
-                                    <img class="w-full h-full object-cover {{ $product->Stok < 1 ? 'opacity-50' : '' }}" 
-                                         src="{{ asset('storage/' . $product->Gambar) }}" 
-                                         alt="{{ $product->NamaProduk }}" />
-                                    @if($product->Stok < 1)
-                                        <div class="absolute inset-0 flex items-center justify-center">
-                                            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45">
-                                                HABIS
-                                            </span>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="p-3 text-white">
-                                    <h3 class="text-base font-medium mb-0.5 truncate">{{ $product->NamaProduk }}</h3>
-                                    <p class="text-xs mb-2 {{ $product->Stok < 1 ? 'text-red-400' : 'text-gray-400' }}">
-                                        Stok: {{ $product->Stok }} {{ $product->Satuan }}
-                                    </p>
-                                    @if($product->harga_aktif < $product->Harga)
-                                        <p class="text-sm line-through text-gray-400">
-                                            Rp {{ number_format($product->Harga, 0, ',', '.') }}
-                                        </p>
-                                        <p class="text-lg font-bold text-red-500">
-                                            Rp {{ number_format($product->harga_aktif, 0, ',', '.') }}
-                                        </p>
-                                    @else
-                                        <p class="text-lg font-bold">
-                                            Rp {{ number_format($product->Harga, 0, ',', '.') }}
-                                        </p>
-                                    @endif
-                                </div>
-                            </div>
-                            <form action="{{ route('cart.add', $product->ProdukID) }}" method="POST" class="mt-2 flex gap-2">
-                                @csrf
-                                <input type="number" 
-                                       name="qty" 
-                                       value="1" 
-                                       min="1" 
-                                       max="{{ $product->Stok }}"
-                                       class="w-20 rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black">
-                                <button type="submit" 
-                                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                        {{ $product->Stok < 1 ? 'disabled' : '' }}>
-                                    <i class="fas fa-cart-plus mr-1"></i> Tambah
-                                </button>
-                            </form>
+<h3 class="text-lg font-semibold text-gray-900 mb-4">Daftar Produk</h3> 
+<div id="productGrid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+    @foreach($products as $product)
+        <div class="product-card" data-name="{{ strtolower($product->NamaProduk) }}">
+            <div class="bg-[#0f172a] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
+
+                {{-- 🔖 Label Promo --}}
+                @if($product->harga_aktif < $product->Harga)
+                    @php
+                        $persenDiskon = round((($product->Harga - $product->harga_aktif) / $product->Harga) * 100);
+                    @endphp
+                    <span class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md z-10">
+                        Diskon -{{ $persenDiskon }}%
+                    </span>
+                @endif
+
+                {{-- 🖼️ Gambar produk --}}
+                <div class="aspect-square relative">
+                    <img class="w-full h-full object-cover {{ $product->Stok < 1 ? 'opacity-50' : '' }}" 
+                         src="{{ asset('storage/' . $product->Gambar) }}" 
+                         alt="{{ $product->NamaProduk }}" />
+
+                    @if($product->Stok < 1)
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45">
+                                HABIS
+                            </span>
                         </div>
-                    @endforeach
+                    @endif
                 </div>
+
+                {{-- 📦 Detail produk --}}
+                <div class="p-3 text-white">
+                    <h3 class="text-base font-medium mb-0.5 truncate">{{ $product->NamaProduk }}</h3>
+                    <p class="text-xs mb-2 {{ $product->Stok < 1 ? 'text-red-400' : 'text-gray-400' }}">
+                        Stok: {{ $product->Stok }} {{ $product->Satuan }}
+                    </p>
+
+                    {{-- 💰 Harga --}}
+                    @if($product->harga_aktif < $product->Harga)
+                        <p class="text-sm line-through text-gray-400">
+                            Rp {{ number_format($product->Harga, 0, ',', '.') }}
+                        </p>
+                        <p class="text-lg font-bold text-red-500">
+                            Rp {{ number_format($product->harga_aktif, 0, ',', '.') }}
+                        </p>
+                    @else
+                        <p class="text-lg font-bold">
+                            Rp {{ number_format($product->Harga, 0, ',', '.') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+
+            {{-- 🛒 Form tambah ke keranjang --}}
+            <form action="{{ route('cart.add', $product->ProdukID) }}" method="POST" class="mt-2 flex gap-2">
+                @csrf
+                <input type="number" 
+                       name="qty" 
+                       value="1" 
+                       min="1" 
+                       max="{{ $product->Stok }}"
+                       class="w-20 rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black">
+                <button type="submit" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        {{ $product->Stok < 1 ? 'disabled' : '' }}>
+                    <i class="fas fa-cart-plus mr-1"></i> Tambah
+                </button>
+            </form>
+        </div>
+    @endforeach
+</div>
+
 
                 <div class="mt-6">
                     {{ $products->links() }}
