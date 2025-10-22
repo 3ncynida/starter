@@ -14,7 +14,7 @@
                             <h3 class="mb-2 text-lg font-semibold text-gray-800">Informasi Penjualan</h3>
                             <p class="text-gray-600">
                                 <span class="font-medium">Tanggal:</span>
-                                {{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i') }}
+                                {{ \Carbon\Carbon::parse($penjualan->TanggalPenjualan)->format('d/m/Y H:i') }}
                             </p>
                             <p class="text-gray-600">
                                 <span class="font-medium">Pelanggan:</span>
@@ -45,7 +45,7 @@
                             @endphp
                             @if($__diskon > 0)
                                 <p class="text-gray-600">
-                                    <span class="font-medium">Diskon Member:</span>
+                                    <span class="font-medium">Diskon:</span>
                                     <span class="text-green-600">
                                         - Rp {{ number_format($__diskon, 0, ',', '.') }}
                                         @if($__discPct > 0)
@@ -71,18 +71,19 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Subtotal</th>
                                 </tr>
                             </thead>
-<tbody class="divide-y divide-gray-200 bg-white">
-@foreach($details as $index => $detail)
-    @php
-        $hargaAsli = $detail->Harga ?? $detail->produk->Harga;
-        $diskonPromoNominalPerUnit = $detail->DiskonPromoNominal ?? 0;
-        $diskonPromoPersen = $detail->DiskonPromoPersen ?? 0;
-        $hargaSetelahPromo = $hargaAsli - $diskonPromoNominalPerUnit;
-    @endphp
-
-    <tr class="hover:bg-gray-50">
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $detail->produk->NamaProduk }}</td>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                                @foreach($details as $index => $detail)
+                                    @php
+                                        $produk = $detail->produk;
+                                        $diskonPromoPersen = $detail->DiskonPromoPersen ?? 0;
+                                        $diskonPromoNominal = $detail->DiskonPromoNominal ?? 0;
+                                        $hargaSetelahPromo = $produk->Harga - $diskonPromoNominal;
+                                                $diskonPromoNominalPerUnit = $detail->DiskonPromoNominal ?? 0;
+                                        $hargaAsli = $produk->Harga;
+                                    @endphp
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $produk->NamaProduk }}</td>
 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
     @if($diskonPromoNominalPerUnit > 0)
         <span class="line-through text-gray-400">
@@ -98,18 +99,21 @@
         Rp {{ number_format($hargaAsli, 0, ',', '.') }}
     @endif
 </td>
-
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $detail->JumlahProduk }}</td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-            Rp {{ number_format($detail->Subtotal, 0, ',', '.') }}
-        </td>
-    </tr>
-@endforeach
-
-</tbody>
-<tfoot class="bg-gray-50 text-sm">
-    @php
-        $subtotal = $details->sum('Subtotal');
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $detail->JumlahProduk }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp {{ number_format($detail->Subtotal, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody><tfoot class="bg-gray-50">
+                                    @php
+                                          $subtotal = $details->sum('Subtotal');
+                                  $diskon   = $__diskon;
+                                  $discPct  = $subtotal > 0 ? round(($diskon / $subtotal) * 100) : 0;
+                                  
+                                  $totalDiskonPromo = 0;
+                                  foreach($details as $detail) {
+                                      $diskonPromoPerItem = $detail->DiskonPromoNominal ?? 0;
+                                      $totalDiskonPromo += $diskonPromoPerItem * $detail->JumlahProduk;
+                                  }
 
         // Hitung total diskon promo aktif + ambil rata-rata persen promo
         $promoData = $details->map(function($d) {
@@ -135,105 +139,43 @@
         $tunai = $penjualan->Tunai ?? $penjualan->UangTunai ?? 0;
         $kembalian = $penjualan->Kembalian ?? max($tunai - $totalBayar, 0);
     @endphp
+  <tr>
+    <td colspan="4" class="px-6 py-4 text-right text-sm font-medium text-gray-900">Subtotal</td>
+    <td class="px-6 py-4 text-sm font-semibold text-gray-900">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
+  </tr>
 
-    <!-- Label -->
-    <tr class="bg-white">
-        <td colspan="5" class="px-6 py-2 text-left font-semibold text-gray-700 border-b">
-            <span class="text-gray-500">Rincian Pembayaran</span>
-        </td>
+  @if($diskon > 0)
+    <tr class="bg-green-50">
+      <td colspan="4" class="px-6 py-4 text-right text-sm font-medium text-emerald-800">
+        Diskon Member <span class="ml-1 text-xs">({{ $discPct }}%)</span>
+      </td>
+      <td class="px-6 py-4 text-sm font-semibold text-emerald-700">- Rp {{ number_format($diskon, 0, ',', '.') }}</td>
     </tr>
+  @endif
 
+  <tr class="bg-gray-100 border-t border-gray-300">
+    <td colspan="4" class="px-6 py-4 text-right text-sm font-bold text-gray-900">Total</td>
+    <td class="px-6 py-4 text-sm font-bold text-gray-900">Rp {{ number_format($penjualan->TotalHarga, 0, ',', '.') }}</td>
+  </tr>
+
+  @if($tunai > 0)
     <tr>
-        <td colspan="4" class="px-6 py-3 text-right font-medium text-gray-800">Subtotal Produk</td>
-        <td class="px-6 py-3 text-right font-semibold text-gray-900">
-            Rp {{ number_format($subtotal, 0, ',', '.') }}
-        </td>
+      <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-800">Tunai Diterima</td>
+      <td class="px-6 py-3 text-sm font-semibold text-gray-900">
+        Rp {{ number_format($tunai, 0, ',', '.') }}
+      </td>
     </tr>
+  @endif
 
-@if($isMember && $__diskon > 0)
-<tr>
-    <td colspan="4" class="px-6 py-3 text-right font-medium text-gray-800">
-        Diskon Member
-        @if($__discPct > 0)
-            ({{ $__discPct }}%)
-        @endif
-    </td>
-    <td class="px-6 py-3 text-right font-semibold text-emerald-600">
-        - Rp {{ number_format($__diskon, 0, ',', '.') }}
-    </td>
-</tr>
-@endif
-
-
-{{-- ✅ Tampilkan semua diskon promo produk --}}
-@php
-    $adaPromo = false;
-@endphp
-
-@foreach($penjualan->detailPenjualan as $detail)
-    @if($detail->produk && $detail->produk->DiskonPersen > 0)
-        @php $adaPromo = true; @endphp
-        <tr>
-            <td colspan="4" class="px-6 py-3 text-right font-medium text-gray-800">
-                Diskon Promo — {{ $detail->produk->NamaProduk }}
-                ({{ $detail->produk->DiskonPersen }}%)
-            </td>
-            <td class="px-6 py-3 text-right font-semibold text-green-600">
-                - Rp {{ number_format(($detail->DiskonPromoPersen / 100) * $detail->Harga * $detail->JumlahProduk, 0, ',', '.') }}
-            </td>
-        </tr>
-    @endif
-@endforeach
-
-{{-- ✅ Jika ada total semua diskon promo, tampilkan totalnya juga di bawah --}}
-@if($adaPromo)
-    <tr class="border-t border-gray-200">
-        <td colspan="4" class="px-6 py-3 text-right font-semibold text-gray-900">
-            Total Diskon Promo
-        </td>
-        <td class="px-6 py-3 text-right font-bold text-green-700">
-            - Rp {{ number_format($totalDiskonPromo, 0, ',', '.') }}
-        </td>
+  @if(isset($penjualan->Kembalian))
+    <tr>
+      <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-800">Kembalian</td>
+      <td class="px-6 py-3 text-sm font-semibold text-gray-900">
+        Rp {{ number_format($penjualan->Kembalian, 0, ',', '.') }}
+      </td>
     </tr>
-@endif
-
-
-    @if($diskonMember > 0)
-        <tr>
-            <td colspan="4" class="px-6 py-3 text-right font-medium text-gray-800">Diskon Member</td>
-            <td class="px-6 py-3 text-right font-semibold text-emerald-600">
-                - Rp {{ number_format($diskonMember, 0, ',', '.') }}
-            </td>
-        </tr>
-    @endif
-
-    <tr class="bg-gray-100">
-        <td colspan="4" class="px-6 py-3 text-right font-bold text-gray-900">Total Bayar</td>
-        <td class="px-6 py-3 text-right font-bold text-gray-900">
-            Rp {{ number_format($totalBayar, 0, ',', '.') }}
-        </td>
-    </tr>
-
-    @if($tunai > 0)
-        <tr>
-            <td colspan="4" class="px-6 py-3 text-right font-medium text-gray-800">Tunai Diterima</td>
-            <td class="px-6 py-3 text-right font-semibold text-gray-900">
-                Rp {{ number_format($tunai, 0, ',', '.') }}
-            </td>
-        </tr>
-    @endif
-
-    @if($kembalian > 0)
-        <tr>
-            <td colspan="4" class="px-6 py-3 text-right font-medium text-gray-800">Kembalian</td>
-            <td class="px-6 py-3 text-right font-semibold text-blue-600">
-                Rp {{ number_format($kembalian, 0, ',', '.') }}
-            </td>
-        </tr>
-    @endif
+  @endif
 </tfoot>
-
-
 
                         </table>
                     </div>
@@ -253,7 +195,7 @@
         </div>
     </div>
 
-    <style>
+   <style>
         /* Screen default: hide print-only container */
         .print-only { display: none; }
 
@@ -306,113 +248,124 @@
 
     </style>
 
-<div id="receipt" class="print-only">
-  <div class="center bold" style="text-transform: uppercase;">
-    {{ config('app.name', 'Toko') }}
-  </div>
-  <div class="center small muted">
-    {{ config('app.company_address', 'Alamat Toko') }}
-  </div>
-  <div class="center small muted">
-    {{ config('app.company_phone', '-') }}
-  </div>
+    <div id="receipt" class="print-only">
+      <div class="center bold" style="text-transform: uppercase;">
+        {{ config('app.name', 'Toko') }}
+      </div>
+      <div class="center small muted">
+        {{ config('app.company_address', 'Alamat Toko') }}
+      </div>
+      <div class="center small muted">
+        {{ config('app.company_phone', '-') }}
+      </div>
 
-  <hr>
+      <hr>
 
+      <div class="row small">
+        <span>Nota</span>
+        <span>#{{ $penjualan->PenjualanID }}</span>
+      </div>
+      <div class="row small">
+        <span>Tanggal</span>
+        <span>{{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i') }}</span>
+      </div>
+      <div class="row small">
+        <span>Kasir</span>
+        <span>{{ auth()->user()->name ?? '-' }}</span>
+      </div>
+
+      <hr>
+
+@foreach($details as $d)
+  @php
+      $hargaAsli = $d->produk->Harga;
+      $diskonPromo = 0;
+      $sekarang = now();
+
+      // cek apakah produk sedang promo
+      if ($d->produk->Promosi 
+          && $d->produk->TanggalMulaiPromosi 
+          && $d->produk->TanggalSelesaiPromosi
+          && $sekarang->between($d->produk->TanggalMulaiPromosi, $d->produk->TanggalSelesaiPromosi)
+      ) {
+          $diskonPromo = ($d->produk->DiskonPersen / 100) * $hargaAsli;
+      }
+
+      $hargaSetelahDiskon = $hargaAsli - $diskonPromo;
+  @endphp
+
+
+  <div class="bold">{{ $d->produk->NamaProduk }}</div>
   <div class="row small">
-    <span>Nota</span>
-    <span>#{{ $penjualan->PenjualanID }}</span>
-  </div>
-  <div class="row small">
-    <span>Tanggal</span>
-    <span>{{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i') }}</span>
-  </div>
-  <div class="row small">
-    <span>Kasir</span>
-    <span>{{ auth()->user()->name ?? '-' }}</span>
+    <span>{{ $d->JumlahProduk }} x {{ number_format($hargaAsli, 0, ',', '.') }}</span>
+    <span>{{ number_format($d->Subtotal, 0, ',', '.') }}</span>
   </div>
 
-  <hr>
+  @if($diskonPromo > 0)
+    <div class="row small muted">
+      <span>Diskon Promo</span>
+      <span>-{{ number_format($diskonPromo * $d->JumlahProduk, 0, ',', '.') }}</span>
+    </div>
+  @endif
+@endforeach
 
-  {{-- 🔹 Daftar Produk --}}
-  @foreach($details as $d)
-    @php
-        $hargaAsli = $d->produk->Harga;
-        $diskonPromo = 0;
+      <hr>
+
+      <div class="row small">
+        <span>Total Item</span>
+        <span>{{ $details->sum('JumlahProduk') }}</span>
+      </div>
+      @if((($__diskon ?? 0) > 0))
+        <div class="row small">
+          <span>Diskon Member.</span>
+          <span>-{{ number_format($__diskon, 0, ',', '.') }}</span>
+        </div>
+      @endif
+
+@php
+    $totalDiskonPromo = $details->sum(function($d) {
         $sekarang = now();
-
-        // Cek apakah sedang promo
         if ($d->produk->Promosi 
             && $d->produk->TanggalMulaiPromosi 
             && $d->produk->TanggalSelesaiPromosi
             && $sekarang->between($d->produk->TanggalMulaiPromosi, $d->produk->TanggalSelesaiPromosi)
         ) {
-            $diskonPromo = ($d->produk->DiskonPersen / 100) * $hargaAsli;
+            $diskon = ($d->produk->DiskonPersen / 100) * $d->produk->Harga;
+            return $diskon * $d->JumlahProduk;
         }
+        return 0;
+    });
+@endphp
 
-        $hargaSetelahDiskon = $hargaAsli - $diskonPromo;
-    @endphp
-
-    <div class="bold">{{ $d->produk->NamaProduk }}</div>
+@if($totalDiskonPromo > 0)
     <div class="row small">
-      <span>{{ $d->JumlahProduk }} x {{ number_format($hargaSetelahDiskon, 0, ',', '.') }}</span>
-      <span>{{ number_format($d->Subtotal, 0, ',', '.') }}</span>
+        <span>Promo</span>
+        <span>-{{ number_format($totalDiskonPromo, 0, ',', '.') }}</span>
     </div>
+@endif
 
-    @if($diskonPromo > 0)
-      <div class="row small muted">
-        <span>Promo {{ $d->produk->DiskonPersen }}%</span>
-        <span>-{{ number_format($diskonPromo * $d->JumlahProduk, 0, ',', '.') }}</span>
+      <div class="row bold">
+        <span>Total Belanja</span>
+        <span>Rp {{ number_format($penjualan->TotalHarga, 0, ',', '.') }}</span>
       </div>
-    @endif
-  @endforeach
 
-  <hr>
+      @if(isset($penjualan->UangTunai))
+        <div class="row small">
+          <span>Tunai</span>
+          <span>Rp {{ number_format($penjualan->UangTunai, 0, ',', '.') }}</span>
+        </div>
+      @endif
+      @if(isset($penjualan->Kembalian))
+        <div class="row small">
+          <span>Kembalian</span>
+          <span>Rp {{ number_format($penjualan->Kembalian, 0, ',', '.') }}</span>
+        </div>
+      @endif
 
-  {{-- 🔹 Ringkasan Pembayaran --}}
-  <div class="row small">
-    <span>Total Item</span>
-    <span>{{ $details->sum('JumlahProduk') }}</span>
-  </div>
+      <hr>
 
-  @if($totalDiskonPromo > 0)
-    <div class="row small">
-      <span>Total Diskon Promo</span>
-      <span>Rp -{{ number_format($totalDiskonPromo, 0, ',', '.') }}</span>
+      <div class="center small muted">
+        Terima kasih telah berbelanja
+      </div>
     </div>
-  @endif
-
-  @if(($__diskon ?? 0) > 0)
-    <div class="row small">
-      <span>Diskon Member</span>
-      <span>Rp -{{ number_format($__diskon, 0, ',', '.') }}</span>
-    </div>
-  @endif
-
-  <div class="row bold">
-    <span>Total Bayar</span>
-    <span>Rp {{ number_format($totalBayar, 0, ',', '.') }}</span>
-  </div>
-
-  @if($tunai > 0)
-    <div class="row small">
-      <span>Tunai</span>
-      <span>Rp {{ number_format($tunai, 0, ',', '.') }}</span>
-    </div>
-  @endif
-
-  @if($kembalian > 0)
-    <div class="row small">
-      <span>Kembalian</span>
-      <span>Rp {{ number_format($kembalian, 0, ',', '.') }}</span>
-    </div>
-  @endif
-
-  <hr>
-
-  <div class="center small muted">
-    Terima kasih telah berbelanja ❤️
-  </div>
-</div>
-
 </x-app-layout>

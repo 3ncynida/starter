@@ -225,21 +225,15 @@
                     <form id="checkout-form" action="{{ route('cart.checkout') }}" method="POST" class="space-y-3 border-t pt-3">
                         @csrf
 
-<div>
-    <label for="uang_tunai" class="block text-sm font-medium text-gray-700">
-        Uang Tunai (Rp)
-    </label>
-    
-    <input type="text"
-        name="UangTunaiFormatted"
-        id="uang_tunai"
-        class="rupiah-input w-full rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black py-2 px-3"
-        placeholder="Masukkan nominal uang..."
-        required>
-
-    <!-- Hidden input untuk kirim nilai asli (tanpa format Rp) -->
-    <input type="hidden" name="UangTunai" id="uang_tunai_raw">
-</div>
+                        <div>
+                            <label for="uang_tunai" class="block text-sm font-medium text-gray-700">Uang Tunai (Rp)</label>
+                            <input type="number"
+                                name="UangTunai"
+                                id="uang_tunai"
+                                class="w-full rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black py-2 px-3"
+                                placeholder="Masukkan nominal uang..."
+                                min="0" required>
+                        </div>
                         <!-- Kembalian -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Kembalian</label>
@@ -282,52 +276,27 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const uangInput = document.getElementById('uang_tunai');
-    const hiddenInput = document.getElementById('uang_tunai_raw');
     const kembalianDisplay = document.getElementById('kembalian-display');
     const totalEl = document.getElementById('total-display');
     const checkoutForm = document.getElementById('checkout-form');
-    const total = parseFloat(totalEl?.dataset.total || 0);
+    const total = parseFloat(totalEl.dataset.total || 0);
 
-    // Fungsi format ke Rupiah
-    const formatRupiah = (angka) => {
-        let number_string = angka.toString().replace(/[^\d]/g, '');
-        let sisa = number_string.length % 3;
-        let rupiah = number_string.substr(0, sisa);
-        let ribuan = number_string.substr(sisa).match(/\d{3}/g);
-        if (ribuan) {
-            let separator = sisa ? '.' : '';
-            rupiah += separator + ribuan.join('.');
-        }
-        return 'Rp ' + rupiah;
-    };
-
-    // Update input & hitung kembalian saat diketik
+    // Update kembalian saat user mengetik
     uangInput?.addEventListener('input', e => {
-        // Ambil hanya angka dari input (hapus Rp, titik, spasi)
-        let value = e.target.value.replace(/[^\d]/g, '');
-        hiddenInput.value = value;
-
-        // Format tampilan ke Rupiah
-        uangInput.value = value ? formatRupiah(value) : '';
-
-        // Hitung kembalian
-        const uang = parseFloat(value || 0);
+        const uang = parseFloat(e.target.value || 0);
         const kembalian = uang - total;
-        const hasil = kembalian > 0 ? kembalian : 0;
-
-        // Tampilkan hasil kembalian
-        if (kembalianDisplay) {
-            kembalianDisplay.textContent = 'Rp ' + hasil.toLocaleString('id-ID');
-            kembalianDisplay.classList.toggle('text-red-600', kembalian < 0);
-            kembalianDisplay.classList.toggle('text-green-600', kembalian >= 0);
-        }
+        kembalianDisplay.textContent = 'Rp ' + (kembalian > 0 ? kembalian.toLocaleString('id-ID') : 0);
+        kembalianDisplay.classList.toggle('text-red-600', kembalian < 0);
+        kembalianDisplay.classList.toggle('text-green-600', kembalian >= 0);
     });
 
-    // 🔒 Cek uang tunai sebelum submit
+    // 🚨 Cek uang tunai sebelum submit
     checkoutForm?.addEventListener('submit', e => {
-        const uang = parseFloat(hiddenInput.value || 0);
+        const uang = parseFloat(uangInput.value || 0);
         if (uang < total) {
             e.preventDefault();
+
+            // Tampilkan notifikasi dengan style yang bagus
             Swal.fire({
                 icon: 'error',
                 title: 'Uang Tunai Kurang!',
@@ -338,8 +307,114 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-</script>
 
+ (function () {
+            const input = document.getElementById('product-search');
+            const productGrid = document.querySelector('.grid');
+            const products = @json($allProducts); // Get all products from controller
+            
+            // Updated template function with proper HTML structure
+            const template = product => `
+                <div class="product-card" data-name="${product.NamaProduk.toLowerCase()}">
+                    <div class="bg-[#0f172a] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                        <div class="aspect-square w-full relative">
+                            <img class="w-full h-full object-cover ${product.Stok < 1 ? 'opacity-50' : ''}" 
+                                 src="/storage/${product.Gambar}" 
+                                 alt="${product.NamaProduk}" />
+                            ${product.Stok < 1 ? `
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45">
+                                        HABIS
+                                    </span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="p-3 text-white">
+                            <h3 class="text-base font-medium mb-0.5 truncate">${product.NamaProduk}</h3>
+                            <p class="text-xs mb-2 ${product.Stok < 1 ? 'text-red-400' : 'text-gray-400'}">
+                                Stok: ${product.Stok} ${product.Satuan}
+                            </p>
+                            <div class="flex items-center justify-between gap-2">
+                                <p class="text-lg font-bold">
+                                    Rp ${Number(product.Harga).toLocaleString('id-ID')}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="/cart/add/${product.ProdukID}" method="POST" class="mt-2 flex gap-2">
+                        @csrf
+                        <input type="number" 
+                               name="qty" 
+                               value="1" 
+                               min="1" 
+                               max="${product.Stok}"
+                               class="w-20 rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black">
+                        <button type="submit" 
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                ${product.Stok < 1 ? 'disabled' : ''}>
+                            <i class="fas fa-cart-plus mr-1"></i> Tambah
+                        </button>
+                    </form>
+                </div>
+            `;
+
+            // Search filter function
+            const filter = (term) => {
+                const q = (term || '').toLowerCase().trim();
+                
+                if (!q) {
+                    showPaginated();
+                    return;
+                }
+
+                // Hide pagination when searching
+                document.querySelector('.mt-6').style.display = 'none';
+                
+                // Filter and display matching products
+                const filtered = products.filter(product => 
+                    product.NamaProduk.toLowerCase().includes(q)
+                );
+
+                productGrid.innerHTML = filtered.map(template).join('');
+            };
+
+            // Function to show paginated view
+            const showPaginated = () => {
+                document.querySelector('.mt-6').style.display = 'block';
+                location.reload(); // Reload to restore pagination view
+            };
+
+            // Search input handler with debounce
+            let timeout;
+            input?.addEventListener('input', (e) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    const term = e.target.value;
+                    if (!term) {
+                        showPaginated();
+                        return;
+                    }
+                    filter(term);
+                }, 300);
+            });
+
+            // Keep existing keyboard shortcuts
+            window.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement !== input) {
+                    e.preventDefault();
+                    input?.focus();
+                }
+                if (e.altKey && (e.key.toLowerCase() === 'c')) {
+                    const cb = document.getElementById('checkout-button');
+                    if (cb) cb.focus();
+                }
+                if (e.key === 'Escape' && document.activeElement === input) {
+                    input.value = '';
+                    showPaginated();
+                }
+            });
+        })();   
+</script>
 
 
 </x-app-layout>
