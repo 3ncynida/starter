@@ -10,7 +10,7 @@ class Pelanggan extends Model
     protected $primaryKey = 'PelangganID';
     protected $fillable = [
         'NamaPelanggan',
-        'NoTelepon',
+        'NomorTelepon',
         'Alamat',
     ];
 
