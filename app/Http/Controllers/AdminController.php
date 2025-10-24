@@ -12,34 +12,39 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        // Define this month's date range
+        // Tentukan rentang tanggal bulan ini
         $startOfMonth = Carbon::now()->startOfMonth()->startOfDay();
         $endOfMonth = Carbon::now()->endOfMonth()->endOfDay();
 
+        // Total penjualan bulan ini
         $totalPenjualan = Penjualan::whereBetween('TanggalPenjualan', [$startOfMonth, $endOfMonth])->count();
 
+        // Total pendapatan bulan ini
         $totalPendapatan = DB::table('detail_penjualan')
             ->join('penjualan', 'detail_penjualan.PenjualanID', '=', 'penjualan.PenjualanID')
             ->whereBetween('penjualan.TanggalPenjualan', [$startOfMonth, $endOfMonth])
             ->sum('detail_penjualan.Subtotal');
 
-        // Get total products
+        // Total produk
         $totalProduk = Produk::count();
 
-        // Get total customers
+        // Total pelanggan
         $totalPelanggan = Pelanggan::count();
 
-        // Get recent sales with eager loading
-        $recentSales = Penjualan::with('pelanggan')
-            ->select('penjualan.*')
-            ->addSelect(DB::raw('(SELECT COALESCE(SUM(Subtotal), 0) 
-                FROM detail_penjualan 
-                WHERE detail_penjualan.PenjualanID = penjualan.PenjualanID) as total'))
+        // ✅ Ambil 5 penjualan terbaru — langsung dari tabel penjualan (pakai NamaPelanggan string)
+        $recentSales = Penjualan::select(
+                'PenjualanID',
+                'TanggalPenjualan',
+                'NamaPelanggan',
+                DB::raw('(SELECT COALESCE(SUM(Subtotal), 0) 
+                    FROM detail_penjualan 
+                    WHERE detail_penjualan.PenjualanID = penjualan.PenjualanID) as total')
+            )
             ->latest('TanggalPenjualan')
             ->take(5)
             ->get();
 
-        // Get top selling products with total quantity sold
+        // Produk terlaris
         $topProducts = DB::table('produk')
             ->leftJoin('detail_penjualan', 'produk.ProdukID', '=', 'detail_penjualan.ProdukID')
             ->select(
@@ -48,46 +53,24 @@ class AdminController extends Controller
                 'produk.Harga',
                 'produk.Stok',
                 'produk.Gambar',
-                'produk.created_at',
-                'produk.updated_at',
-                DB::raw('COALESCE(SUM(detail_penjualan.JumlahProduk), 0) as total_sold'),
+                DB::raw('COALESCE(SUM(detail_penjualan.Jumlah), 0) as total_sold'),
                 DB::raw('COALESCE(SUM(detail_penjualan.Subtotal), 0) as total_revenue')
             )
-            ->groupBy(
-                'produk.ProdukID',
-                'produk.NamaProduk',
-                'produk.Harga',
-                'produk.Stok',
-                'produk.Gambar',
-                'produk.created_at',
-                'produk.updated_at'
-            )
+            ->groupBy('produk.ProdukID', 'produk.NamaProduk', 'produk.Harga', 'produk.Stok', 'produk.Gambar')
             ->orderByDesc('total_revenue')
             ->take(5)
             ->get();
 
-        // Get top customers with their total transactions
-        $topCustomers = DB::table('pelanggan')
-            ->leftJoin('penjualan', 'pelanggan.PelangganID', '=', 'penjualan.PelangganID')
+        // ✅ Pelanggan teratas — dari tabel penjualan (pakai NamaPelanggan string)
+        $topCustomers = DB::table('penjualan')
             ->leftJoin('detail_penjualan', 'penjualan.PenjualanID', '=', 'detail_penjualan.PenjualanID')
             ->select(
-                'pelanggan.PelangganID',
-                'pelanggan.NamaPelanggan',
-                'pelanggan.Alamat',
-                'pelanggan.NomorTelepon',
-                'pelanggan.created_at',
-                'pelanggan.updated_at',
+                'penjualan.NamaPelanggan',
                 DB::raw('COUNT(DISTINCT penjualan.PenjualanID) as total_transactions'),
                 DB::raw('COALESCE(SUM(detail_penjualan.Subtotal), 0) as total_spent')
             )
-            ->groupBy(
-                'pelanggan.PelangganID',
-                'pelanggan.NamaPelanggan',
-                'pelanggan.Alamat',
-                'pelanggan.NomorTelepon',
-                'pelanggan.created_at',
-                'pelanggan.updated_at'
-            )
+            ->whereNotNull('penjualan.NamaPelanggan')
+            ->groupBy('penjualan.NamaPelanggan')
             ->orderByDesc('total_spent')
             ->take(5)
             ->get();

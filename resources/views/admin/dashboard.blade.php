@@ -98,7 +98,7 @@
                                             {{ $sale->TanggalPenjualan }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
-                                            {{ $sale->pelanggan->NamaPelanggan ?? 'Non-Member' }}
+                                            {{ $sale->NamaPelanggan ?? 'Non-Member' }}
                                         </td>
 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
     Rp {{ number_format($sale->total, 0, ',', '.') }}
