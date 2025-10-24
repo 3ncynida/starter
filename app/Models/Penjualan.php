@@ -7,17 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Penjualan extends Model
 {
     protected $table = 'penjualan';
-
     protected $primaryKey = 'PenjualanID';
-
     protected $fillable = [
-        'PenjualanID',
+        'PelangganID',
+        'NamaPelanggan',
         'TanggalPenjualan',
         'TotalHarga',
-        'PelangganID',
+        'Diskon',
         'UangTunai',
         'Kembalian',
-        'MetodePembayaran',
     ];
 
     public function detailPenjualan()
@@ -25,10 +23,10 @@ class Penjualan extends Model
         return $this->hasMany(DetailPenjualan::class, 'PenjualanID');
     }
 
-    public function pelanggan()
-    {
-        return $this->belongsTo(Pelanggan::class, 'PelangganID');
-    }
+public function pelanggan()
+{
+    return $this->belongsTo(\App\Models\Pelanggan::class, 'PelangganID', 'PelangganID');
+}
 
     public function getHargaAktifAttribute()
     {

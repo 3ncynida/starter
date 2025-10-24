@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\DetailPenjualan;
 use App\Models\Penjualan;
-use App\Models\Produk;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
@@ -12,30 +11,26 @@ class DetailPenjualanController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil data penjualan beserta relasi pelanggan & detail
-        $query = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])
-            ->orderBy('created_at', 'desc'); // 🔥 Menampilkan data terbaru di atas
+        // Ambil data penjualan + pelanggan + detail
+        $query = Penjualan::with(['pelanggan', 'detailPenjualan'])
+            ->orderBy('created_at', 'desc');
 
-        // 🔍 Fitur pencarian
-        if ($request->has('search') && ! empty($request->search)) {
+        // 🔍 Fitur pencarian berdasarkan nama pelanggan atau produk
+        if ($request->filled('search')) {
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
-                // Cari berdasarkan nama pelanggan
-                $q->whereHas('pelanggan', function ($q) use ($search) {
-                    $q->where('NamaPelanggan', 'like', '%'.$search.'%');
+                $q->whereHas('pelanggan', function ($sub) use ($search) {
+                    $sub->where('NamaPelanggan', 'like', "%{$search}%");
                 })
-                // atau berdasarkan nama produk
-                    ->orWhereHas('detailPenjualan.produk', function ($q) use ($search) {
-                        $q->where('NamaProduk', 'like', '%'.$search.'%');
-                    });
+                ->orWhereHas('detailPenjualan', function ($sub) use ($search) {
+                    $sub->where('produk_nama', 'like', "%{$search}%");
+                });
             });
         }
 
-        // Ambil data terbaru
         $penjualan = $query->paginate(10)->withQueryString();
 
-        // Kirim ke view
         return view('kasir.detail_penjualan.index', compact('penjualan'));
     }
 
@@ -44,29 +39,27 @@ class DetailPenjualanController extends Controller
         // Ambil pengaturan diskon member
         $diskon = Setting::get('diskon_member', 0);
 
-        // Ambil data penjualan beserta detail dan produk
-        $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])->findOrFail($id);
+        // Ambil data penjualan dan detail (tanpa relasi produk)
+        $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan'])->findOrFail($id);
 
-        // Hitung subtotal (total harga sebelum promo)
+        // Hitung subtotal dari kolom langsung
         $subtotal = $penjualan->detailPenjualan->sum(function ($detail) {
-            return $detail->Jumlah * $detail->produk->Harga;
+            return $detail->jumlah * $detail->produk_harga_jual;
         });
 
-        // Inisialisasi variabel promo
+        // Cek promo
         $diskonPromo = 0;
         $persenPromo = 0;
 
-        // Cek apakah ada produk yang sedang promosi
         $promosiAktif = $penjualan->detailPenjualan->first(function ($detail) {
-            return $detail->produk->Promosi === true;
+            return ($detail->diskon_promo_persen ?? 0) > 0;
         });
 
         if ($promosiAktif) {
-            $persenPromo = $promosiAktif->produk->DiskonPersen; // ambil kolom diskon persen produk
+            $persenPromo = $promosiAktif->diskon_promo_persen;
             $diskonPromo = ($persenPromo / 100) * $subtotal;
         }
 
-        // Total setelah diskon promo
         $totalSetelahDiskonPromo = $subtotal - $diskonPromo;
 
         return view('kasir.detail_penjualan.show', [
@@ -82,29 +75,29 @@ class DetailPenjualanController extends Controller
 
     public function edit($id)
     {
-        $detail = DetailPenjualan::with(['penjualan.pelanggan', 'produk'])->findOrFail($id);
-        $produk = Produk::all();
+        // Ambil data detail penjualan
+        $detail = DetailPenjualan::with(['penjualan.pelanggan'])->findOrFail($id);
 
-        return view('kasir.detail_penjualan.form', compact('detail', 'produk'));
+        return view('kasir.detail_penjualan.form', compact('detail'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'JumlahProduk' => 'required|integer|min:1',
-            'ProdukID' => 'required|exists:produk,ProdukID',
+            'jumlah' => 'required|integer|min:1',
+            'produk_nama' => 'required|string',
+            'produk_harga_jual' => 'required|numeric|min:0',
         ]);
 
         $detail = DetailPenjualan::findOrFail($id);
-        $produk = Produk::findOrFail($request->ProdukID);
 
-        // Hitung subtotal baru
-        $subtotal = $produk->Harga * $request->JumlahProduk;
+        $subtotal = $request->produk_harga_jual * $request->jumlah;
 
         $detail->update([
-            'ProdukID' => $request->ProdukID,
-            'JumlahProduk' => $request->JumlahProduk,
-            'Subtotal' => $subtotal,
+            'produk_nama' => $request->produk_nama,
+            'produk_harga_jual' => $request->produk_harga_jual,
+            'jumlah' => $request->jumlah,
+            'subtotal' => $subtotal,
         ]);
 
         return redirect()

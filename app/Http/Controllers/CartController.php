@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Penjualan;
 use App\Models\Produk;
 use App\Models\DetailPenjualan;
+use App\Models\Pelanggan;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -25,7 +27,7 @@ class CartController extends Controller
         // Simpan info promosi
         $hargaAsli = $produk->Harga;
         $promosi = $produk->Promosi;
-        $diskonPersen = $produk->DiskonPersen;
+        $diskonPersen = $produk->DiskonPersen ?? 0;
 
         // Hitung harga setelah diskon
         $hargaSetelahDiskon = $promosi && $diskonPersen > 0
@@ -47,7 +49,6 @@ class CartController extends Controller
         return back()->with('success', 'Produk ditambahkan ke keranjang!');
     }
 
-    // Tambahkan method remove() ini
     public function remove($id)
     {
         $cart = session()->get('cart', []);
@@ -93,61 +94,78 @@ class CartController extends Controller
     }
 
     public function checkout(Request $request)
-{
-    $cart = session()->get('cart', []);
-    if (empty($cart)) {
-        return redirect()->back()->with('error', 'Keranjang kosong!');
+    {
+        $cart = session()->get('cart', []);
+        if (empty($cart)) {
+            return redirect()->back()->with('error', 'Keranjang kosong!');
+        }
+
+        // Ambil pelanggan (kalau ada)
+$pelangganId = session('cart_customer', null);
+$pelanggan = Pelanggan::find($pelangganId);
+$namaPelanggan = $pelanggan ? $pelanggan->NamaPelanggan : 'Umum';
+
+        $subtotal = collect($cart)->sum(fn($item) => $item['harga'] * $item['qty']);
+
+        $totalDiskonPromo = 0;
+        foreach ($cart as $item) {
+            if ($item['promosi'] && $item['diskon_persen'] > 0) {
+                $diskonNominal = ($item['harga_asli'] * $item['diskon_persen'] / 100) * $item['qty'];
+                $totalDiskonPromo += $diskonNominal;
+            }
+        }
+
+        $diskonPersenMember = $pelangganId ? (Setting::where('key', 'diskon_member')->value('value') ?? 0) : 0;
+        $diskonNominalMember = ($subtotal * $diskonPersenMember) / 100;
+
+        $grandTotal = $subtotal - $diskonNominalMember;
+
+        // Validasi uang tunai
+        $uangTunai = (float) ($request->UangTunai ?? 0);
+        if ($uangTunai < $grandTotal) {
+            return back()->with('error', 'Uang tunai kurang dari total yang harus dibayar!');
+        }
+
+        $kembalian = $uangTunai - $grandTotal;
+
+        $pelangganId = session('cart_customer', null);
+$pelanggan = Pelanggan::find($pelangganId);
+$namaPelanggan = $pelanggan ? $pelanggan->NamaPelanggan : 'Umum';
+
+        // Simpan penjualan
+    $penjualan = Penjualan::create([
+    'NamaPelanggan' => $namaPelanggan,
+    'TanggalPenjualan' => now(),
+    'TotalHarga' => $grandTotal,
+     'Diskon' => $diskonNominalMember,
+    'UangTunai' => $uangTunai,
+    'Kembalian' => $kembalian,
+]);
+
+        foreach ($cart as $id => $item) {
+            $hargaAsli = $item['harga_asli'];
+            $hargaJual = $item['harga'];
+            $diskonPromoNominal = ($hargaAsli - $hargaJual) * $item['qty'];
+
+            DetailPenjualan::create([
+                'PenjualanID' => $penjualan->PenjualanID,
+                'produk_nama' => $item['nama'],
+                'produk_harga_asli' => $hargaAsli,
+                'produk_harga_jual' => $hargaJual,
+                'diskon_promo_persen' => $item['diskon_persen'] ?? 0,
+                'diskon_promo_nominal' => $diskonPromoNominal,
+                'jumlah' => $item['qty'],
+                'subtotal' => $hargaJual * $item['qty'],
+            ]);
+
+            Produk::where('ProdukID', $id)->decrement('Stok', $item['qty']);
+        }
+
+        // Bersihkan session keranjang
+        session()->forget(['cart', 'cart_customer']);
+
+        return redirect()->route('penjualan.index')->with('success', 'Checkout berhasil!');
     }
-
-    $pelangganId = session('cart_customer', null);
-
-    // Hitung subtotal dari cart (harga sudah termasuk diskon promo)
-    $subtotal = collect($cart)->sum(fn($item) => $item['harga'] * $item['qty']);
-
-    // Hitung diskon member (jika ada)
-    $diskonPersenMember = $pelangganId ? \App\Models\Setting::get('diskon_member', 0) : 0;
-    $diskonNominalMember = ($subtotal * $diskonPersenMember) / 100;
-
-    // Total akhir
-    $grandTotal = $subtotal - $diskonNominalMember;
-
-    // Validasi uang tunai
-    $uangTunai = (float) ($request->UangTunai ?? 0);
-    if ($uangTunai < $grandTotal) {
-        return back()->with('error', 'Uang tunai kurang dari total yang harus dibayar!');
-    }
-
-    // Buat penjualan dulu (sebelum detail)
-    $penjualan = \App\Models\Penjualan::create([
-        'TanggalPenjualan' => now(),
-        'PelangganID' => $pelangganId,
-        'TotalHarga' => $grandTotal,
-        'Diskon' => $diskonNominalMember,
-        'UangTunai' => $uangTunai,
-        'Kembalian' => $uangTunai - $grandTotal,
-    ]);
-
-    // Simpan detail penjualan & update stok
-    foreach ($cart as $productId => $item) {
-        \App\Models\DetailPenjualan::create([
-            'PenjualanID' => $penjualan->PenjualanID,
-            'ProdukID' => $productId,
-            'JumlahProduk' => $item['qty'],
-            'Harga' => $item['harga_asli'],
-            'DiskonPromoNominal' => $item['harga_asli'] - $item['harga'],
-            'DiskonPromoPersen' => $item['diskon_persen'],
-            'Subtotal' => $item['harga'] * $item['qty'],
-        ]);
-
-        \App\Models\Produk::findOrFail($productId)->decrement('Stok', $item['qty']);
-    }
-
-    // Bersihkan session
-    session()->forget(['cart', 'cart_customer']);
-
-    return redirect()->route('penjualan.index')->with('success', 'Checkout berhasil!');
-}
-
 
     public function setCustomer(Request $request)
     {

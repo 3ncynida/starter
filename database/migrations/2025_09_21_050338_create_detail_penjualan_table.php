@@ -11,20 +11,25 @@ return new class extends Migration
         Schema::create('detail_penjualan', function (Blueprint $table) {
             $table->id('DetailID');
 
-            // Relasi ke Penjualan
+            // Masih tetap relasi ke penjualan (biar tahu ini milik penjualan mana)
             $table->foreignId('PenjualanID')
                 ->constrained('penjualan', 'PenjualanID')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            // Relasi ke Produk
-            $table->foreignId('ProdukID')
-                ->constrained('produk', 'ProdukID')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+            // 🧾 Data produk disimpan sebagai string & angka (bukan ID)
+            $table->string('produk_nama');
+            $table->decimal('produk_harga_asli', 10, 2);
+            $table->decimal('produk_harga_jual', 10, 2);
 
-            $table->integer('JumlahProduk');
-            $table->decimal('Subtotal', 10, 2);
+            // 🎯 Informasi diskon promo
+            $table->decimal('diskon_promo_persen', 5, 2)->nullable();
+            $table->decimal('diskon_promo_nominal', 10, 2)->nullable();
+
+            // 📦 Jumlah & subtotal
+            $table->integer('jumlah');
+            $table->decimal('subtotal', 10, 2);
+
             $table->timestamps();
         });
     }

@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::table('detail_penjualan', function (Blueprint $table) {
             // harga per unit disimpan saat transaksi
-            $table->decimal('Harga', 14, 2)->after('ProdukID')->default(0);
+            $table->decimal('Harga', 14, 2)->default(0);
             // diskon promo nominal per unit (jika ada)
             $table->decimal('DiskonPromoNominal', 14, 2)->after('Harga')->nullable();
             // persen diskon promo saat transaksi (optional, buat informasi)

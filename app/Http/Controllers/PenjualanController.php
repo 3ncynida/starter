@@ -22,89 +22,100 @@ class PenjualanController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // ✅ Validasi input
-        $validated = $request->validate([
-            'PelangganID' => 'nullable|exists:pelanggan,PelangganID', // boleh kosong (non-member)
-            'ProdukID' => 'required|exists:produk,ProdukID',
-            'JumlahProduk' => 'required|integer|min:1',
-            'UangTunai' => 'required|numeric|min:0', // input baru
-        ]);
+{
+    // ✅ Validasi input
+    $validated = $request->validate([
+        'PelangganID' => 'nullable|exists:pelanggan,PelangganID',
+        'ProdukID' => 'required|exists:produk,ProdukID',
+        'JumlahProduk' => 'required|integer|min:1',
+        'UangTunai' => 'required|numeric|min:0',
+    ]);
 
-        // ✅ Ambil produk
-        $produk = Produk::findOrFail($validated['ProdukID']);
+    // ✅ Ambil produk
+    $produk = Produk::findOrFail($validated['ProdukID']);
 
-        // ✅ Harga dasar
-        $hargaProduk = $produk->HargaAktif;
-
-        // ✅ Cek apakah produk sedang promosi
-        $sekarang = now()->toDateString();
-        if (
-            $produk->Promosi &&
-            $produk->TanggalMulaiPromosi &&
-            $produk->TanggalSelesaiPromosi &&
-            $sekarang >= $produk->TanggalMulaiPromosi &&
-            $sekarang <= $produk->TanggalSelesaiPromosi
-        ) {
-            // Jika sedang promo, hitung diskon promo
-            $diskonPromo = ($hargaProduk * $produk->DiskonPersen) / 100;
-            $hargaProduk -= $diskonPromo;
-        }
-
-        // ✅ Hitung subtotal
-        $subtotal = $hargaProduk * $validated['JumlahProduk'];
-
-        // ✅ Diskon member (kalau ada)
-        $diskonPersenMember = 0;
-        if (! empty($validated['PelangganID'])) {
-            $diskonPersenMember = Setting::get('diskon_member', 0); // misal default 0
-        }
-
-        // ✅ Hitung diskon member nominal
-        $diskonMemberNominal = ($subtotal * $diskonPersenMember) / 100;
-
-        // ✅ Total akhir
-        $total = $subtotal - $diskonMemberNominal;
-
-        // ✅ Hitung kembalian
-        $uangTunai = $validated['UangTunai'];
-        $kembalian = $uangTunai - $total;
-        if ($kembalian < 0) {
-            return back()->withErrors(['UangTunai' => 'Uang tunai tidak cukup untuk membayar total belanja.']);
-        }
-
-        // ✅ Simpan penjualan
-        $penjualan = Penjualan::create([
-            'PelangganID' => $validated['PelangganID'] ?? null,
-            'TanggalPenjualan' => now(),
-            'TotalHarga' => $total,
-            'Diskon' => $diskonMemberNominal, // catat diskon member
-            'UangTunai' => $uangTunai,
-            'Kembalian' => $kembalian,
-        ]);
-
-        // ✅ Simpan detail penjualan
-        DetailPenjualan::create([
-            'PenjualanID' => $penjualan->PenjualanID,
-            'ProdukID' => $produk->ProdukID,
-            'JumlahProduk' => $validated['JumlahProduk'],
-            'Subtotal' => $subtotal,
-        ]);
-
-        // ✅ Update stok
-        $produk->decrement('Stok', $validated['JumlahProduk']);
-
-        return redirect()->route('penjualan.show', $penjualan->PenjualanID)
-            ->with('success', 'Penjualan berhasil disimpan.');
+    // ✅ Ambil pelanggan jika ada
+    $pelanggan = null;
+    $namaPelanggan = 'Umum';
+    if (!empty($validated['PelangganID'])) {
+        $pelanggan = Pelanggan::findOrFail($validated['PelangganID']);
+        $namaPelanggan = $pelanggan->NamaPelanggan;
     }
 
-    public function create()
-    {
-        $pelanggan = \App\Models\Pelanggan::all();
-        $produk = \App\Models\Produk::all();
+    // ✅ Harga dasar
+    $hargaAsli = $produk->Harga;
+    $diskonPromoNominal = 0;
+    $diskonPromoPersen = 0;
 
-        return view('kasir.penjualan.create', compact('pelanggan', 'produk'));
+    // ✅ Cek apakah produk sedang promosi
+    $sekarang = now()->toDateString();
+    if (
+        $produk->Promosi &&
+        $produk->DiskonPersen > 0 &&
+        $produk->TanggalMulaiPromosi &&
+        $produk->TanggalSelesaiPromosi &&
+        $sekarang >= $produk->TanggalMulaiPromosi &&
+        $sekarang <= $produk->TanggalSelesaiPromosi
+    ) {
+        $diskonPromoPersen = $produk->DiskonPersen;
+        $diskonPromoNominal = ($hargaAsli * $diskonPromoPersen) / 100;
     }
+
+    // ✅ Harga jual setelah promo
+    $hargaJual = $hargaAsli - $diskonPromoNominal;
+
+    // ✅ Hitung subtotal (setelah promo)
+    $subtotal = $hargaJual * $validated['JumlahProduk'];
+
+    // ✅ Diskon member (kalau ada)
+    $diskonPersenMember = 0;
+    if (!empty($validated['PelangganID'])) {
+        $diskonPersenMember = Setting::get('diskon_member', 0);
+    }
+
+    // ✅ Hitung diskon member nominal (dari subtotal setelah promo)
+    $diskonMemberNominal = ($subtotal * $diskonPersenMember) / 100;
+
+    // ✅ Total akhir (setelah promo dan member discount)
+    $total = $subtotal - $diskonMemberNominal;
+
+    // ✅ Hitung kembalian
+    $uangTunai = $validated['UangTunai'];
+    $kembalian = $uangTunai - $total;
+    if ($kembalian < 0) {
+        return back()->withErrors(['UangTunai' => 'Uang tunai tidak cukup untuk membayar total belanja.']);
+    }
+
+    // ✅ Simpan penjualan
+    $penjualan = Penjualan::create([
+        'PelangganID' => $validated['PelangganID'] ?? null,
+        'pelanggan_nama' => $namaPelanggan,
+        'TanggalPenjualan' => now(),
+        'TotalHarga' => $total,
+        'Diskon' => $diskonMemberNominal,
+        'UangTunai' => $uangTunai,
+        'Kembalian' => $kembalian,
+    ]);
+
+    // ✅ Simpan detail penjualan dengan diskon promo
+    DetailPenjualan::create([
+        'PenjualanID' => $penjualan->PenjualanID,
+        'produk_nama' => $produk->NamaProduk,
+        'produk_harga_asli' => $hargaAsli,
+        'produk_harga_jual' => $hargaJual,
+        'diskon_promo_persen' => $diskonPromoPersen,
+        'diskon_promo_nominal' => $diskonPromoNominal,
+        'jumlah' => $validated['JumlahProduk'],
+        'subtotal' => $subtotal,
+    ]);
+
+    // ✅ Update stok
+    $produk->decrement('Stok', $validated['JumlahProduk']);
+
+    return redirect()->route('penjualan.show', $penjualan->PenjualanID)
+        ->with('success', 'Penjualan berhasil disimpan.');
+}
+
 
     public function edit($id)
     {

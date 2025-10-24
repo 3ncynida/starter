@@ -7,19 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class DetailPenjualan extends Model
 {
     protected $table = 'detail_penjualan';
-
     protected $primaryKey = 'DetailID';
-
-    // App/Models/DetailPenjualan.php
     protected $fillable = [
         'PenjualanID',
-        'ProdukID',
-        'JumlahProduk',
-        'Subtotal',
-        'Harga', // baru
-        'DiskonPromoNominal', // baru
-        'DiskonPromoPersen', // baru
+        'produk_nama',
+        'produk_harga_asli',
+        'produk_harga_jual',
+        'diskon_promo_persen',
+        'diskon_promo_nominal',
+        'jumlah',
+        'subtotal',
     ];
+
 
     public function penjualan()
     {

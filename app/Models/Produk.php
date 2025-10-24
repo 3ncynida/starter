@@ -10,20 +10,26 @@ class Produk extends Model
     use HasFactory;
 
     protected $table = 'produk';
-
     protected $primaryKey = 'ProdukID';
-
     protected $fillable = [
         'NamaProduk',
         'Harga',
-        'Stok',
         'Satuan',
+        'Stok',
         'Gambar',
         'Promosi',
         'DiskonPersen',
         'TanggalMulaiPromosi',
         'TanggalSelesaiPromosi',
     ];
+
+    // app/Models/Produk.php
+protected $casts = [
+    'Promosi' => 'boolean',
+    'TanggalMulaiPromosi' => 'datetime',
+    'TanggalSelesaiPromosi' => 'datetime',
+];
+
 
     public function getHargaAktifAttribute()
     {

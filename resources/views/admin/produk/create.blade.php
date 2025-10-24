@@ -47,7 +47,8 @@
                         <div>
                             <x-input-label for="Satuan" :value="__('Satuan')" />
                             <select name="Satuan" id="Satuan" class="w-full border rounded p-2" required>
-                                <option value="pcs">Pcs</option>
+                                                <option value="buah">per-buah</option>
+                <option value="sisir">sisir</option>
                                 <option value="kg">Kg</option>
                                 <option value="pack">Pack</option>
                                 <option value="dus">Dus</option>

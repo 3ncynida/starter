@@ -57,14 +57,15 @@
     @forelse ($penjualan as $index => $row)
         @php
             // kumpulkan nama produk untuk ditampilkan (dipisah koma)
-            $produkNames = $row->detailPenjualan->map(function($d){
-                return $d->produk->NamaProduk ?? '-';
-            })->filter()->values()->all();
+$produkNames = $row->detailPenjualan->map(function($d){
+    return $d->produk_nama ?? '-';
+})->filter()->values()->all();
             $produkText = implode(', ', $produkNames);
 
             // jumlah item & subtotal dari relation detailPenjualan
-            $totalJumlah = $row->detailPenjualan->sum('JumlahProduk');
-            $totalSubtotal = $row->detailPenjualan->sum('Subtotal');
+$totalJumlah = $row->detailPenjualan->sum('jumlah');
+$totalSubtotal = $row->detailPenjualan->sum('subtotal');
+
 
             // nomor baris yang benar saat paginated
             $no = $penjualan->firstItem() + $index;
@@ -77,7 +78,7 @@
                     ->setTimezone('Asia/Jakarta')->format('d/m/Y H:i') }} WIB
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ $row->pelanggan?->NamaPelanggan ?? 'Non Member' }}
+                {{ $row->NamaPelanggan ?? 'Umum' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {{-- tampilkan daftar produk (ringkas) --}}
