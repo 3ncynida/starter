@@ -13,7 +13,7 @@ class DetailPenjualanController extends Controller
     public function index(Request $request)
     {
         // Ambil data penjualan beserta relasi pelanggan & detail
-        $query = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])
+        $query = Penjualan::with(['pelanggan', 'detailPenjualan'])
             ->orderBy('created_at', 'desc'); // 🔥 Menampilkan data terbaru di atas
 
         // 🔍 Fitur pencarian
@@ -26,7 +26,7 @@ class DetailPenjualanController extends Controller
                     $q->where('NamaPelanggan', 'like', '%'.$search.'%');
                 })
                 // atau berdasarkan nama produk
-                    ->orWhereHas('detailPenjualan.produk', function ($q) use ($search) {
+                    ->orWhereHas('detailPenjualan', function ($q) use ($search) {
                         $q->where('NamaProduk', 'like', '%'.$search.'%');
                     });
             });
@@ -44,27 +44,23 @@ class DetailPenjualanController extends Controller
         // Ambil pengaturan diskon member
         $diskon = Setting::get('diskon_member', 0);
 
-        // Ambil data penjualan beserta detail dan produk
-        $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan.produk'])->findOrFail($id);
+        // Ambil data penjualan beserta detail
+        $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan'])->findOrFail($id);
 
-        // Hitung subtotal (total harga sebelum promo)
-        $subtotal = $penjualan->detailPenjualan->sum(function ($detail) {
-            return $detail->Jumlah * $detail->produk->Harga;
-        });
+        // Hitung subtotal
+        $subtotal = $penjualan->detailPenjualan->sum('Subtotal');
 
         // Inisialisasi variabel promo
         $diskonPromo = 0;
         $persenPromo = 0;
 
-        // Cek apakah ada produk yang sedang promosi
-        $promosiAktif = $penjualan->detailPenjualan->first(function ($detail) {
-            return $detail->produk->Promosi === true;
+        // Hitung total diskon promo
+        $diskonPromo = $penjualan->detailPenjualan->sum(function ($detail) {
+            return ($detail->DiskonPromoNominal ?? 0) * $detail->JumlahProduk;
         });
-
-        if ($promosiAktif) {
-            $persenPromo = $promosiAktif->produk->DiskonPersen; // ambil kolom diskon persen produk
-            $diskonPromo = ($persenPromo / 100) * $subtotal;
-        }
+        
+        // Hitung rata-rata persen diskon
+        $persenPromo = $penjualan->detailPenjualan->avg('DiskonPromoPersen') ?? 0;
 
         // Total setelah diskon promo
         $totalSetelahDiskonPromo = $subtotal - $diskonPromo;

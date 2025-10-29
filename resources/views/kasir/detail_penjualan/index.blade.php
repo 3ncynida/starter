@@ -57,10 +57,8 @@
     @forelse ($penjualan as $index => $row)
         @php
             // kumpulkan nama produk untuk ditampilkan (dipisah koma)
-            $produkNames = $row->detailPenjualan->map(function($d){
-                return $d->produk->NamaProduk ?? '-';
-            })->filter()->values()->all();
-            $produkText = implode(', ', $produkNames);
+            $produkNames = $row->detailPenjualan->pluck('NamaProduk')->filter();
+            $produkText = $produkNames->join(', ');
 
             // jumlah item & subtotal dari relation detailPenjualan
             $totalJumlah = $row->detailPenjualan->sum('JumlahProduk');
@@ -77,7 +75,7 @@
                     ->setTimezone('Asia/Jakarta')->format('d/m/Y H:i') }} WIB
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ $row->pelanggan?->NamaPelanggan ?? 'Non Member' }}
+                {{ $row->NamaPelanggan ?? 'Non Member' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {{-- tampilkan daftar produk (ringkas) --}}

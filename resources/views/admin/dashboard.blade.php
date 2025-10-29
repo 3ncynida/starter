@@ -97,9 +97,9 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                                             {{ $sale->TanggalPenjualan }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
-                                            {{ $sale->pelanggan->NamaPelanggan ?? 'Non-Member' }}
-                                        </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                                                {{ $sale->NamaPelanggan ?? 'Non-Member' }}
+                                            </td>
 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
     Rp {{ number_format($sale->total, 0, ',', '.') }}
 </td>
@@ -126,7 +126,12 @@
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-slate-900 mb-4">Produk Terlaris</h3>
-                        <div class="space-y-4">
+                            <div class="space-y-4">
+                                @if($topProducts->isEmpty())
+                                    <div class="text-center py-4">
+                                        <p class="text-slate-500">Belum ada data produk terlaris</p>
+                                    </div>
+                                @else
                             @foreach($topProducts as $product)
                                 @php
                                     $pct = round(($product->total_sold / $maxSold) * 100);
@@ -147,6 +152,7 @@
                                     <p class="text-sm font-medium text-slate-900">Rp {{ number_format($product->Harga, 0, ',', '.') }}</p>
                                 </div>
                             @endforeach
+                                @endif
                         </div>
                     </div>
                 </div>
@@ -155,7 +161,12 @@
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-slate-900 mb-4">Pelanggan Teratas</h3>
-                        <div class="space-y-4">
+                            <div class="space-y-4">
+                                @if($topCustomers->isEmpty())
+                                    <div class="text-center py-4">
+                                        <p class="text-slate-500">Belum ada data pelanggan</p>
+                                    </div>
+                                @else
                             @foreach($topCustomers as $customer)
                                 @php
                                     $pct = round(($customer->total_spent / $maxSpent) * 100);
@@ -175,6 +186,7 @@
                                     <p class="text-sm font-medium text-slate-900">Rp {{ number_format($customer->total_spent, 0, ',', '.') }}</p>
                                 </div>
                             @endforeach
+                                @endif
                         </div>
                     </div>
                 </div>

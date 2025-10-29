@@ -121,6 +121,7 @@ class CartController extends Controller
     $penjualan = \App\Models\Penjualan::create([
         'TanggalPenjualan' => now(),
         'PelangganID' => $pelangganId,
+        'NamaPelanggan' => $pelangganId ? \App\Models\Pelanggan::find($pelangganId)->NamaPelanggan : null,
         'TotalHarga' => $grandTotal,
         'Diskon' => $diskonNominalMember,
         'UangTunai' => $uangTunai,
@@ -129,9 +130,11 @@ class CartController extends Controller
 
     // Simpan detail penjualan & update stok
     foreach ($cart as $productId => $item) {
+        $produk = Produk::find($productId);
         \App\Models\DetailPenjualan::create([
             'PenjualanID' => $penjualan->PenjualanID,
             'ProdukID' => $productId,
+            'NamaProduk' => $produk ? $produk->NamaProduk : $item['nama'],
             'JumlahProduk' => $item['qty'],
             'Harga' => $item['harga_asli'],
             'DiskonPromoNominal' => $item['harga_asli'] - $item['harga'],

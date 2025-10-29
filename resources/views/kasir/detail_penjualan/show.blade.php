@@ -18,8 +18,8 @@
                             </p>
                             <p class="text-gray-600">
                                 <span class="font-medium">Pelanggan:</span>
-                                @php $isMember = isset($penjualan->pelanggan) && !empty($penjualan->pelanggan->NamaPelanggan); @endphp
-                                <span class="ml-1">{{ $penjualan->pelanggan->NamaPelanggan ?? 'Non Member' }}</span>
+                                @php $isMember = !empty($penjualan->PelangganID); @endphp
+                                <span class="ml-1">{{ $penjualan->NamaPelanggan ?? 'Non Member' }}</span>
                                 @if($isMember)
                                     <span class="ml-2 inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Member</span>
                                 @else
@@ -74,16 +74,15 @@
                             <tbody class="divide-y divide-gray-200 bg-white">
                                 @foreach($details as $index => $detail)
                                     @php
-                                        $produk = $detail->produk;
                                         $diskonPromoPersen = $detail->DiskonPromoPersen ?? 0;
                                         $diskonPromoNominal = $detail->DiskonPromoNominal ?? 0;
-                                        $hargaSetelahPromo = $produk->Harga - $diskonPromoNominal;
-                                                $diskonPromoNominalPerUnit = $detail->DiskonPromoNominal ?? 0;
-                                        $hargaAsli = $produk->Harga;
+                                        $hargaAsli = $detail->Harga;
+                                        $hargaSetelahPromo = $hargaAsli - $diskonPromoNominal;
+                                        $diskonPromoNominalPerUnit = $detail->DiskonPromoNominal ?? 0;
                                     @endphp
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $produk->NamaProduk }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $detail->NamaProduk }}</td>
 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
     @if($diskonPromoNominalPerUnit > 0)
         <span class="line-through text-gray-400">
@@ -106,38 +105,18 @@
                             </tbody><tfoot class="bg-gray-50">
                                     @php
                                           $subtotal = $details->sum('Subtotal');
-                                  $diskon   = $__diskon;
-                                  $discPct  = $subtotal > 0 ? round(($diskon / $subtotal) * 100) : 0;
+                                          $diskon   = $__diskon;
+                                          $discPct  = $subtotal > 0 ? round(($diskon / $subtotal) * 100) : 0;
                                   
-                                  $totalDiskonPromo = 0;
-                                  foreach($details as $detail) {
-                                      $diskonPromoPerItem = $detail->DiskonPromoNominal ?? 0;
-                                      $totalDiskonPromo += $diskonPromoPerItem * $detail->JumlahProduk;
-                                  }
-
-        // Hitung total diskon promo aktif + ambil rata-rata persen promo
-        $promoData = $details->map(function($d) {
-            $sekarang = now();
-            if ($d->produk->Promosi 
-                && $d->produk->TanggalMulaiPromosi 
-                && $d->produk->TanggalSelesaiPromosi
-                && $sekarang->between($d->produk->TanggalMulaiPromosi, $d->produk->TanggalSelesaiPromosi)
-            ) {
-                return [
-                    'diskon_persen' => $d->produk->DiskonPersen,
-                    'diskon_total' => ($d->produk->DiskonPersen / 100) * $d->produk->Harga * $d->JumlahProduk
-                ];
-            }
-            return ['diskon_persen' => 0, 'diskon_total' => 0];
-        });
-
-        $totalDiskonPromo = $promoData->sum('diskon_total');
-        $rataRataPersenPromo = $promoData->avg('diskon_persen');
-
-        $diskonMember = $penjualan->Diskon ?? 0;
-        $totalBayar = $penjualan->TotalHarga ?? ($subtotal - $totalDiskonPromo - $diskonMember);
-        $tunai = $penjualan->Tunai ?? $penjualan->UangTunai ?? 0;
-        $kembalian = $penjualan->Kembalian ?? max($tunai - $totalBayar, 0);
+                                          // Ambil data diskon yang sudah tersimpan saat transaksi
+                                          $totalDiskonPromo = $details->sum(function($d) {
+                                              return ($d->DiskonPromoNominal ?? 0) * $d->JumlahProduk;
+                                          });
+                                          
+                                          $diskonMember = $penjualan->Diskon ?? 0;
+                                          $totalBayar = $penjualan->TotalHarga;
+                                          $tunai = $penjualan->UangTunai ?? 0;
+                                          $kembalian = $penjualan->Kembalian ?? 0;
     @endphp
   <tr>
     <td colspan="4" class="px-6 py-4 text-right text-sm font-medium text-gray-900">Subtotal</td>
@@ -278,33 +257,22 @@
 
 @foreach($details as $d)
   @php
-      $hargaAsli = $d->produk->Harga;
-      $diskonPromo = 0;
-      $sekarang = now();
-
-      // cek apakah produk sedang promo
-      if ($d->produk->Promosi 
-          && $d->produk->TanggalMulaiPromosi 
-          && $d->produk->TanggalSelesaiPromosi
-          && $sekarang->between($d->produk->TanggalMulaiPromosi, $d->produk->TanggalSelesaiPromosi)
-      ) {
-          $diskonPromo = ($d->produk->DiskonPersen / 100) * $hargaAsli;
-      }
-
-      $hargaSetelahDiskon = $hargaAsli - $diskonPromo;
+      $hargaAsli = $d->Harga;
+      $diskonPromoNominal = $d->DiskonPromoNominal ?? 0;
+      $hargaSetelahDiskon = $hargaAsli - $diskonPromoNominal;
   @endphp
 
 
-  <div class="bold">{{ $d->produk->NamaProduk }}</div>
+  <div class="bold">{{ $d->NamaProduk }}</div>
   <div class="row small">
     <span>{{ $d->JumlahProduk }} x {{ number_format($hargaAsli, 0, ',', '.') }}</span>
     <span>{{ number_format($d->Subtotal, 0, ',', '.') }}</span>
   </div>
 
-  @if($diskonPromo > 0)
+  @if($diskonPromoNominal > 0)
     <div class="row small muted">
       <span>Diskon Promo</span>
-      <span>-{{ number_format($diskonPromo * $d->JumlahProduk, 0, ',', '.') }}</span>
+      <span>-{{ number_format($diskonPromoNominal * $d->JumlahProduk, 0, ',', '.') }}</span>
     </div>
   @endif
 @endforeach
@@ -324,16 +292,7 @@
 
 @php
     $totalDiskonPromo = $details->sum(function($d) {
-        $sekarang = now();
-        if ($d->produk->Promosi 
-            && $d->produk->TanggalMulaiPromosi 
-            && $d->produk->TanggalSelesaiPromosi
-            && $sekarang->between($d->produk->TanggalMulaiPromosi, $d->produk->TanggalSelesaiPromosi)
-        ) {
-            $diskon = ($d->produk->DiskonPersen / 100) * $d->produk->Harga;
-            return $diskon * $d->JumlahProduk;
-        }
-        return 0;
+        return ($d->DiskonPromoNominal ?? 0) * $d->JumlahProduk;
     });
 @endphp
 

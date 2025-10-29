@@ -14,10 +14,11 @@ class DetailPenjualan extends Model
     protected $fillable = [
         'PenjualanID',
         'ProdukID',
+        'NamaProduk',
         'JumlahProduk',
         'Subtotal',
-        'Harga', // baru
-        'DiskonPromoNominal', // baru
+        'Harga',
+        'DiskonPromoNominal',
         'DiskonPromoPersen', // baru
     ];
 

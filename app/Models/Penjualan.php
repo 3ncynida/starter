@@ -15,6 +15,7 @@ class Penjualan extends Model
         'TanggalPenjualan',
         'TotalHarga',
         'PelangganID',
+        'NamaPelanggan',
         'UangTunai',
         'Kembalian',
         'MetodePembayaran',

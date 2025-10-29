@@ -18,10 +18,12 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             // Relasi ke Produk
-            $table->foreignId('ProdukID')
-                ->constrained('produk', 'ProdukID')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+            $table->unsignedBigInteger('ProdukID')->nullable();
+            $table->foreign('ProdukID')
+                ->references('ProdukID')
+                ->on('produk')
+                ->onUpdate('cascade')
+                ->onDelete('set null');
 
             $table->integer('JumlahProduk');
             $table->decimal('Subtotal', 10, 2);
