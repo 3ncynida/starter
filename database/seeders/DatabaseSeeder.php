@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'superAdmin@email.com'],
             [
                 'name' => 'Super Admin',
-                'password' => bcrypt('password'),
+                'password' => bcrypt('123123123'),
             ]
         );
         $superAdmin->assignRole($superAdminRole);
@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@email.com'],
             [
                 'name' => 'Admin User',
-                'password' => bcrypt('password'),
+                'password' => bcrypt('123123123'),
             ]
         );
         $admin->assignRole($adminRole);
@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'kasir@email.com'],
             [
                 'name' => 'Regular Kasir',
-                'password' => bcrypt('password'),
+                'password' => bcrypt('123123123'),
             ]
         );
         $kasir->assignRole($kasirRole);
@@ -107,7 +107,7 @@ class DatabaseSeeder extends Seeder
                     'Harga' => $product['harga'],
                     'Stok' => $product['stok'],
                     'Satuan' => $product['satuan'],
-                    'Gambar' => 'produk/default.webp',
+                    'Gambar' => 'produk/default.png',
                 ]
             );
         }
