@@ -107,7 +107,6 @@ class DatabaseSeeder extends Seeder
                     'Harga' => $product['harga'],
                     'Stok' => $product['stok'],
                     'Satuan' => $product['satuan'],
-                    'Gambar' => 'produk/default.png',
                 ]
             );
         }

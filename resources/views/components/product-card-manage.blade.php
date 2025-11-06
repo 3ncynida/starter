@@ -19,15 +19,26 @@
       <span class="pointer-events-none absolute left-2 top-2 rounded-md bg-orange-500 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">Habis</span>
     @endif
 
+    {{-- PROMO badge --}}
+    @if($product->harga_aktif < $product->Harga)
+        @php
+            $persenDiskon = round((($product->Harga - $product->harga_aktif) / $product->Harga) * 100);
+        @endphp
+        <span class="pointer-events-none absolute right-2 top-2 rounded-md bg-red-500 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
+            Diskon -{{ $persenDiskon }}%
+        </span>
+    @endif
+
     @if(!empty($product->Gambar))
       <img
         src="{{ asset('storage/' . $product->Gambar) }}"
         alt="{{ $product->NamaProduk }}"
         class="mx-auto h-full object-contain {{ $isOut ? 'opacity-60 grayscale' : '' }}"
+        onerror="this.onerror=null;this.src='/produk/default.png'"
       />
     @else
       <img
-        src="{{ asset('/placeholder.svg?height=160&width=240') }}"
+        src="/produk/default.png"
         alt="{{ $product->NamaProduk }}"
         class="mx-auto h-full object-contain {{ $isOut ? 'opacity-60 grayscale' : '' }}"
       />
@@ -46,9 +57,18 @@
       <p class="mt-1 text-xs text-gray-500">Stok: <span class="font-medium text-gray-700">{{ $product->Stok }}</span> {{ $product->Satuan }}</p>
     @endif
 
-    <p class="mt-2 text-lg font-bold text-gray-900">
-      Rp {{ number_format($product->Harga, 0, ',', '.') }}
-    </p>
+    @if($product->harga_aktif < $product->Harga)
+        <p class="mt-2 text-sm line-through text-gray-500">
+            Rp {{ number_format($product->Harga, 0, ',', '.') }}
+        </p>
+        <p class="text-lg font-bold text-red-600">
+            Rp {{ number_format($product->harga_aktif, 0, ',', '.') }}
+        </p>
+    @else
+        <p class="mt-2 text-lg font-bold text-gray-900">
+            Rp {{ number_format($product->Harga, 0, ',', '.') }}
+        </p>
+    @endif
   </div>
 
   {{-- Aksi --}}

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class ProdukController extends Controller
 {
@@ -57,7 +59,7 @@ class ProdukController extends Controller
         if ($request->hasFile('Gambar')) {
             $validated['Gambar'] = $request->file('Gambar')->store('produk', 'public');
         } else {
-            $validated['Gambar'] = 'produk/default.webp';
+            $validated['Gambar'] = 'produk/default.png';
         }
 
         // Simpan produk
