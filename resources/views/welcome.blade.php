@@ -73,7 +73,7 @@
                 <div class="flex items-center justify-between">
                     <!-- Logo -->
                     <div class="flex items-center">
-                        <span class="text-primary text-2xl font-bold">{{ env('APP_NAME') }}</span>
+                        <span class="text-primary text-2xl font-bold">{{ env('APP_COMPANY') }}</span>
                     </div>
 
                     <!-- Navigation Menu -->
@@ -142,10 +142,6 @@
                                 Discover the finest selection of fresh, seasonal fruits delivered right to your doorstep.
                                 Experience premium quality and taste that nature has to offer.
                             </p>
-                            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                                <a href="#about" class="btn-primary text-center">Lihat Keunggulan</a>
-                                <a href="{{ Route::has('login') ? route('login') : '#about' }}" class="btn-secondary text-center">Masuk</a>
-                            </div>
                             <div class="mt-12 grid grid-cols-3 gap-8">
                                 <div class="text-center">
                                     <span class="block text-3xl font-bold text-primary">100+</span>
@@ -199,12 +195,41 @@
                 </div>
             </section>
 
+            <!-- Members Section -->
+            <section id="members" class="py-12 bg-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Daftar Member</h2>
+
+                    @if(isset($members) && $members->isNotEmpty())
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            @foreach($members as $member)
+                                <div class="bg-gray-50 rounded-lg p-4 flex items-center gap-4 border">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold">
+                                        {{ strtoupper(substr($member->NamaPelanggan, 0, 1)) }}
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-semibold text-gray-900">{{ $member->NamaPelanggan }}</h3>
+                                            <span class="text-xs text-gray-500">Member</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Sisa: <span class="font-medium text-green-600">{{ number_format($member->remaining_days, 0) }} hari</span></p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="p-6 bg-gray-50 rounded-lg">
+                            <p class="text-gray-600">Belum ada member aktif saat ini.</p>
+                        </div>
+                    @endif
+                </div>
+            </section>
+
             <!-- CTA Section -->
             <section class="py-14 bg-primary">
                 <div class="container mx-auto px-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-white">
                         <h3 class="text-2xl md:text-3xl font-semibold">Get fresh, premium fruits delivered today</h3>
-                        <a href="#about" class="btn-secondary bg-white text-gray-900 hover:bg-gray-100">Lihat Keunggulan</a>
                     </div>
                 </div>
             </section>

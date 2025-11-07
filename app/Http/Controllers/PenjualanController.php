@@ -18,8 +18,6 @@ class PenjualanController extends Controller
         $penjualan = Penjualan::with('pelanggan')->get();
         $pelanggan = Pelanggan::orderBy('NamaPelanggan')->get(); // ambil data pelanggan
 
-        dd($products);
-
         return view('kasir.penjualan.index', compact('products', 'penjualan', 'pelanggan', 'allProducts'));
     }
 

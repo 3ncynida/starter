@@ -3,10 +3,18 @@
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PelangganController;
+use App\Models\Pelanggan;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/", function () {
-    return view("welcome");
+    // Tampilkan daftar member aktif ke halaman welcome
+    $members = Pelanggan::where('is_member', true)
+                ->whereNotNull('member_expired')
+                ->where('member_expired', '>', now())
+                ->orderBy('member_expired', 'asc')
+                ->get();
+
+    return view("welcome", compact('members'));
 })->name("welcome");
 
 Route::get('/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
