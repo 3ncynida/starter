@@ -10,9 +10,33 @@ class PelangganController extends Controller
     public function index()
     {
         $pelanggan = Pelanggan::all();
+        // Update status membership untuk semua pelanggan
+        foreach ($pelanggan as $p) {
+            $p->checkMembershipStatus();
+        }
         $diskon = \App\Models\Setting::get('diskon_member', 0);
 
         return view('admin.pelanggan.index', compact('pelanggan', 'diskon'));
+    }
+
+    public function activateMember($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+        $pelanggan->activateMembership();
+
+        return redirect()
+            ->route('pelanggan.index')
+            ->with('success', 'Membership berhasil diaktifkan untuk ' . $pelanggan->NamaPelanggan);
+    }
+
+    public function deactivateMember($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+        $pelanggan->deactivateMembership();
+
+        return redirect()
+            ->route('pelanggan.index')
+            ->with('success', 'Membership berhasil dinonaktifkan untuk ' . $pelanggan->NamaPelanggan);
     }
 
     public function create()

@@ -65,6 +65,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Alamat</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telepon</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Member</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
         </x-slot>
 
@@ -75,18 +76,70 @@
                 <td class="px-6 py-4">{{ $item->Alamat }}</td>
                 <td class="px-6 py-4">{{ $item->NomorTelepon }}</td>
                 <td class="px-6 py-4">
-                    <a href="{{ route('pelanggan.edit', $item->PelangganID) }}" class="text-blue-600 hover:text-blue-900">Edit</a> ||
+                    @if($item->is_member)
+                        @if($item->checkMembershipStatus())
+                            <div class="flex flex-col">
+                                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                    Member Aktif
+                                </span>
+<span class="text-xs text-gray-500 mt-1">
+    Sisa {{ number_format($item->remaining_days, 0) }} hari
+</span>
 
-                    <form action="{{ route('pelanggan.destroy', $item->PelangganID) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
-                    </form>
+                            </div>
+                        @else
+                            <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                                Kadaluarsa
+                            </span>
+                        @endif
+                    @else
+                        <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/20">
+                            Non-Member
+                        </span>
+                    @endif
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('pelanggan.edit', $item->PelangganID) }}" 
+                           class="px-2 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700">
+                            Edit
+                        </a>
+                        
+                        @if(!$item->is_member || !$item->checkMembershipStatus())
+                            <form action="{{ route('pelanggan.activate-member', $item->PelangganID) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" 
+                                        class="px-2 py-1 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700">
+                                    Aktifkan Member
+                                </button>
+                            </form>
+                        @else
+                            <form action="{{ route('pelanggan.deactivate-member', $item->PelangganID) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" 
+                                        class="px-2 py-1 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700">
+                                    Nonaktifkan
+                                </button>
+                            </form>
+                        @endif
+
+                        <form action="{{ route('pelanggan.destroy', $item->PelangganID) }}" 
+                              method="POST" 
+                              class="inline" 
+                              onsubmit="return confirm('Yakin ingin menghapus {{ $item->NamaPelanggan }}?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700">
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
-            @empty
+        @empty
             <tr>
-                <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
                     Tidak ada Pelanggan.
                 </td>
             </tr>

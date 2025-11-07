@@ -88,7 +88,6 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tanggal</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Pelanggan</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Total</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200">
@@ -103,11 +102,6 @@
 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
     Rp {{ number_format($sale->total, 0, ',', '.') }}
 </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-700">
-                                                Selesai
-                                            </span>
-                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -149,7 +143,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="text-sm font-medium text-slate-900">Rp {{ number_format($product->Harga, 0, ',', '.') }}</p>
+                                    <div class="flex flex-col items-end min-w-[120px]">
+                                        @if(isset($product->harga_aktif) && $product->harga_aktif !== null && $product->harga_aktif < $product->Harga)
+                                            @php
+                                                $persenDiskon = round((($product->Harga - $product->harga_aktif) / $product->Harga) * 100);
+                                            @endphp
+                                            <span class="text-xs font-bold text-red-600 mb-1">Diskon -{{ $persenDiskon }}%</span>
+                                            <span class="text-sm line-through text-gray-400 block">Rp {{ number_format($product->Harga, 0, ',', '.') }}</span>
+                                            <span class="text-lg font-bold text-red-600 block">Rp {{ number_format($product->harga_aktif, 0, ',', '.') }}</span>
+                                        @else
+                                            <span class="text-lg font-bold">Rp {{ number_format($product->Harga, 0, ',', '.') }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             @endforeach
                                 @endif

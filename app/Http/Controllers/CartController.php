@@ -104,8 +104,14 @@ class CartController extends Controller
     // Hitung subtotal dari cart (harga sudah termasuk diskon promo)
     $subtotal = collect($cart)->sum(fn($item) => $item['harga'] * $item['qty']);
 
-    // Hitung diskon member (jika ada)
-    $diskonPersenMember = $pelangganId ? \App\Models\Setting::get('diskon_member', 0) : 0;
+    // Hitung diskon member (jika ada dan membership masih aktif)
+    $diskonPersenMember = 0;
+    if ($pelangganId) {
+        $pelanggan = \App\Models\Pelanggan::find($pelangganId);
+        if ($pelanggan && $pelanggan->checkMembershipStatus()) {
+            $diskonPersenMember = \App\Models\Setting::get('diskon_member', 0);
+        }
+    }
     $diskonNominalMember = ($subtotal * $diskonPersenMember) / 100;
 
     // Total akhir
