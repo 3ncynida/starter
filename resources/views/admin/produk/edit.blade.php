@@ -63,6 +63,8 @@
                 <option value="kg">Kg</option>
                 <option value="pack">Pack</option>
                 <option value="dus">Dus</option>
+                <option value="sisir">Sisir</option>
+
             </select>
         <x-input-error class="mt-2" :messages="$errors->get('Satuan')" />
     </div>
