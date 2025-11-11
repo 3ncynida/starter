@@ -7,8 +7,7 @@
 @endphp
 
 <div
-  // add conditional border color when habis and data-stock for future filters
-  class="product-card group rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md focus-within:shadow-md {{ $isOut ? 'border-orange-300' : 'border-gray-200' }}"
+  class="product-card flex flex-col h-full group rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md focus-within:shadow-md {{ $isOut ? 'border-orange-300' : 'border-gray-200' }}"
   data-name="{{ strtolower($product->NamaProduk) }}"
   data-stock="{{ (int)($product->Stok ?? 0) }}"
 >
@@ -72,28 +71,43 @@
   </div>
 
   {{-- Aksi --}}
-  <div class="mt-4 flex items-center gap-2">
+  <div class="mt-auto flex gap-2 pt-4">
     <a
       href="{{ route('produk.edit', $product->ProdukID) }}"
-      class="inline-flex w-full items-center justify-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
       aria-label="Edit {{ $product->NamaProduk }}"
     >
+     <button
+        class="w-full inline-flex items-center justify-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+        aria-label="Hapus {{ $product->NamaProduk }}"
+      >
+      {{-- pencil icon --}}
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828zM4 14.5V17h2.5l8.377-8.377-2.5-2.5L4 14.5z" />
+      </svg>
       Edit
+      </button>
+
     </a>
 
     <form
       action="{{ route('produk.destroy', $product->ProdukID) }}"
       method="POST"
-      class="w-full"
+      class="flex-1"
       onsubmit="return confirm('Yakin ingin menghapus {{ $product->NamaProduk }}?')"
     >
       @csrf
       @method('DELETE')
       <button
         type="submit"
-        class="inline-flex w-full items-center justify-center rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+        class="w-full inline-flex items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
         aria-label="Hapus {{ $product->NamaProduk }}"
       >
+        {{-- trash icon --}}
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8 9a1 1 0 012 0v6a1 1 0 11-2 0V9zm4 0a1 1 0 10-2 0v6a1 1 0 102 0V9z" clip-rule="evenodd" />
+          <path d="M5 6h10l-.867 9.144A2 2 0 0111.142 17H8.858a2 2 0 01-1.991-1.856L6 6z" />
+          <path d="M9 4a1 1 0 011-1h0a1 1 0 011 1h3a1 1 0 110 2H6a1 1 0 110-2h3z" />
+        </svg>
         Hapus
       </button>
     </form>

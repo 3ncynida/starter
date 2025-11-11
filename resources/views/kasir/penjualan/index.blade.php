@@ -50,9 +50,18 @@
 
                 {{-- 🖼️ Gambar produk --}}
                 <div class="aspect-square relative">
-                    <img class="w-full h-full object-cover {{ $product->Stok < 1 ? 'opacity-50' : '' }}" 
-                         src="{{ asset('storage/' . $product->Gambar) }}" 
-                         alt="{{ $product->NamaProduk }}" />
+    @if(!empty($product->Gambar))
+      <img
+        src="{{ asset('storage/' . $product->Gambar) }}"
+        alt="{{ $product->NamaProduk }}"
+        onerror="this.onerror=null;this.src='/produk/default.png'"
+      />
+    @else
+      <img
+        src="/produk/default.png"
+        alt="{{ $product->NamaProduk }}"
+      />
+    @endif
 
                     @if($product->Stok < 1)
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -227,12 +236,14 @@
 
                         <div>
                             <label for="uang_tunai" class="block text-sm font-medium text-gray-700">Uang Tunai (Rp)</label>
-                            <input type="number"
+                            <input type="text"
                                 name="UangTunai"
                                 id="uang_tunai"
+                                inputmode="numeric"
+                                autocomplete="off"
                                 class="w-full rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black py-2 px-3"
                                 placeholder="Masukkan nominal uang..."
-                                min="0" required>
+                                required>
                         </div>
                         <!-- Kembalian -->
                         <div>
@@ -281,10 +292,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkoutForm = document.getElementById('checkout-form');
     const total = parseFloat(totalEl.dataset.total || 0);
 
-    // Update kembalian saat user mengetik
+    const parseRupiahToNumber = (str) => {
+        if (!str) return 0;
+        // Remove all non-digit characters
+        const digits = String(str).replace(/[^0-9-]/g, '');
+        return Number(digits) || 0;
+    };
+
+    const formatNumberRupiah = (num) => {
+        if (num === 0 || num === null || typeof num === 'undefined') return '';
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
+
+    // Update kembalian saat user mengetik (format input as Rupiah)
     uangInput?.addEventListener('input', e => {
-        const uang = parseFloat(e.target.value || 0);
-        const kembalian = uang - total;
+        const raw = parseRupiahToNumber(e.target.value);
+        // reformat the input with thousand separators
+        e.target.value = raw ? formatNumberRupiah(raw) : '';
+
+        const kembalian = raw - total;
         kembalianDisplay.textContent = 'Rp ' + (kembalian > 0 ? kembalian.toLocaleString('id-ID') : 0);
         kembalianDisplay.classList.toggle('text-red-600', kembalian < 0);
         kembalianDisplay.classList.toggle('text-green-600', kembalian >= 0);
@@ -292,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🚨 Cek uang tunai sebelum submit
     checkoutForm?.addEventListener('submit', e => {
-        const uang = parseFloat(uangInput.value || 0);
+        const uang = parseRupiahToNumber(uangInput.value);
         if (uang < total) {
             e.preventDefault();
 
@@ -304,7 +330,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmButtonColor: '#dc2626',
                 confirmButtonText: 'Oke, saya perbaiki'
             });
+            return;
         }
+
+        // Before submit, set the input to raw numeric value (no separators)
+        uangInput.value = parseRupiahToNumber(uangInput.value);
     });
 });
 

@@ -66,7 +66,10 @@ Route::prefix("cart")->group(function () {
 
 // Route untuk gambar default produk
 Route::get('/produk/default.png', function() {
-    return response()->file(public_path('storage/produk/default.png'));
+    $path = public_path('produk/default.png');
+    if(!file_exists($path)) $path = public_path('storage/produk/default.png');
+    if(!file_exists($path)) abort(404);
+    return response()->file($path, ['Content-Type' => 'image/png']);
 });
 
 require __DIR__.'/auth.php';

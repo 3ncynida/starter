@@ -99,10 +99,12 @@
                     @endif
                 </td>
                 <td class="px-6 py-4">
-                    <div class="flex items-center gap-2">
-                        <a href="{{ route('pelanggan.edit', $item->PelangganID) }}" 
-                           class="px-2 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700">
+                    <div class="flex gap-2">
+                        <a href="{{ route('pelanggan.edit', $item->PelangganID) }}">
+                            <button
+                                    class="px-2 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700">
                             Edit
+                            </button>
                         </a>
                         
                         @if(!$item->is_member || !$item->checkMembershipStatus())

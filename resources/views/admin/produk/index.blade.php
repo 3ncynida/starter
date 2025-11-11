@@ -1,34 +1,42 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Daftar Produk') }}
-        </h2>
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="font-bold text-2xl text-gray-900">{{ __('Daftar Produk') }}</h2>
+                <p class="text-sm text-gray-600 mt-1">Kelola dan pantau seluruh produk Anda</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-6">
+    <div class="py-8">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             
             {{-- Toolbar: Tambah + Pencarian --}}
-            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <a href="{{ route('produk.create') }}"
-                    class="inline-flex items-center gap-1 rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/80">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="h-4 w-4">
+                    class="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="h-5 w-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-                    Tambah Produk
+                    <span>Tambah Produk</span>
                 </a>
 
                 {{-- Search --}}
-                <div class="relative">
+                <div class="relative flex-1 sm:max-w-xs">
                     <label for="product-search" class="sr-only">Cari produk</label>
+                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
+                        </svg>
+                    </div>
                     <input type="search" id="product-search" placeholder="Cari produk..."
-                        class="w-full rounded-lg border-gray-300 px-4 py-2 text-sm focus:border-black focus:ring-black sm:w-64" />
+                        class="w-full rounded-lg border border-gray-200 bg-white pl-10 pr-4 py-2.5 text-sm placeholder-gray-500 transition focus:border-black focus:ring-2 focus:ring-black/10" />
                 </div>
             </div>
 
             {{-- Grid Produk --}}
-            <div id="productGrid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+            <div id="productGrid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 auto-rows-fr">
                 @foreach($produks as $produk)
                 @php
                     $isPromo = $produk->Promosi && now()->between($produk->TanggalMulaiPromosi, $produk->TanggalSelesaiPromosi);
@@ -42,7 +50,7 @@
             </div>
 
             {{-- Pagination --}}
-            <div class="mt-6">
+            <div class="mt-8">
                 {{ $produks->links() }}
             </div>
         </div>
@@ -58,50 +66,51 @@
             const productGrid = document.getElementById('productGrid');
             const products = {!! $productsJson !!};
 
-            const template = product => `
-                <div class="flex flex-col h-full">
-                    <div class="product-card group rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md focus-within:shadow-md" data-name="${product.NamaProduk.toLowerCase()}">
-                        <div class="relative h-40 w-full overflow-hidden rounded-lg bg-gray-50">
-                            <img src="/storage/${product.Gambar}" 
-                                 alt="${product.NamaProduk}"
-                                 class="mx-auto h-full object-contain"
-                                 onerror="this.onerror=null;this.src='/produk/default.png'">
-                        </div>
+const template = product => `
+                <div class="flex flex-col h-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-lg hover:border-gray-300 focus-within:shadow-lg" data-name="${product.NamaProduk.toLowerCase()}">
+                    <div class="relative h-40 w-full overflow-hidden rounded-lg bg-gray-50">
+                        <img src="/storage/${product.Gambar}" 
+                             alt="${product.NamaProduk}"
+                             class="mx-auto h-full object-contain"
+                             onerror="this.onerror=null;this.src='/produk/default.png'">
+                    </div>
 
-                        <div class="mt-4">
-                            <h3 class="min-h-[2.75rem] text-sm font-semibold text-gray-900 line-clamp-2">${product.NamaProduk}</h3>
-                            <p class="mt-1 text-xs text-gray-500">
-                                Stok: <span class="font-medium text-gray-700">${product.Stok}</span> ${product.Satuan}
-                            </p>
-                            <p class="mt-2 text-lg font-bold text-gray-900">
-                                Rp ${Number(product.Harga).toLocaleString('id-ID')}
-                            </p>
-                        </div>
+                    <!-- Info section expands to fill available space -->
+                    <div class="mt-4 flex-1 flex flex-col justify-start">
+                        <h3 class="h-[2.75rem] text-sm font-semibold text-gray-900 line-clamp-2">${product.NamaProduk}</h3>
+                        <p class="mt-2 text-xs text-gray-600">
+                            Stok: <span class="font-bold text-gray-900">${product.Stok}</span> ${product.Satuan}
+                        </p>
+                        <p class="mt-3 text-lg font-bold text-gray-900">
+                            Rp ${Number(product.Harga).toLocaleString('id-ID')}
+                        </p>
+                    </div>
 
-                        <div class="mt-4 flex items-center gap-2">
-                            <a href="/produk/${product.ProdukID}/edit"
-                               class="inline-flex w-full items-center justify-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                                Edit
-                            </a>
-                            <form action="/produk/${product.ProdukID}"
-                                  method="POST"
-                                  class="w-full"
-                                  onsubmit="return confirm('Yakin ingin menghapus ' + product.NamaProduk + '?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        class="inline-flex w-full items-center justify-center rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                                    Hapus
-                                </button>
-                            </form>
-                        </div>
+                    <!-- Button container pushed to bottom with consistent height -->
+                    <div class="mt-4 flex gap-2">
+                        <a href="/produk/${product.ProdukID}/edit"
+                           class="flex-1 inline-flex items-center justify-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 active:scale-95 transition h-10">
+                            Edit
+                        </a>
+                        <form action="/produk/${product.ProdukID}"
+                              method="POST"
+                              class="flex-1"
+                              onsubmit="return confirm('Yakin ingin menghapus ${product.NamaProduk}?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    class="w-full h-10 inline-flex items-center justify-center rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 active:scale-95 transition">
+                                Hapus
+                            </button>
+                        </form>
                     </div>
                 </div>
             `;
 
+
             const filter = (term) => {
                 const q = term.toLowerCase().trim();
-                const paginationDiv = document.querySelector('.mt-6');
+                const paginationDiv = document.querySelector('.mt-8');
                 
                 if (paginationDiv) {
                     paginationDiv.style.display = 'none';
@@ -114,17 +123,18 @@
                 productGrid.innerHTML = filtered.length 
                     ? filtered.map(template).join('')
                     : `<div class="col-span-full">
-                           <div class="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center">
-                               <svg xmlns="http://www.w3.org/2000/svg" class="mb-2 h-10 w-10 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                           <div class="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="mb-3 h-12 w-12 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
                                </svg>
-                               <p class="text-sm text-gray-600">Tidak ada produk yang cocok dengan pencarian "${term}"</p>
+                               <p class="text-sm font-medium text-gray-700">Tidak ada produk yang cocok</p>
+                               <p class="text-xs text-gray-500 mt-1">Coba cari dengan kata kunci lain</p>
                            </div>
                        </div>`;
             };
 
             const resetSearch = () => {
-                const paginationDiv = document.querySelector('.mt-6');
+                const paginationDiv = document.querySelector('.mt-8');
                 if (paginationDiv) {
                     paginationDiv.style.display = 'block';
                 }
@@ -156,13 +166,4 @@
             });
         })();
     </script>
-
-    <style>
-        .price-container {
-            min-height: 3rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-    </style>
 </x-app-layout>
