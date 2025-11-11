@@ -88,7 +88,7 @@ const template = product => `
 
                     <!-- Button container pushed to bottom with consistent height -->
                     <div class="mt-4 flex gap-2">
-                        <a href="/produk/${product.ProdukID}/edit"
+                        <a href="/admin/produk/${product.ProdukID}/edit"
                            class="flex-1 inline-flex items-center justify-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 active:scale-95 transition h-10">
                             Edit
                         </a>
