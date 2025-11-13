@@ -49,28 +49,50 @@
                 @endif
 
                 {{-- 🖼️ Gambar produk --}}
-                <div class="aspect-square relative">
+<div class="aspect-square relative">
+    {{-- 🖼️ Gambar produk --}}
     @if(!empty($product->Gambar))
-      <img
-        src="{{ asset('storage/' . $product->Gambar) }}"
-        alt="{{ $product->NamaProduk }}"
-        onerror="this.onerror=null;this.src='/produk/default.png'"
-      />
+        <img
+            src="{{ asset('storage/' . $product->Gambar) }}"
+            alt="{{ $product->NamaProduk }}"
+            class="w-full h-full object-cover {{ $product->Stok < 1 ? 'opacity-50' : '' }}"
+            onerror="this.onerror=null;this.src='/produk/default.png'"
+        />
     @else
-      <img
-        src="/produk/default.png"
-        alt="{{ $product->NamaProduk }}"
-      />
+        <img
+            src="/produk/default.png"
+            alt="{{ $product->NamaProduk }}"
+            class="w-full h-full object-cover {{ $product->Stok < 1 ? 'opacity-50' : '' }}"
+        />
     @endif
 
-                    @if($product->Stok < 1)
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45">
-                                HABIS
-                            </span>
-                        </div>
-                    @endif
-                </div>
+    {{-- 🚫 Label HABIS --}}
+    @if($product->Stok < 1)
+        <div class="absolute inset-0 flex items-center justify-center">
+            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45 shadow-md">
+                HABIS
+            </span>
+        </div>
+    @endif
+
+    {{-- ⚠️ Label Stok Menipis --}}
+    @if($product->Stok > 0 && $product->Stok < 5)
+        <span class="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full shadow-md z-10 animate-pulse">
+            Menipis
+        </span>
+    @endif
+
+    {{-- 🔖 Label Promo --}}
+    @if($product->harga_aktif < $product->Harga)
+        @php
+            $persenDiskon = round((($product->Harga - $product->harga_aktif) / $product->Harga) * 100);
+        @endphp
+        <span class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md z-10">
+            Diskon -{{ $persenDiskon }}%
+        </span>
+    @endif
+</div>
+
 
                 {{-- 📦 Detail produk --}}
                 <div class="p-3 text-white">

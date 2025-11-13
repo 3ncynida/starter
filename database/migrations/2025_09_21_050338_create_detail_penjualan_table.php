@@ -27,7 +27,7 @@ return new class extends Migration
 
             $table->integer('JumlahProduk');
             $table->decimal('Subtotal', 10, 2);
-            $table->timestamps();
+            $table->timestamps();   
         });
     }
 

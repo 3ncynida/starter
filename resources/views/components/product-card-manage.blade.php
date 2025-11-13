@@ -28,6 +28,13 @@
         </span>
     @endif
 
+    {{-- ⚠️ Label Stok Menipis --}}
+    @if($product->Stok > 0 && $product->Stok < 5)
+        <span class="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full shadow-md z-10 animate-pulse">
+            Menipis
+        </span>
+    @endif
+
     @if(!empty($product->Gambar))
       <img
         src="{{ asset('storage/' . $product->Gambar) }}"
