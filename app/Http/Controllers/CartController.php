@@ -158,15 +158,22 @@ class CartController extends Controller
 }
 
 
-    public function setCustomer(Request $request)
-    {
-        $request->validate([
-            'pelanggan_id' => 'nullable|exists:pelanggan,PelangganID',
-        ]);
+// ... existing code ...
 
-        // Simpan ID pelanggan di session
-        session(['cart_customer' => $request->pelanggan_id]);
+public function setCustomer(Request $request)
+{
+    $request->validate([
+        'pelanggan_id' => 'nullable|exists:pelanggan,PelangganID',
+    ]);
 
-        return back()->with('success', 'Pelanggan berhasil dipilih');
+    // <CHANGE> Simpan ID pelanggan di session
+    session(['cart_customer' => $request->pelanggan_id]);
+
+    // <CHANGE> Return JSON untuk AJAX requests
+    if ($request->expectsJson()) {
+        return response()->json(['success' => true, 'message' => 'Pelanggan berhasil dipilih']);
     }
+
+    return back()->with('success', 'Pelanggan berhasil dipilih');
+}
 }
