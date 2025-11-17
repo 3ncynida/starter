@@ -24,33 +24,37 @@ class Pelanggan extends Model
         'member_expired' => 'datetime',
         'is_member' => 'boolean'
     ];
+    
+    // Method untuk mengecek status membership
+    public function checkMembershipStatus()
+    {
+        if ($this->is_member && $this->member_expired && $this->member_expired->isPast()) {
+            $this->is_member = false;
+            $this->save();
+        }
+        return $this->is_member;
+    }
 
+    // Method untuk mengaktifkan membership (1 BULAN)
     public function activateMembership()
     {
-        $this->member_start = now();
-        $this->member_expired = now()->addMonth();
         $this->is_member = true;
+        $this->member_expired = now()->addMonth(); // 1 bulan
         $this->save();
     }
 
+    // Method untuk menonaktifkan membership
     public function deactivateMembership()
     {
         $this->is_member = false;
+        $this->member_expired = null;
         $this->save();
     }
 
-    public function checkMembershipStatus()
+    // Method untuk mengecek apakah member aktif
+    public function isMemberActive()
     {
-        if (!$this->is_member || !$this->member_expired) {
-            return false;
-        }
-
-        if ($this->member_expired->isPast()) {
-            $this->deactivateMembership();
-            return false;
-        }
-
-        return true;
+        return $this->is_member && $this->member_expired && $this->member_expired->isFuture();
     }
 
     public function getRemainingDaysAttribute()

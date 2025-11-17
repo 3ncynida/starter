@@ -46,6 +46,11 @@ Route::prefix("admin")->middleware(["web", "auth", "role:admin"])->group(functio
 Route::resource("pelanggan", App\Http\Controllers\PelangganController::class);
 Route::post("/pelanggan/{id}/activate-member", [PelangganController::class, "activateMember"])->name("pelanggan.activate-member");
 Route::post("/pelanggan/{id}/deactivate-member", [PelangganController::class, "deactivateMember"])->name("pelanggan.deactivate-member");
+// Untuk update status member pelanggan
+Route::patch('/pelanggan/{id}/status', [PelangganController::class, 'updateStatus'])->name('pelanggan.update-status');
+
+// Untuk hapus pelanggan
+Route::delete('/pelanggan/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
 
 Route::resource("penjualan", App\Http\Controllers\PenjualanController::class)->middleware("role:kasir");
 Route::resource("detail-penjualan", App\Http\Controllers\DetailPenjualanController::class);

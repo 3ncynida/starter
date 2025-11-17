@@ -18,6 +18,16 @@
         <div class="min-h-screen bg-green-50">
             @include('layouts.navigation')
 
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <style>
+            .swal2-confirm {
+                background-color: #dc2626 !important;
+            }
+            .swal2-cancel {
+                background-color: #6b7280 !important;
+            }
+        </style>
+
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-white/70 backdrop-blur border-b border-green-100 sticky top-0 z-30" role="banner" aria-label="Header">
@@ -32,5 +42,62 @@
                 {{ $slot }}
             </main>
         </div>
+   <!-- SweetAlert Script -->
+        <script>
+            // Function untuk konfirmasi hapus
+            function confirmDelete(event, name) {
+                event.preventDefault();
+                const form = event.target.closest('form');
+                
+                Swal.fire({
+                    title: 'Hapus Pelanggan?',
+                    html: `Apakah Anda yakin ingin menghapus <strong>${name}</strong>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-xl',
+                        confirmButton: 'px-4 py-2 rounded-lg font-semibold',
+                        cancelButton: 'px-4 py-2 rounded-lg font-semibold'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+
+            // Function untuk konfirmasi ubah status member
+            function confirmStatusChange(event, name, currentStatus) {
+                event.preventDefault();
+                const form = event.target.closest('form');
+                const newStatus = currentStatus === 'Aktif' ? 'menonaktifkan' : 'mengaktifkan';
+                
+                Swal.fire({
+                    title: 'Ubah Status Member?',
+                    html: `Apakah Anda yakin ingin <strong>${newStatus}</strong> status member untuk <strong>${name}</strong>?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#059669',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: `Ya, ${newStatus}!`,
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-xl',
+                        confirmButton: 'px-4 py-2 rounded-lg font-semibold',
+                        cancelButton: 'px-4 py-2 rounded-lg font-semibold'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+        </script>
     </body>
 </html>
