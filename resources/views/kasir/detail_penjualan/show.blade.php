@@ -229,7 +229,7 @@
 
     <div id="receipt" class="print-only">
       <div class="center bold" style="text-transform: uppercase;">
-        {{ config('app.name', 'Toko') }}
+        {{ config('app.company', 'Toko') }}
       </div>
       <div class="center small muted">
         {{ config('app.company_address', 'Alamat Toko') }}
@@ -298,7 +298,7 @@
 
 @if($totalDiskonPromo > 0)
     <div class="row small">
-        <span>Promo</span>
+        <span>Promo Produk</span>
         <span>-{{ number_format($totalDiskonPromo, 0, ',', '.') }}</span>
     </div>
 @endif
