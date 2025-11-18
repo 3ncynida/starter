@@ -20,9 +20,18 @@ return new class extends Migration
                 ->constrained('pelanggan', 'PelangganID')
                 ->cascadeOnUpdate()
                 ->nullOnDelete();
+                
+    // Relasi ke User (Kasir)
+    $table->foreignId('user_id')
+        ->nullable() // ⛔ WAJIB! Karena onDelete('set null')
+        ->constrained('users', 'id')
+        ->cascadeOnUpdate()
+        ->nullOnDelete();
 
-            $table->timestamps();
+                $table->timestamps();
+                
         });
+
     }
 
     public function down(): void

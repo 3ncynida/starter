@@ -250,7 +250,7 @@
       </div>
       <div class="row small">
         <span>Kasir</span>
-        <span>{{ auth()->user()->name ?? '-' }}</span>
+<span>{{ $penjualan->user->name ?? '-' }}</span>
       </div>
 
       <hr>

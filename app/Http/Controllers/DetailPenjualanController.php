@@ -45,7 +45,7 @@ class DetailPenjualanController extends Controller
         $diskon = Setting::get('diskon_member', 0);
 
         // Ambil data penjualan beserta detail
-        $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan'])->findOrFail($id);
+        $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan', 'user'])->findOrFail($id);
 
         // Hitung subtotal
         $subtotal = $penjualan->detailPenjualan->sum('Subtotal');

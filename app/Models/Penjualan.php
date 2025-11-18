@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Models;
+use App\Models\DetailPenjualan;
+use App\Models\Pelanggan;
+use App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,12 +17,18 @@ class Penjualan extends Model
         'PenjualanID',
         'TanggalPenjualan',
         'TotalHarga',
+        'user_id',
         'PelangganID',
         'NamaPelanggan',
         'UangTunai',
         'Kembalian',
         'MetodePembayaran',
     ];
+
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id', 'id');
+}
 
     public function detailPenjualan()
     {
