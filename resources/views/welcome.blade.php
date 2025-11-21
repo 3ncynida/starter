@@ -399,13 +399,13 @@
 <div class="flex items-center space-x-2">
     <x-application-logo class="h-9 w-auto fill-current text-green-700" />
     <span class="text-2xl font-bold" style="color: var(--primary-color);">
-        Toko Buah Segar
+        {{ env('APP_COMPANY') }}
     </span>
 </div>
 
 
                     <!-- Navigation Menu -->
-                    <nav class="hidden md:flex space-x-8">
+                    <nav class="hidden md:flex space-x-5">
                         <a href="#home" style="color: var(--text-light);" class="hover:text-primary transition font-medium">Beranda</a>
                         <a href="#about" style="color: var(--text-light);" class="hover:text-primary transition font-medium">Tentang Kami</a>
                     </nav>
@@ -465,7 +465,6 @@
                             </p>
                             <div class="flex flex-col sm:flex-row gap-4 mb-12">
                                 <a href="#about" class="btn-primary text-center">Lihat Keunggulan</a>
-                                <a href="{{ Route::has('login') ? route('login') : '#about' }}" class="btn-secondary text-center">Masuk Sekarang</a>
                             </div>
                             <div class="grid grid-cols-3 gap-6">
                                 <div class="stat-item">
