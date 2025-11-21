@@ -21,7 +21,7 @@ class ProdukController extends Controller
         // Get paginated products for display
         $produks = Produk::when(
             request('q'),
-            fn ($q, $s) => $q->where('NamaProduk', 'like', "%$s%")
+            fn($q, $s) => $q->where('NamaProduk', 'like', "%$s%")
         )
             ->orderBy('NamaProduk')
             ->paginate(10)

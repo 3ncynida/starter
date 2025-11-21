@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use App\Models\DetailPenjualan;
 use App\Models\Pelanggan;
 use App\Models\User;
@@ -25,10 +26,10 @@ class Penjualan extends Model
         'MetodePembayaran',
     ];
 
-public function user()
-{
-    return $this->belongsTo(User::class, 'user_id', 'id');
-}
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
     public function detailPenjualan()
     {

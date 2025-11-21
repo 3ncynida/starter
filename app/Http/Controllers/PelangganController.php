@@ -21,11 +21,11 @@ class PelangganController extends Controller
         if ($request->has('member_status') && $request->member_status !== '') {
             if ($request->member_status === 'active') {
                 $query->where('is_member', true)
-                      ->where('member_expired', '>', now());
+                    ->where('member_expired', '>', now());
             } elseif ($request->member_status === 'inactive') {
                 $query->where(function ($q) {
                     $q->where('is_member', false)
-                      ->orWhere('member_expired', '<=', now());
+                        ->orWhere('member_expired', '<=', now());
                 });
             }
         }
@@ -35,8 +35,8 @@ class PelangganController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('NamaPelanggan', 'like', "%{$search}%")
-                  ->orWhere('NomorTelepon', 'like', "%{$search}%")
-                  ->orWhere('Alamat', 'like', "%{$search}%");
+                    ->orWhere('NomorTelepon', 'like', "%{$search}%")
+                    ->orWhere('Alamat', 'like', "%{$search}%");
             });
         }
 
@@ -70,17 +70,17 @@ class PelangganController extends Controller
     public function updateStatus($id)
     {
         $pelanggan = Pelanggan::findOrFail($id);
-        
+
         // Toggle status member
         $pelanggan->is_member = !$pelanggan->is_member;
-        
+
         // Jika diaktifkan, set expired date 1 BULAN dari sekarang
         if ($pelanggan->is_member) {
             $pelanggan->member_expired = \Carbon\Carbon::now()->addMonth();
         } else {
             $pelanggan->member_expired = null;
         }
-        
+
         $pelanggan->save();
 
         return back()->with('success', 'Status member berhasil diubah.');

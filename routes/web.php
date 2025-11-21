@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Route;
 Route::get("/", function () {
     // Tampilkan daftar member aktif ke halaman welcome
     $members = Pelanggan::where('is_member', true)
-                ->whereNotNull('member_expired')
-                ->where('member_expired', '>', now())
-                ->orderBy('member_expired', 'asc')
-                ->get();
+        ->whereNotNull('member_expired')
+        ->where('member_expired', '>', now())
+        ->orderBy('member_expired', 'asc')
+        ->get();
 
     return view("welcome", compact('members'));
 })->name("welcome");
@@ -70,11 +70,11 @@ Route::prefix("cart")->group(function () {
 });
 
 // Route untuk gambar default produk
-Route::get('/produk/default.png', function() {
+Route::get('/produk/default.png', function () {
     $path = public_path('produk/default.png');
-    if(!file_exists($path)) $path = public_path('storage/produk/default.png');
-    if(!file_exists($path)) abort(404);
+    if (!file_exists($path)) $path = public_path('storage/produk/default.png');
+    if (!file_exists($path)) abort(404);
     return response()->file($path, ['Content-Type' => 'image/png']);
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

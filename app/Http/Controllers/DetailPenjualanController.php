@@ -23,11 +23,11 @@ class DetailPenjualanController extends Controller
             $query->where(function ($q) use ($search) {
                 // Cari berdasarkan nama pelanggan
                 $q->whereHas('pelanggan', function ($q) use ($search) {
-                    $q->where('NamaPelanggan', 'like', '%'.$search.'%');
+                    $q->where('NamaPelanggan', 'like', '%' . $search . '%');
                 })
-                // atau berdasarkan nama produk
+                    // atau berdasarkan nama produk
                     ->orWhereHas('detailPenjualan', function ($q) use ($search) {
-                        $q->where('NamaProduk', 'like', '%'.$search.'%');
+                        $q->where('NamaProduk', 'like', '%' . $search . '%');
                     });
             });
         }
@@ -58,7 +58,7 @@ class DetailPenjualanController extends Controller
         $diskonPromo = $penjualan->detailPenjualan->sum(function ($detail) {
             return ($detail->DiskonPromoNominal ?? 0) * $detail->JumlahProduk;
         });
-        
+
         // Hitung rata-rata persen diskon
         $persenPromo = $penjualan->detailPenjualan->avg('DiskonPromoPersen') ?? 0;
 

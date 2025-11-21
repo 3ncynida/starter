@@ -24,7 +24,7 @@ class Pelanggan extends Model
         'member_expired' => 'datetime',
         'is_member' => 'boolean'
     ];
-    
+
     // Method untuk mengecek status membership
     public function checkMembershipStatus()
     {
