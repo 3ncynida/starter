@@ -132,7 +132,7 @@
                             @endphp
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <img src="{{ asset('storage/' . $product->Gambar) }}" alt="{{ $product->NamaProduk }}" class="w-12 h-12 rounded-lg object-cover">
+                                    <img src="{{ asset('storage/' . $product->Gambar) }}" alt="{{ $product->NamaProduk }}" class="w-12 h-12 rounded-lg object-cover" onerror="this.onerror=null;this.src='/produk/default.png'">
                                     <div class="ml-3">
                                         <p class="text-sm font-medium text-slate-900">{{ $product->NamaProduk }}</p>
                                         <p class="text-sm text-slate-500">{{ $product->total_sold }} terjual</p>
