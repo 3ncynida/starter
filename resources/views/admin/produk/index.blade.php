@@ -3,7 +3,6 @@
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="font-bold text-2xl text-gray-900">{{ __('Daftar Produk') }}</h2>
-                <p class="text-sm text-gray-600 mt-1">Kelola dan pantau seluruh produk Anda</p>
             </div>
         </div>
     </x-slot>

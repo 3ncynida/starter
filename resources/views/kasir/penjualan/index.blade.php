@@ -702,7 +702,8 @@
                         <div class="aspect-square w-full relative">
                             <img class="w-full h-full object-cover ${product.Stok < 1 ? 'opacity-50' : ''}" 
                                  src="/storage/${product.Gambar}" 
-                                 alt="${product.NamaProduk}" />
+                                 alt="${product.NamaProduk}" 
+                                 onerror="this.onerror=null;this.src='/produk/default.png'" />
                             ${product.Stok < 1 ? `
                                 <div class="absolute inset-0 flex items-center justify-center">
                                     <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45">
