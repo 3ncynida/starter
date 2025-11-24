@@ -7,6 +7,8 @@ use App\Models\Penjualan;
 use App\Models\Produk;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class DetailPenjualanController extends Controller
 {
@@ -107,4 +109,69 @@ class DetailPenjualanController extends Controller
             ->route('detail-penjualan.index')
             ->with('success', 'Detail penjualan berhasil diperbarui');
     }
+
+    public function cetakPDFPerBulan(Request $request)
+    {
+        $request->validate([
+            'bulan' => 'required|date_format:Y-m',
+        ]);
+
+        $bulan = $request->bulan;
+        $tanggalAwal = Carbon::parse($bulan)->startOfMonth();
+        $tanggalAkhir = Carbon::parse($bulan)->endOfMonth();
+
+        // Ambil data penjualan
+        $penjualan = Penjualan::with(['pelanggan', 'detailPenjualan', 'user'])
+            ->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
+            ->orWhereBetween('TanggalPenjualan', [$tanggalAwal, $tanggalAkhir])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Hitung statistik
+        $totalPenjualan = $penjualan->count();
+        $totalPendapatan = $penjualan->sum('TotalHarga');
+        $totalProdukTerjual = 0;
+        $produkTerjual = [];
+
+        foreach ($penjualan as $pj) {
+            foreach ($pj->detailPenjualan as $detail) {
+                $totalProdukTerjual += $detail->JumlahProduk;
+                
+                if (!isset($produkTerjual[$detail->ProdukID])) {
+                    $produkTerjual[$detail->ProdukID] = [
+                        'nama' => $detail->NamaProduk,
+                        'jumlah' => 0,
+                        'subtotal' => 0
+                    ];
+                }
+                $produkTerjual[$detail->ProdukID]['jumlah'] += $detail->JumlahProduk;
+                $produkTerjual[$detail->ProdukID]['subtotal'] += $detail->Subtotal;
+            }
+        }
+
+        // Urutkan produk terlaris
+        usort($produkTerjual, function($a, $b) {
+            return $b['jumlah'] - $a['jumlah'];
+        });
+
+        $data = [
+            'penjualan' => $penjualan,
+            'bulan' => $bulan,
+            'namaBulan' => Carbon::parse($bulan)->translatedFormat('F Y'),
+            'tanggalAwal' => $tanggalAwal->format('d/m/Y'),
+            'tanggalAkhir' => $tanggalAkhir->format('d/m/Y'),
+            'totalPenjualan' => $totalPenjualan,
+            'totalPendapatan' => $totalPendapatan,
+            'totalProdukTerjual' => $totalProdukTerjual,
+            'produkTerjual' => array_slice($produkTerjual, 0, 10),
+            'title' => 'Laporan Penjualan Bulanan'
+        ];
+
+        // ✅ Gunakan facade Pdf (bukan PDF)
+        $pdf = Pdf::loadView('kasir.detail_penjualan.cetak_pdf_bulanan', $data)
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan-penjualan-' . $bulan . '.pdf');
+    }
+
 }

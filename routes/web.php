@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PelangganController;
 use App\Models\Pelanggan;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DetailPenjualanController;
 
 Route::get("/", function () {
     // Tampilkan daftar member aktif ke halaman welcome
@@ -76,5 +77,12 @@ Route::get('/produk/default.png', function () {
     if (!file_exists($path)) abort(404);
     return response()->file($path, ['Content-Type' => 'image/png']);
 });
+
+Route::get('/detail-penjualan/{id}/cetak-pdf', [DetailPenjualanController::class, 'cetakPDF'])
+    ->name('detail-penjualan.cetak-pdf');
+    
+// routes/web.php
+Route::post('/detail-penjualan/cetak-pdf-bulanan', [DetailPenjualanController::class, 'cetakPDFPerBulan'])
+    ->name('detail-penjualan.cetak-pdf-bulanan');
 
 require __DIR__ . '/auth.php';
