@@ -60,160 +60,141 @@
     @endphp
 
     <script>
-(function() {
-    const input = document.getElementById('product-search');
-    const productGrid = document.getElementById('productGrid');
-    const products = @json($allProducts);
+        (function () {
+            const input = document.getElementById('product-search');
+            const productGrid = document.getElementById('productGrid');
+            const products = {!! $productsJson !!};
 
-    const template = product => {
-        // Logika promo berdasarkan tanggal
-        const isPromo = product.Promosi &&
-            new Date() >= new Date(product.TanggalMulaiPromosi) &&
-            new Date() <= new Date(product.TanggalSelesaiPromosi);
+const template = product => {
+    const isPromo = product.Promosi &&
+        new Date() >= new Date(product.TanggalMulaiPromosi) &&
+        new Date() <= new Date(product.TanggalSelesaiPromosi);
 
-        const hargaPromo = isPromo
-            ? product.Harga - (product.Harga * product.DiskonPersen / 100)
-            : null;
+    const hargaPromo = isPromo
+        ? product.Harga - (product.Harga * product.DiskonPersen / 100)
+        : null;
 
-        const isOutOfStock = product.Stok <= 0;
-        const stokMenipis = product.Stok > 0 && product.Stok < 5;
+    const isOutOfStock = product.Stok <= 0;
+    const stokMenipis = product.Stok > 0 && product.Stok < 5;
 
-        return `
-            <div class="product-card" data-name="${product.NamaProduk.toLowerCase()}">
-                <div class="bg-[#0f172a] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-                    
-                    <!-- LABEL DISKON -->
-                    ${isPromo ? `
-                        <span class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md z-10">
-                            Diskon ${product.DiskonPersen}%
-                        </span>
-                    ` : ''}
-                    
-                    <div class="aspect-square relative">
-                        <img class="w-full h-full object-cover ${isOutOfStock ? 'opacity-50' : ''}" 
-                             src="/storage/${product.Gambar}" 
-                             alt="${product.NamaProduk}" 
-                             onerror="this.onerror=null;this.src='/produk/default.png'" />
-                        
-                        <!-- LABEL HABIS -->
-                        ${isOutOfStock ? `
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45 shadow-md">
-                                    HABIS
-                                </span>
-                            </div>
-                        ` : ''}
-                        
-                        <!-- LABEL MENIPIS -->
-                        ${stokMenipis && !isOutOfStock ? `
-                            <span class="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full shadow-md z-10 animate-pulse">
-                                Menipis
-                            </span>
-                        ` : ''}
-                    </div>
+    // Hilangkan .00 dari persentase diskon
+    const diskonTampil = Math.round(product.DiskonPersen);
 
-                    <div class="p-3 text-white">
-                        <h3 class="text-base font-medium mb-0.5 truncate">${product.NamaProduk}</h3>
-                        <p class="text-xs mb-2 ${isOutOfStock ? 'text-red-400' : 'text-gray-400'}">
-                            Stok: ${product.Stok} ${product.Satuan}
-                        </p>
+return `
+<div class="flex flex-col h-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-lg hover:border-gray-300" data-name="${product.NamaProduk.toLowerCase()}">
+    
+    <!-- LABELS -->
+    <div class="relative w-full h-40 overflow-hidden rounded-lg bg-gray-50">
+        ${isPromo ? `
+        <span class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md z-10">
+            Diskon ${diskonTampil}%
+        </span>` : ''}
 
-                        <!-- HARGA -->
-                        ${isPromo ? `
-                            <p class="text-sm line-through text-gray-400">
-                                Rp ${Number(product.Harga).toLocaleString('id-ID')}
-                            </p>
-                            <p class="text-lg font-bold text-red-500">
-                                Rp ${Number(hargaPromo).toLocaleString('id-ID')}
-                            </p>
-                        ` : `
-                            <p class="text-lg font-bold">
-                                Rp ${Number(product.Harga).toLocaleString('id-ID')}
-                            </p>
-                        `}
-                    </div>
-                </div>
-                
-                <!-- FORM TAMBAH KE KERANJANG -->
-                <form action="/cart/add/${product.ProdukID}" method="POST" class="mt-2 flex gap-2">
-                    @csrf
-                    <input type="number" 
-                           name="qty" 
-                           value="1" 
-                           min="1" 
-                           max="${product.Stok}"
-                           class="w-20 rounded-lg border-gray-300 text-sm focus:ring-black focus:border-black">
-                    <button type="submit" 
-                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            ${isOutOfStock ? 'disabled' : ''}>
-                        <i class="fas fa-cart-plus mr-1"></i> Tambah
-                    </button>
-                </form>
-            </div>
-        `;
-    };
+        ${isOutOfStock ? `
+        <span class="absolute top-2 right-2 bg-gray-700 text-white text-xs px-2 py-1 rounded-md z-10">
+            Stok Habis
+        </span>` : ''}
 
-    // Search filter function
-    const filter = (term) => {
-        const q = (term || '').toLowerCase().trim();
+        ${stokMenipis && !isOutOfStock ? `
+        <span class="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-md z-10 animate-pulse">
+            Stok Menipis
+        </span>` : ''}
 
-        if (!q) {
-            showPaginated();
-            return;
-        }
+        <img src="/storage/${product.Gambar}" 
+             alt="${product.NamaProduk}"
+             class="mx-auto h-full object-contain"
+             onerror="this.onerror=null;this.src='/produk/default.png'">
+    </div>
 
-        // Hide pagination when searching
-        const paginationElement = document.querySelector('.mt-6');
-        if (paginationElement) {
-            paginationElement.style.display = 'none';
-        }
-
-        // Filter and display matching products
-        const filtered = products.filter(product =>
-            product.NamaProduk.toLowerCase().includes(q)
-        );
-
-        productGrid.innerHTML = filtered.map(template).join('');
-    };
-
-    // Function to show paginated view
-    const showPaginated = () => {
-        const paginationElement = document.querySelector('.mt-6');
-        if (paginationElement) {
-            paginationElement.style.display = 'block';
-        }
-        location.reload();
-    };
-
-    // Search input handler with debounce
-    let timeout;
-    input?.addEventListener('input', (e) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            const term = e.target.value;
-            if (!term) {
-                showPaginated();
-                return;
+    <!-- INFORMASI -->
+    <div class="mt-4 flex-1 flex flex-col justify-start">
+        <h3 class="h-[2.75rem] text-sm font-semibold text-gray-900 line-clamp-2">${product.NamaProduk}</h3>
+        <p class="mt-2 text-xs text-gray-600">
+            Stok: <span class="font-bold ${isOutOfStock ? 'text-red-600' : stokMenipis ? 'text-yellow-600' : 'text-gray-900'}">${product.Stok}</span> ${product.Satuan}
+        </p>
+        <p class="mt-3 text-lg font-bold text-gray-900">
+            ${isPromo 
+                ? `<span class="line-through text-gray-400 text-sm">Rp ${Number(product.Harga).toLocaleString('id-ID')}</span><br>
+                   Rp ${Number(hargaPromo).toLocaleString('id-ID')}`
+                : `Rp ${Number(product.Harga).toLocaleString('id-ID')}`
             }
-            filter(term);
-        }, 300);
-    });
+        </p>
+    </div>
 
-    // Keep existing keyboard shortcuts
-    window.addEventListener('keydown', (e) => {
-        if (e.key === '/' && document.activeElement !== input) {
-            e.preventDefault();
-            input?.focus();
-        }
-        if (e.altKey && (e.key.toLowerCase() === 'c')) {
-            const cb = document.getElementById('checkout-button');
-            if (cb) cb.focus();
-        }
-        if (e.key === 'Escape' && document.activeElement === input) {
-            input.value = '';
-            showPaginated();
-        }
-    });
-})();
+    <!-- AKSI -->
+    <div class="mt-4 flex gap-2">
+        <a href="/admin/produk/${product.ProdukID}/edit"
+           class="flex-1 inline-flex items-center justify-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700 active:scale-95 transition h-10">
+            Edit
+        </a>
+        <form action="/produk/${product.ProdukID}" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menghapus ${product.NamaProduk}?')">
+            @csrf
+            @method('DELETE')
+            <button type="submit"
+                class="w-full h-10 inline-flex items-center justify-center rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 active:scale-95 transition">
+                Hapus
+            </button>
+        </form>
+    </div>
+</div>
+`;
+};
+            const filter = (term) => {
+                const q = term.toLowerCase().trim();
+                const paginationDiv = document.querySelector('.mt-8');
+                
+                if (paginationDiv) {
+                    paginationDiv.style.display = 'none';
+                }
+
+                const filtered = products.filter(product =>
+                    product.NamaProduk.toLowerCase().includes(q)
+                );
+
+                productGrid.innerHTML = filtered.length 
+                    ? filtered.map(template).join('')
+                    : `<div class="col-span-full">
+                           <div class="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="mb-3 h-12 w-12 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
+                               </svg>
+                               <p class="text-sm font-medium text-gray-700">Tidak ada produk yang cocok</p>
+                               <p class="text-xs text-gray-500 mt-1">Coba cari dengan kata kunci lain</p>
+                           </div>
+                       </div>`;
+            };
+
+            const resetSearch = () => {
+                const paginationDiv = document.querySelector('.mt-8');
+                if (paginationDiv) {
+                    paginationDiv.style.display = 'block';
+                }
+                location.reload();
+            };
+
+            let timeout;
+            input?.addEventListener('input', (e) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    const term = e.target.value;
+                    if (!term) {
+                        resetSearch();
+                        return;
+                    }
+                    filter(term);
+                }, 300);
+            });
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement !== input) {
+                    e.preventDefault();
+                    input?.focus();
+                }
+                if (e.key === 'Escape' && document.activeElement === input) {
+                    input.value = '';
+                    resetSearch();
+                }
+            });
+        })();
     </script>
 </x-app-layout>

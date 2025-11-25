@@ -19,12 +19,9 @@
     @endif
 
     {{-- PROMO badge --}}
-    @if($product->harga_aktif < $product->Harga)
-        @php
-            $persenDiskon = round((($product->Harga - $product->harga_aktif) / $product->Harga) * 100);
-        @endphp
+    @if($product->DiskonPersen > 0)
         <span class="pointer-events-none absolute right-2 top-2 rounded-md bg-red-500 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
-            Diskon {{ $persenDiskon }}%
+            Diskon {{ number_format($product->DiskonPersen, 0) }}%
         </span>
     @endif
 
