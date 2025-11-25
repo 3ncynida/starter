@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('detail_penjualan', function (Blueprint $table) {
             $table->id('DetailID');
-
+            
             // Relasi ke Penjualan
             $table->foreignId('PenjualanID')
-                ->constrained('penjualan', 'PenjualanID')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
-
+            ->constrained('penjualan', 'PenjualanID')
+            ->cascadeOnUpdate()
+            ->cascadeOnDelete();
+            
             // Relasi ke Produk
             $table->unsignedBigInteger('ProdukID')->nullable();
             $table->foreign('ProdukID')
@@ -24,7 +24,15 @@ return new class extends Migration
                 ->on('produk')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-
+            $table->string('NamaProduk');
+            // harga per unit disimpan saat transaksi
+            $table->decimal('Harga', 14, 2)->default(0);
+            // diskon promo nominal per unit (jika ada)
+            $table->decimal('DiskonPromoNominal', 14, 2)->nullable();
+            // persen diskon promo saat transaksi (optional, buat informasi)
+            $table->decimal('DiskonPromoPersen', 5, 2)->nullable();
+            // (subtotal tetap ada)
+            
             $table->integer('JumlahProduk');
             $table->decimal('Subtotal', 10, 2);
             $table->timestamps();   

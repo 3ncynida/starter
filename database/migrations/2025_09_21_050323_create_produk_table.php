@@ -14,6 +14,12 @@ return new class extends Migration
             $table->decimal('Harga', 10, 2);
             $table->string('Satuan', 50);
             $table->integer('Stok');
+            // field untuk promo produk
+            $table->boolean('Promosi')->default(false); // true = produk sedang promo
+            $table->decimal('DiskonPersen', 5, 2)->nullable(); // misal 10.00 = 10%
+            $table->date('TanggalMulaiPromosi')->nullable();
+            $table->date('TanggalSelesaiPromosi')->nullable();
+            $table->string('Gambar')->default('produk/default.png');
             $table->timestamps();
         });
     }

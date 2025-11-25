@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id('PenjualanID');
             $table->date('TanggalPenjualan');
             $table->decimal('TotalHarga', 10, 2)->default(0);
+            $table->decimal('UangTunai', 15, 2)->nullable();
+            $table->decimal('Kembalian', 15, 2)->nullable();
             $table->decimal('Diskon', 10, 2)->default(0);
 
             // Relasi ke Pelanggan
@@ -20,6 +22,7 @@ return new class extends Migration
                 ->constrained('pelanggan', 'PelangganID')
                 ->cascadeOnUpdate()
                 ->nullOnDelete();
+            $table->string('NamaPelanggan')->nullable();
                 
     // Relasi ke User (Kasir)
     $table->foreignId('user_id')

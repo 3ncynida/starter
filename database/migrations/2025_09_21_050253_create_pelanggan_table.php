@@ -13,6 +13,9 @@ return new class extends Migration
             $table->string('NamaPelanggan', 255);
             $table->text('Alamat')->nullable();
             $table->string('NomorTelepon', 15)->nullable();
+            $table->timestamp('member_start')->nullable();
+            $table->timestamp('member_expired')->nullable();
+            $table->boolean('is_member')->default(false);
             $table->timestamps();
         });
     }

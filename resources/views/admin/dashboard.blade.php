@@ -143,18 +143,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex flex-col items-end min-w-[120px]">
-                                    @if(isset($product->harga_aktif) && $product->harga_aktif !== null && $product->harga_aktif < $product->Harga)
-                                        @php
-                                        $persenDiskon = round((($product->Harga - $product->harga_aktif) / $product->Harga) * 100);
-                                        @endphp
-                                        <span class="text-xs font-bold text-red-600 mb-1">Diskon -{{ $persenDiskon }}%</span>
-                                        <span class="text-sm line-through text-gray-400 block">Rp {{ number_format($product->Harga, 0, ',', '.') }}</span>
-                                        <span class="text-lg font-bold text-red-600 block">Rp {{ number_format($product->harga_aktif, 0, ',', '.') }}</span>
-                                        @else
-                                        <span class="text-lg font-bold">Rp {{ number_format($product->Harga, 0, ',', '.') }}</span>
-                                        @endif
-                                </div>
                             </div>
                             @endforeach
                             @endif
