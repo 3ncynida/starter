@@ -14,7 +14,7 @@
               <h3 class="mb-2 text-lg font-semibold text-gray-800">Informasi Penjualan</h3>
               <p class="text-gray-600">
                 <span class="font-medium">Tanggal:</span>
-                {{ \Carbon\Carbon::parse($penjualan->TanggalPenjualan)->format('d/m/Y H:i') }}
+                {{ \Carbon\Carbon::parse($penjualan->created_at)->setTimezone('Asia/Jakarta')->format('d/m/Y H:i') }} WIB
               </p>
               <p class="text-gray-600">
                 <span class="font-medium">Pelanggan:</span>

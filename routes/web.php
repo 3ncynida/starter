@@ -18,7 +18,7 @@ Route::get("/", function () {
     return view("welcome", compact('members'));
 })->name("welcome");
 
-Route::get('/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('dashboard');
 
 Route::get("/admin", function () {
     return "Halaman Admin";
