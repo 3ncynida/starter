@@ -13,7 +13,18 @@ class PenjualanController extends Controller
 {
     public function index()
     {
-        $allProducts = Produk::orderBy('NamaProduk')->get(); // For search functionality
+    $allProducts = Produk::select(
+        'ProdukID', 
+        'NamaProduk', 
+        'Gambar', 
+        'Harga', 
+        'Stok', 
+        'Satuan', 
+        'Promosi',
+        'TanggalMulaiPromosi',
+        'TanggalSelesaiPromosi',
+        'DiskonPersen'
+    )->get(); // For search functionality
         $products = Produk::orderBy('NamaProduk')->paginate(10)->withQueryString();
         $penjualan = Penjualan::with('pelanggan')->get();
         $pelanggan = Pelanggan::all();

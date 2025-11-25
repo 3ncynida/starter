@@ -68,7 +68,7 @@ class DatabaseSeeder extends Seeder
         // ====== SETTINGS DEFAULT ======
         Setting::firstOrCreate(
             ['key' => 'diskon_member'],
-            ['value' => '10'] // default diskon 10%
+            ['value' => '5'] // default diskon 5%
         );
 
         // ====== PRODUK DEFAULT ======

@@ -24,7 +24,7 @@
             $persenDiskon = round((($product->Harga - $product->harga_aktif) / $product->Harga) * 100);
         @endphp
         <span class="pointer-events-none absolute right-2 top-2 rounded-md bg-red-500 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
-            Diskon -{{ $persenDiskon }}%
+            Diskon {{ $persenDiskon }}%
         </span>
     @endif
 
