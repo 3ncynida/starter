@@ -43,19 +43,6 @@
                             <x-input-error class="mt-2" :messages="$errors->get('Stok')" />
                         </div>
 
-                        <!-- Satuan -->
-                        <div>
-                            <x-input-label for="Satuan" :value="__('Satuan')" />
-                            <select name="Satuan" id="Satuan" class="w-full border rounded p-2" required>
-                                <option value="pcs">Pcs</option>
-                                <option value="kg">Kg</option>
-                                <option value="pack">Pack</option>
-                                <option value="dus">Dus</option>
-                                <option value="sisir">Sisir</option>
-                            </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('Satuan')" />
-                        </div>
-
                         <!-- Gambar -->
                         <div>
                             <x-input-label for="Gambar" :value="__('Gambar Produk')" />

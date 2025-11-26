@@ -19,7 +19,6 @@ class PenjualanController extends Controller
         'Gambar', 
         'Harga', 
         'Stok', 
-        'Satuan', 
         'Promosi',
         'TanggalMulaiPromosi',
         'TanggalSelesaiPromosi',

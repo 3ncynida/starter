@@ -17,7 +17,6 @@ class Produk extends Model
         'NamaProduk',
         'Harga',
         'Stok',
-        'Satuan',
         'Gambar',
         'Promosi',
         'DiskonPersen',

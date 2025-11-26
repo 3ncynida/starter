@@ -73,26 +73,10 @@ class DatabaseSeeder extends Seeder
 
         // ====== PRODUK DEFAULT ======
         $products = [
-            ['nama' => 'Apel', 'harga' => 25000, 'stok' => 100, 'satuan' => 'kg'],
-            ['nama' => 'Jeruk Mandarin', 'harga' => 20000, 'stok' => 150, 'satuan' => 'kg'],
-            ['nama' => 'Pisang', 'harga' => 15000, 'stok' => 200, 'satuan' => 'sisir'],
-            ['nama' => 'Mangga', 'harga' => 30000, 'stok' => 80, 'satuan' => 'kg'],
-            ['nama' => 'Anggur', 'harga' => 45000, 'stok' => 50, 'satuan' => 'kg'],
-            ['nama' => 'Semangka', 'harga' => 18000, 'stok' => 30, 'satuan' => 'buah'],
-            ['nama' => 'Nanas', 'harga' => 12000, 'stok' => 60, 'satuan' => 'buah'],
-            ['nama' => 'Pir', 'harga' => 35000, 'stok' => 75, 'satuan' => 'kg'],
-            ['nama' => 'Melon', 'harga' => 22000, 'stok' => 40, 'satuan' => 'buah'],
-            ['nama' => 'Strawberry', 'harga' => 40000, 'stok' => 45, 'satuan' => 'pack'],
-            ['nama' => 'Kiwi', 'harga' => 50000, 'stok' => 35, 'satuan' => 'kg'],
-            ['nama' => 'Pepaya', 'harga' => 16000, 'stok' => 55, 'satuan' => 'buah'],
-            ['nama' => 'Jambu', 'harga' => 28000, 'stok' => 65, 'satuan' => 'kg'],
-            ['nama' => 'Salak', 'harga' => 15000, 'stok' => 90, 'satuan' => 'kg'],
-            ['nama' => 'Duku', 'harga' => 25000, 'stok' => 70, 'satuan' => 'kg'],
-            ['nama' => 'Rambutan', 'harga' => 18000, 'stok' => 85, 'satuan' => 'kg'],
-            ['nama' => 'Durian', 'harga' => 75000, 'stok' => 25, 'satuan' => 'buah'],
-            ['nama' => 'Alpukat', 'harga' => 32000, 'stok' => 60, 'satuan' => 'kg'],
-            ['nama' => 'Manggis', 'harga' => 28000, 'stok' => 75, 'satuan' => 'kg'],
-            ['nama' => 'Lemon', 'harga' => 45000, 'stok' => 40, 'satuan' => 'kg'],
+            ['nama' => 'Power Ranger', 'harga' => 25000, 'stok' => 100],
+            ['nama' => 'Ultraman', 'harga' => 20000, 'stok' => 150],
+            ['nama' => 'Yoyo', 'harga' => 15000, 'stok' => 200],
+            ['nama' => 'Gasing', 'harga' => 30000, 'stok' => 80],
         ];
 
         $pelanggan = \App\Models\Pelanggan::firstOrCreate(
@@ -106,7 +90,6 @@ class DatabaseSeeder extends Seeder
                 [
                     'Harga' => $product['harga'],
                     'Stok' => $product['stok'],
-                    'Satuan' => $product['satuan'],
                 ]
             );
         }

@@ -57,7 +57,7 @@
     @if($isOut)
       <p class="mt-1 text-xs font-medium text-orange-700">Stok: Habis</p>
     @else
-      <p class="mt-1 text-xs text-gray-500">Stok: <span class="font-medium text-gray-700">{{ $product->Stok }}</span> {{ $product->Satuan }}</p>
+      <p class="mt-1 text-xs text-gray-500">Stok: <span class="font-medium text-gray-700">{{ $product->Stok }}</span></p>
     @endif
 
     @if($product->harga_aktif < $product->Harga)

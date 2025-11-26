@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id('ProdukID');
             $table->string('NamaProduk', 255);
             $table->decimal('Harga', 10, 2);
-            $table->string('Satuan', 50);
             $table->integer('Stok');
             // field untuk promo produk
             $table->boolean('Promosi')->default(false); // true = produk sedang promo

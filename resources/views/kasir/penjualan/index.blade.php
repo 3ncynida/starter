@@ -75,7 +75,7 @@
                             <div class="p-3 text-white">
                                 <h3 class="text-base font-medium mb-0.5 truncate">{{ $product->NamaProduk }}</h3>
                                 <p class="text-xs mb-2 {{ $product->Stok < 1 ? 'text-red-400' : 'text-gray-400' }}">
-                                    Stok: {{ $product->Stok }} {{ $product->Satuan }}
+                                    Stok: {{ $product->Stok }}
                                 </p>
 
                                 {{-- 💰 Harga --}}
@@ -726,7 +726,7 @@
                     <div class="p-3 text-white">
                         <h3 class="text-base font-medium mb-0.5 truncate">${product.NamaProduk}</h3>
                         <p class="text-xs mb-2 ${stokHabis ? 'text-red-400' : 'text-gray-400'}">
-                            Stok: ${product.Stok} ${product.Satuan}
+                            Stok: ${product.Stok}
                         </p>
 
                         ${isPromo ? `

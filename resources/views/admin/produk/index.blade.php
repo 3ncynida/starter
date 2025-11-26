@@ -112,7 +112,7 @@
     <div class="mt-4 flex-1 flex flex-col justify-start">
         <h3 class="h-[2.75rem] text-sm font-semibold text-gray-900 line-clamp-2">${product.NamaProduk}</h3>
         <p class="mt-2 text-xs text-gray-600">
-            Stok: <span class="font-bold ${isOutOfStock ? 'text-red-600' : stokMenipis ? 'text-yellow-600' : 'text-gray-900'}">${product.Stok}</span> ${product.Satuan}
+            Stok: <span class="font-bold ${isOutOfStock ? 'text-red-600' : stokMenipis ? 'text-yellow-600' : 'text-gray-900'}">${product.Stok}</span>
         </p>
         <p class="mt-3 text-lg font-bold text-gray-900">
             ${isPromo 

@@ -55,19 +55,6 @@
                         <x-input-error :messages="$errors->get('Stok')" class="mt-2" />
                     </div>
 
-                    <!-- Satuan -->
-                    <div>
-                        <x-input-label for="Satuan" :value="__('Satuan')" />
-                        <select name="Satuan" id="Satuan" class="w-full border rounded p-2" required>
-                            <option value="pcs" {{ old('Satuan', $produk->Satuan) == 'pcs' ? 'selected' : '' }}>Pcs</option>
-                            <option value="kg" {{ old('Satuan', $produk->Satuan) == 'kg' ? 'selected' : '' }}>Kg</option>
-                            <option value="pack" {{ old('Satuan', $produk->Satuan) == 'pack' ? 'selected' : '' }}>Pack</option>
-                            <option value="dus" {{ old('Satuan', $produk->Satuan) == 'dus' ? 'selected' : '' }}>Dus</option>
-                            <option value="sisir" {{ old('Satuan', $produk->Satuan) == 'sisir' ? 'selected' : '' }}>Sisir</option>
-                        </select>
-                        <x-input-error class="mt-2" :messages="$errors->get('Satuan')" />
-                    </div>
-
                     <!-- Promosi -->
                     <div class="flex items-center mt-2">
                         <input type="hidden" name="Promosi" value="0">

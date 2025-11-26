@@ -163,7 +163,6 @@ class CartController extends Controller
             'TanggalPenjualan' => now(),
             'PelangganID' => $pelangganId,
             'user_id' => auth()->id(),
-            'NamaPelanggan' => $pelangganId ? \App\Models\Pelanggan::find($pelangganId)->NamaPelanggan : null,
             'TotalHarga' => $grandTotal,
             'DiskonMember' => $diskonNominalMember,
             'UangTunai' => $uangTunai,

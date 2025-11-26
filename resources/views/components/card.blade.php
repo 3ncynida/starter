@@ -28,7 +28,7 @@
         <div>
             <h3 class="text-sm font-medium truncate">{{ $product->NamaProduk }}</h3>
             <p class="text-xs {{ $product->Stok < 1 ? 'text-red-400' : 'text-gray-400' }}">
-                Stok: {{ $product->Stok }} {{ $product->Satuan }}
+                Stok: {{ $product->Stok }}
             </p>
         </div>
 

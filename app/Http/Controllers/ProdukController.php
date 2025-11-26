@@ -47,7 +47,6 @@ class ProdukController extends Controller
             'NamaProduk' => 'required|string|max:255|unique:produk,NamaProduk',
             'Harga' => 'required|numeric|min:0',
             'Stok' => 'required|integer|min:0',
-            'Satuan' => 'required|string|max:50',
             'Gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'Promosi' => 'nullable|boolean',
             'DiskonPersen' => 'nullable|numeric|min:0|max:100',
@@ -64,7 +63,6 @@ class ProdukController extends Controller
             'Stok.required' => 'Stok wajib diisi.',
             'Stok.integer' => 'Stok harus berupa bilangan bulat.',
             'Stok.min' => 'Stok tidak boleh kurang dari 0.',
-            'Satuan.required' => 'Satuan wajib diisi.',
             'Gambar.image' => 'File harus berupa gambar.',
             'Gambar.mimes' => 'Gambar harus berformat jpg, jpeg, png, atau webp.',
             'Gambar.max' => 'Ukuran gambar maksimal 2MB.',
@@ -124,7 +122,6 @@ class ProdukController extends Controller
             'DiskonPersen' => 'nullable|numeric|min:0|max:100',
             'TanggalMulaiPromosi' => 'nullable|date',
             'TanggalSelesaiPromosi' => 'nullable|date|after_or_equal:TanggalMulaiPromosi',
-            'Satuan' => 'required|string|max:50',
             'Gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ], [
             // Pesan error kustom dalam bahasa Indonesia
@@ -137,7 +134,6 @@ class ProdukController extends Controller
             'Stok.required' => 'Stok wajib diisi.',
             'Stok.integer' => 'Stok harus berupa bilangan bulat.',
             'Stok.min' => 'Stok tidak boleh kurang dari 0.',
-            'Satuan.required' => 'Satuan wajib diisi.',
             'Gambar.image' => 'File harus berupa gambar.',
             'Gambar.mimes' => 'Gambar harus berformat jpg, jpeg, png, atau webp.',
             'Gambar.max' => 'Ukuran gambar maksimal 2MB.',
