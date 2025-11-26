@@ -37,37 +37,37 @@
                         <div class="product-card" data-name="{{ strtolower($product->NamaProduk) }}">
                             <div class="bg-[#0f172a] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
 
+                                {{-- 🖼️ Gambar produk --}}
+                                <div class="aspect-square relative">
                                     {{-- 🖼️ Gambar produk --}}
-                                    <div class="aspect-square relative">
-                                        {{-- 🖼️ Gambar produk --}}
-                                        <img
-                                            src="{{ asset('storage/' . $product->Gambar) }}"
-                                            alt="{{ $product->NamaProduk }}"
-                                            class="w-full h-full object-cover {{ $product->Stok < 1 ? 'opacity-50' : '' }}"
-                                            onerror="this.onerror=null;this.src='/produk/default.png'" />
+                                    <img
+                                        src="{{ asset('storage/' . $product->Gambar) }}"
+                                        alt="{{ $product->NamaProduk }}"
+                                        class="w-full h-full object-cover {{ $product->Stok < 1 ? 'opacity-50' : '' }}"
+                                        onerror="this.onerror=null;this.src='/produk/default.png'" />
 
-                                        {{-- 🚫 Label HABIS --}}
-                                        @if($product->Stok < 1)
-                                            <div class="absolute inset-0 flex items-center justify-center">
-                                            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45 shadow-md">
-                                                HABIS
-                                            </span>
-                                    </div>
+                                    {{-- 🚫 Label HABIS --}}
+                                    @if($product->Stok < 1)
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold transform rotate-45 shadow-md">
+                                            HABIS
+                                        </span>
+                                </div>
+                                @endif
+
+                                {{-- ⚠️ Label Stok Menipis --}}
+                                @if($product->Stok > 0 && $product->Stok < 5)
+                                    <span class="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full shadow-md z-10 animate-pulse">
+                                    Menipis
+                                    </span>
                                     @endif
 
-                                    {{-- ⚠️ Label Stok Menipis --}}
-                                    @if($product->Stok > 0 && $product->Stok < 5)
-                                        <span class="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full shadow-md z-10 animate-pulse">
-                                        Menipis
-                                        </span>
-                                        @endif
-
-                                        {{-- 🔖 Label Promo --}}
-@if($product->DiskonPersen > 0)
-    <span class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md z-10">
-        Diskon {{ number_format($product->DiskonPersen, 0) }}%
-    </span>
-@endif
+                                    {{-- 🔖 Label Promo --}}
+                                    @if($product->DiskonPersen > 0)
+                                    <span class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md z-10">
+                                        Diskon {{ number_format($product->DiskonPersen, 0) }}%
+                                    </span>
+                                    @endif
                             </div>
 
 
@@ -676,23 +676,23 @@
                 });
             });
 
-(function() {
-    const input = document.getElementById('product-search');
-    const productGrid = document.querySelector('.grid');
-    const products = @json($allProducts);
+            (function() {
+                const input = document.getElementById('product-search');
+                const productGrid = document.querySelector('.grid');
+                const products = @json($allProducts);
 
-    const template = product => {
-        
-        // Coba beberapa kemungkinan nama field diskon
-        const diskonValue = product.DiskonPersen || 0;
-        const isPromo = diskonValue > 0;
-        const hargaAktif = isPromo ? Math.round(product.Harga - (product.Harga * diskonValue / 100)) : product.Harga;
-        const stokMenipis = product.Stok > 0 && product.Stok < 5;
-        const stokHabis = product.Stok < 1;
+                const template = product => {
 
-        const diskonTampil = parseInt(diskonValue);
+                    // Coba beberapa kemungkinan nama field diskon
+                    const diskonValue = product.DiskonPersen || 0;
+                    const isPromo = diskonValue > 0;
+                    const hargaAktif = isPromo ? Math.round(product.Harga - (product.Harga * diskonValue / 100)) : product.Harga;
+                    const stokMenipis = product.Stok > 0 && product.Stok < 5;
+                    const stokHabis = product.Stok < 1;
 
-        return `
+                    const diskonTampil = parseInt(diskonValue);
+
+                    return `
             <div class="product-card" data-name="${product.NamaProduk.toLowerCase()}">
                 <div class="bg-[#0f172a] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
                     
@@ -759,71 +759,71 @@
                 </form>
             </div>
         `;
-    };
+                };
 
-    // Search filter function
-    const filter = (term) => {
-        const q = (term || '').toLowerCase().trim();
+                // Search filter function
+                const filter = (term) => {
+                    const q = (term || '').toLowerCase().trim();
 
-        if (!q) {
-            showPaginated();
-            return;
-        }
+                    if (!q) {
+                        showPaginated();
+                        return;
+                    }
 
-        // Hide pagination when searching
-        const paginationElement = document.querySelector('.mt-6');
-        if (paginationElement) {
-            paginationElement.style.display = 'none';
-        }
+                    // Hide pagination when searching
+                    const paginationElement = document.querySelector('.mt-6');
+                    if (paginationElement) {
+                        paginationElement.style.display = 'none';
+                    }
 
-        // Filter and display matching products
-        const filtered = products.filter(product =>
-            product.NamaProduk.toLowerCase().includes(q)
-        );
+                    // Filter and display matching products
+                    const filtered = products.filter(product =>
+                        product.NamaProduk.toLowerCase().includes(q)
+                    );
 
-        console.log('Filtered products:', filtered);
-        productGrid.innerHTML = filtered.map(template).join('');
-    };
+                    console.log('Filtered products:', filtered);
+                    productGrid.innerHTML = filtered.map(template).join('');
+                };
 
-    // Function to show paginated view
-    const showPaginated = () => {
-        const paginationElement = document.querySelector('.mt-6');
-        if (paginationElement) {
-            paginationElement.style.display = 'block';
-        }
-        location.reload();
-    };
+                // Function to show paginated view
+                const showPaginated = () => {
+                    const paginationElement = document.querySelector('.mt-6');
+                    if (paginationElement) {
+                        paginationElement.style.display = 'block';
+                    }
+                    location.reload();
+                };
 
-    // Search input handler with debounce
-    let timeout;
-    input?.addEventListener('input', (e) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            const term = e.target.value;
-            if (!term) {
-                showPaginated();
-                return;
-            }
-            filter(term);
-        }, 300);
-    });
+                // Search input handler with debounce
+                let timeout;
+                input?.addEventListener('input', (e) => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        const term = e.target.value;
+                        if (!term) {
+                            showPaginated();
+                            return;
+                        }
+                        filter(term);
+                    }, 300);
+                });
 
-    // Keep existing keyboard shortcuts
-    window.addEventListener('keydown', (e) => {
-        if (e.key === '/' && document.activeElement !== input) {
-            e.preventDefault();
-            input?.focus();
-        }
-        if (e.altKey && (e.key.toLowerCase() === 'c')) {
-            const cb = document.getElementById('checkout-button');
-            if (cb) cb.focus();
-        }
-        if (e.key === 'Escape' && document.activeElement === input) {
-            input.value = '';
-            showPaginated();
-        }
-    });
-})();
+                // Keep existing keyboard shortcuts
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === '/' && document.activeElement !== input) {
+                        e.preventDefault();
+                        input?.focus();
+                    }
+                    if (e.altKey && (e.key.toLowerCase() === 'c')) {
+                        const cb = document.getElementById('checkout-button');
+                        if (cb) cb.focus();
+                    }
+                    if (e.key === 'Escape' && document.activeElement === input) {
+                        input.value = '';
+                        showPaginated();
+                    }
+                });
+            })();
         </script>
 
         <style>

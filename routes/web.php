@@ -6,6 +6,7 @@ use App\Http\Controllers\PelangganController;
 use App\Models\Pelanggan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DetailPenjualanController;
+use App\Http\Controllers\ProdukController;
 
 Route::get("/", function () {
     // Tampilkan daftar member aktif ke halaman welcome
@@ -81,5 +82,8 @@ Route::get('/produk/default.png', function () {
 // routes/web.php
 Route::post('/detail-penjualan/cetak-pdf-bulanan', [DetailPenjualanController::class, 'cetakPDFPerBulan'])
     ->name('detail-penjualan.cetak-pdf-bulanan');
+
+Route::post('/produk/{id}/mark-rotten', [ProdukController::class, 'markRotten'])->name('produk.mark-rotten');
+Route::post('/produk/{id}/unmark-rotten', [ProdukController::class, 'unmarkRotten'])->name('produk.unmark-rotten');
 
 require __DIR__ . '/auth.php';

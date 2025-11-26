@@ -26,9 +26,11 @@ class CartController extends Controller
         // Hitung total qty jika produk ditambahkan lagi
         $totalQty = $currentQty + $requestQty;
 
-        // Validasi stok sebelum menambahkan produk
-        if ($totalQty > $produk->Stok) {
-            return back()->with('error', 'Stok tidak mencukupi! Stok tersedia: '.$produk->Stok);
+        $stokBaik = $produk->Stok - ($produk->StokBusuk ?? 0);
+
+        // Validasi stok sebelum menambahkan produk - hanya stok baik yang bisa dijual
+        if ($totalQty > $stokBaik) {
+            return back()->with('error', 'Stok tidak mencukupi! Stok baik tersedia: '.$stokBaik);
         }
 
         // Simpan info promosi produk
@@ -48,6 +50,8 @@ class CartController extends Controller
             'harga' => $hargaSetelahDiskon,
             'qty' => $totalQty,
             'stok' => $produk->Stok,
+            'stok_busuk' => $produk->StokBusuk ?? 0,
+            'stok_baik' => $stokBaik,
             'promosi' => $promosi,
             'diskon_persen' => $diskonPersen,
         ];
@@ -89,8 +93,11 @@ class CartController extends Controller
 
         // Ambil data produk terbaru dari database untuk cek stok
         $produk = Produk::findOrFail($id);
-        if ($request->qty > $produk->Stok) {
-            return back()->with('error', 'Stok tidak mencukupi! Stok tersedia: '.$produk->Stok);
+        
+        $stokBaik = $produk->Stok - ($produk->StokBusuk ?? 0);
+        
+        if ($request->qty > $stokBaik) {
+            return back()->with('error', 'Stok tidak mencukupi! Stok baik tersedia: '.$stokBaik);
         }
 
         // Jika stok mencukupi, update qty di cart
@@ -143,6 +150,14 @@ class CartController extends Controller
             return back()->with('error', 'Uang tunai kurang dari total yang harus dibayar!');
         }
 
+        foreach ($cart as $productId => $item) {
+            $produk = Produk::find($productId);
+            $stokBaik = $produk->Stok - ($produk->StokBusuk ?? 0);
+            if ($item['qty'] > $stokBaik) {
+                return back()->with('error', 'Stok produk '.$item['nama'].' tidak mencukupi lagi!');
+            }
+        }
+
         // Buat record penjualan (header transaksi)
         $penjualan = \App\Models\Penjualan::create([
             'TanggalPenjualan' => now(),
@@ -169,7 +184,7 @@ class CartController extends Controller
                 'Subtotal' => $item['harga'] * $item['qty'],
             ]);
 
-            // Kurangi stok berdasarkan qty yang dibeli
+            // Kurangi stok berdasarkan qty yang dibeli (hanya stok baik)
             \App\Models\Produk::findOrFail($productId)->decrement('Stok', $item['qty']);
         }
 
