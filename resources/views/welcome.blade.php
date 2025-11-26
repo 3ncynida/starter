@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Selamat datang di Toko Buah Segar - Destinasi Anda untuk buah-buahan segar berkualitas tinggi. Kami menawarkan pilihan buah musiman yang luas dikirim segar ke pintu Anda.">
-    <meta name="keywords" content="toko buah, buah segar, buah organik, pengiriman buah, buah musiman">
-    <title>Toko Buah Segar - Buah-Buahan Premium Berkualitas Tinggi</title>
+    <meta name="description" content="Selamat datang di Toko Mainan Edukatif - Destinasi Anda untuk mainan berkualitas tinggi yang mendukung perkembangan anak. Kami menawarkan berbagai mainan edukatif yang aman dan menyenangkan.">
+    <meta name="keywords" content="toko mainan, mainan edukatif, mainan anak, mainan berkualitas, mainan perkembangan anak">
+    <title>Toko Mainan Edukatif - Mainan Berkualitas untuk Tumbuh Kembang Anak</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -16,13 +16,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        /* Updated color palette and design tokens for modern premium look */
+        /* Updated color palette for toy store theme */
         :root {
-            --primary-color: #22C55E;
-            --primary-dark: #16A34A;
-            --secondary-color: #FF8C42;
-            --secondary-dark: #E67E3C;
-            --accent-color: #06B6D4;
+            --primary-color: #3B82F6;
+            --primary-dark: #2563EB;
+            --secondary-color: #EF4444;
+            --secondary-dark: #DC2626;
+            --accent-color: #F59E0B;
             --text-color: #1F2937;
             --text-light: #6B7280;
             --light-bg: #F9FAFB;
@@ -68,15 +68,15 @@
             border: none;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
             display: inline-block;
             text-decoration: none;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
-            background: linear-gradient(135deg, var(--primary-dark) 0%, #15803D 100%);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1D4ED8 100%);
         }
 
         .btn-primary:active {
@@ -93,15 +93,15 @@
             border: none;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(255, 140, 66, 0.25);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
             display: inline-block;
             text-decoration: none;
         }
 
         .btn-secondary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 140, 66, 0.35);
-            background: linear-gradient(135deg, var(--secondary-dark) 0%, #D66B32 100%);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+            background: linear-gradient(135deg, var(--secondary-dark) 0%, #B91C1C 100%);
         }
 
         .btn-secondary:active {
@@ -136,7 +136,7 @@
         .icon-container {
             width: 3.5rem;
             height: 3.5rem;
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
             border-radius: 0.75rem;
             display: flex;
             align-items: center;
@@ -146,7 +146,7 @@
         }
 
         .feature-card:hover .icon-container {
-            background: linear-gradient(135deg, var(--primary-color) 0%, rgba(34, 197, 94, 0.8) 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, rgba(59, 130, 246, 0.8) 100%);
         }
 
         .feature-card:hover .icon-container svg {
@@ -404,12 +404,19 @@
             <div class="flex items-center justify-between">
                 <!-- Logo -->
                 <div class="flex items-center space-x-2">
-                    <x-application-logo class="h-9 w-auto fill-current text-green-700" />
+                    <!-- Logo Mainan SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="36" height="36" fill="currentColor">
+                        <rect x="20" y="28" width="24" height="24" rx="4" fill="#3b82f6"/>
+                        <rect x="26" y="16" width="12" height="12" rx="2" fill="#60a5fa"/>
+                        <circle cx="30" cy="22" r="1.5" fill="white"/>
+                        <circle cx="34" cy="22" r="1.5" fill="white"/>
+                        <line x1="32" y1="16" x2="32" y2="12" stroke="#1e40af" stroke-width="1.5"/>
+                        <circle cx="32" cy="10" r="1.5" fill="#ef4444"/>
+                    </svg>
                     <span class="text-2xl font-bold" style="color: var(--primary-color);">
-                        {{ env('APP_COMPANY') }}
+                        {{ env('APP_COMPANY', 'Toko Mainan') }}
                     </span>
                 </div>
-
 
                 <!-- Navigation Menu -->
                 <nav class="hidden md:flex space-x-5">
@@ -465,33 +472,33 @@
                     <!-- Hero Content -->
                     <div class="lg:w-1/2">
                         <h1 class="hero-title">
-                            Buah-Buahan Segar untuk <span class="highlight">Hidup Sehat</span>
+                            Mainan Edukatif untuk <span class="highlight">Tumbuh Kembang Anak</span>
                         </h1>
                         <p class="hero-description">
-                            Temukan pilihan terbaik buah-buahan segar dan musiman yang dikirim langsung ke pintu Anda. Rasakan kualitas premium dan rasa alami dari alam.
+                            Temukan berbagai mainan edukatif berkualitas tinggi yang aman dan menyenangkan untuk mendukung perkembangan kreativitas dan kecerdasan anak Anda.
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4 mb-12">
                             <a href="#about" class="btn-primary text-center">Lihat Keunggulan</a>
                         </div>
                         <div class="grid grid-cols-3 gap-6">
                             <div class="stat-item">
-                                <div class="stat-number">100+</div>
-                                <div class="stat-label">Jenis Buah</div>
+                                <div class="stat-number">500+</div>
+                                <div class="stat-label">Jenis Mainan</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">24/7</div>
-                                <div class="stat-label">Pengiriman</div>
+                                <div class="stat-number">100%</div>
+                                <div class="stat-label">Aman untuk Anak</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">5K+</div>
-                                <div class="stat-label">Pelanggan Puas</div>
+                                <div class="stat-number">10K+</div>
+                                <div class="stat-label">Orang Tua Puas</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Hero Image -->
                     <div class="lg:w-1/2">
-                        <img src="/placeholder.svg?height=400&width=600" alt="Rangkaian buah-buahan segar" class="rounded-xl shadow-2xl w-full h-auto">
+                        <img src="/placeholder.svg?height=400&width=600" alt="Koleksi mainan edukatif yang colorful" class="rounded-xl shadow-2xl w-full h-auto">
                     </div>
                 </div>
             </div>
@@ -501,8 +508,8 @@
         <section id="about" style="background: var(--light-bg);" class="py-20 lg:py-32">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16">
-                    <h2 class="text-3xl lg:text-4xl font-bold mb-4">Mengapa Memilih Kami</h2>
-                    <p class="text-lg" style="color: var(--text-light);">Rasakan kualitas terbaik buah-buahan dengan layanan premium kami</p>
+                    <h2 class="text-3xl lg:text-4xl font-bold mb-4">Mengapa Memilih Mainan Kami</h2>
+                    <p class="text-lg" style="color: var(--text-light);">Mainan berkualitas yang mendukung perkembangan optimal anak Anda</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
@@ -513,8 +520,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold mb-3">Kualitas Segar</h3>
-                        <p style="color: var(--text-light);">Kami memastikan semua buah-buahan kami segar, dipilih tangan, dan berkualitas tinggi.</p>
+                        <h3 class="text-xl font-semibold mb-3">Aman & Berkualitas</h3>
+                        <p style="color: var(--text-light);">Semua mainan kami terbuat dari bahan non-toxic dan telah lolos uji keamanan untuk anak-anak.</p>
                     </div>
 
                     <div class="feature-card">
@@ -523,8 +530,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold mb-3">Pengiriman Cepat</h3>
-                        <p style="color: var(--text-light);">Pengiriman ekspres 24/7 memastikan buah-buahan sampai ke tangan Anda dalam kondisi terbaik.</p>
+                        <h3 class="text-xl font-semibold mb-3">Edukatif & Menyenangkan</h3>
+                        <p style="color: var(--text-light);">Dirancang khusus untuk merangsang kreativitas, logika, dan perkembangan motorik anak.</p>
                     </div>
 
                     <div class="feature-card">
@@ -533,38 +540,38 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold mb-3">Harga Kompetitif</h3>
-                        <p style="color: var(--text-light);">Nikmati harga terbaik dengan kualitas premium tanpa mengorbankan kesegaran buah-buahan.</p>
+                        <h3 class="text-xl font-semibold mb-3">Harga Terjangkau</h3>
+                        <p style="color: var(--text-light);">Kualitas premium dengan harga yang ramah di kantong untuk semua kalangan.</p>
                     </div>
                 </div>
 
                 <!-- Detailed About Section -->
                 <div class="about-card">
-                    <h3 class="about-title">Tentang Toko Buah Segar</h3>
+                    <h3 class="about-title">Tentang Toko Mainan Edukatif</h3>
                     <p class="about-text">
-                        Toko Buah Segar adalah penyedia buah-buahan berkualitas tinggi yang berkomitmen untuk memberikan produk terbaik kepada pelanggan kami. Dengan pengalaman lebih dari 10 tahun di industri buah segar, kami memahami apa yang diinginkan pelanggan.
+                        Toko Mainan Edukatif adalah penyedia mainan berkualitas tinggi yang berkomitmen untuk memberikan produk terbaik yang mendukung tumbuh kembang anak. Dengan pengalaman lebih dari 8 tahun di industri mainan anak, kami memahami kebutuhan perkembangan anak di setiap usia.
                     </p>
                     <p class="about-text">
-                        Kami bekerja sama langsung dengan petani terpilih di berbagai daerah untuk memastikan setiap buah yang kami jual adalah yang terbaik. Setiap buah dipilih dengan cermat dan diproses dengan standar kebersihan tertinggi sebelum dikirim kepada Anda.
+                        Kami bekerja sama dengan ahli perkembangan anak dan produsen terpercaya untuk memastikan setiap mainan yang kami jual tidak hanya menyenangkan, tetapi juga mendukung perkembangan kognitif, motorik, dan sosial anak.
                     </p>
                     <p class="about-text">
-                        Misi kami adalah membuat hidup Anda lebih sehat dengan menyediakan akses mudah ke buah-buahan segar berkualitas premium. Kepuasan pelanggan adalah prioritas utama kami, dan kami selalu berusaha memberikan layanan terbaik.
+                        Misi kami adalah membantu orang tua dalam memberikan stimulasi yang tepat melalui mainan yang aman, edukatif, dan berkualitas. Setiap senyum anak adalah kebahagiaan bagi kami.
                     </p>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t" style="border-color: var(--border-color);">
                         <div class="stat-item">
-                            <div class="stat-number">10+</div>
+                            <div class="stat-number">8+</div>
                             <div class="stat-label">Tahun Pengalaman</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-number">50+</div>
-                            <div class="stat-label">Mitra Petani</div>
+                            <div class="stat-label">Brand Terpercaya</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-number">100%</div>
                             <div class="stat-label">Kepuasan Pelanggan</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number">30+</div>
+                            <div class="stat-number">25+</div>
                             <div class="stat-label">Kota Terjangkau</div>
                         </div>
                     </div>
@@ -576,7 +583,7 @@
         <section class="member-section">
             <div class="container mx-auto px-6">
                 <h2 class="text-3xl font-bold mb-2">Daftar Member Aktif</h2>
-                <p style="color: var(--text-light);" class="mb-8">Bergabunglah dengan ribuan pelanggan setia kami</p>
+                <p style="color: var(--text-light);" class="mb-8">Bergabunglah dengan ribuan orang tua yang mempercayai kami</p>
 
                 @if(isset($members) && $members->isNotEmpty())
                 <div class="member-grid">
@@ -609,7 +616,7 @@
         <section class="cta-section py-16 lg:py-20">
             <div class="container mx-auto px-6">
                 <div class="cta-content flex flex-col md:flex-row items-center justify-between gap-8">
-                    <p class="cta-text">Dapatkan buah-buahan segar premium hari ini</p>
+                    <p class="cta-text">Berikan yang terbaik untuk tumbuh kembang anak Anda</p>
                     <a href="#about" class="btn-primary bg-white text-gray-900 hover:bg-gray-50">Lihat Keunggulan</a>
                 </div>
             </div>
@@ -621,8 +628,8 @@
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div class="space-y-4">
-                    <h4>Toko Buah Segar</h4>
-                    <p>Sumber terpercaya Anda untuk buah-buahan segar berkualitas tinggi yang dikirim ke pintu Anda.</p>
+                    <h4>Toko Mainan Edukatif</h4>
+                    <p>Sumber terpercaya Anda untuk mainan edukatif berkualitas tinggi yang mendukung perkembangan anak.</p>
                     <div class="flex space-x-4 pt-4">
                         <a href="#" class="text-gray-400 hover:text-white transition">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -643,20 +650,20 @@
                 <div>
                     <h4>Jam Operasional</h4>
                     <ul class="space-y-2">
-                        <li>Senin - Jumat: 9 pagi - 10 malam</li>
-                        <li>Sabtu - Minggu: Tutup</li>
+                        <li>Senin - Jumat: 9 pagi - 8 malam</li>
+                        <li>Sabtu - Minggu: 10 pagi - 6 sore</li>
                     </ul>
                 </div>
 
                 <div>
                     <h4>Hubungi Kami</h4>
-                    <p>Email: kontak@tokobuahsegar.com</p>
-                    <p>Telepon: +62 555 1234</p>
+                    <p>Email: info@tokomainanedukatif.com</p>
+                    <p>Telepon: +62 555 5678</p>
                 </div>
             </div>
 
             <div style="border-top: 1px solid #374151; padding-top: 2rem; text-align: center; color: #6B7280;">
-                <p>&copy; 2025 Toko Buah Segar. Hak Cipta Dilindungi.</p>
+                <p>&copy; 2025 Toko Mainan Edukatif. Hak Cipta Dilindungi.</p>
             </div>
         </div>
     </footer>
