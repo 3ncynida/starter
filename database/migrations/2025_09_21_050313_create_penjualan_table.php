@@ -14,7 +14,7 @@ return new class extends Migration
             $table->decimal('TotalHarga', 10, 2)->default(0);
             $table->decimal('UangTunai', 15, 2)->nullable();
             $table->decimal('Kembalian', 15, 2)->nullable();
-            $table->decimal('Diskon', 10, 2)->default(0);
+            $table->decimal('DiskonMember', 10, 2)->default(0);
 
             // Relasi ke Pelanggan
             $table->foreignId('PelangganID')

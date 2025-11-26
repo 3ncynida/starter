@@ -175,7 +175,7 @@
     </div>
   </div>
 
-  <style>
+<style>
     /* Screen default: hide print-only container */
     .print-only {
       display: none;
@@ -208,6 +208,9 @@
         margin: 0 auto;
         /* supaya muncul di tengah preview */
         padding: 0;
+        /* Batasi tinggi maksimum dan beri scroll jika perlu */
+        max-height: 200mm; /* Sesuaikan nilai ini sesuai kebutuhan */
+        overflow: hidden;
       }
 
       #receipt {
@@ -220,6 +223,9 @@
         font-size: 11px;
         line-height: 1.35;
         box-sizing: border-box;
+        /* Batasi tinggi maksimum struk */
+        max-height: 190mm; /* Kurangi dari max-height body untuk margin */
+        overflow: auto; /* Biarkan discroll jika konten terlalu panjang */
       }
 
       #receipt hr {
@@ -251,7 +257,7 @@
         font-size: 10px;
       }
     }
-  </style>
+</style>
 
   <div id="receipt" class="print-only">
     <div class="center bold" style="text-transform: uppercase;">

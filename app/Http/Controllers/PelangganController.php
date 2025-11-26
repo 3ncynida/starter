@@ -9,15 +9,21 @@ class PelangganController extends Controller
 {
     public function index(Request $request)
     {
+        // Ambil semua pelanggan untuk proses pengecekan status membership
         $pelanggan = Pelanggan::all();
-        // Update status membership untuk semua pelanggan
+
+        // Perbarui status membership setiap pelanggan (aktif / tidak)
         foreach ($pelanggan as $p) {
             $p->checkMembershipStatus();
         }
+
+        // Ambil nilai diskon member dari setting (default 0 jika tidak ada)
         $diskon = \App\Models\Setting::get('diskon_member', 0);
 
+        // Mulai query builder untuk filter dan pencarian
         $query = Pelanggan::query();
 
+        // Filter berdasarkan status member (active / inactive)
         if ($request->has('member_status') && $request->member_status !== '') {
             if ($request->member_status === 'active') {
                 $query->where('is_member', true)
@@ -30,7 +36,7 @@ class PelangganController extends Controller
             }
         }
 
-        // Filter by search keyword
+        // Filter berdasarkan keyword pencarian (nama, telepon, alamat)
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -40,9 +46,10 @@ class PelangganController extends Controller
             });
         }
 
-        // Add membership status indicator with active/expired check
+        // Ambil data pelanggan yang sudah difilter, urutkan terbaru, dan paginasi
         $pelanggan = $query->orderBy('created_at', 'desc')->paginate(10);
 
+        // Kirim data ke view
         return view('admin.pelanggan.index', compact('pelanggan', 'diskon'));
     }
 
@@ -51,13 +58,19 @@ class PelangganController extends Controller
         $pelanggan = Pelanggan::findOrFail($id);
         $pelanggan->activateMembership();
 
+        // Tambahkan tanggal mulai member (hari ini)
+        $pelanggan->member_start = now();
+        $pelanggan->save();
+
         return redirect()
             ->route('pelanggan.index')
             ->with('success', 'Membership berhasil diaktifkan untuk ' . $pelanggan->NamaPelanggan);
     }
 
+
     public function deactivateMember($id)
     {
+        // Nonaktifkan membership pelanggan berdasarkan ID
         $pelanggan = Pelanggan::findOrFail($id);
         $pelanggan->deactivateMembership();
 
@@ -66,7 +79,7 @@ class PelangganController extends Controller
             ->with('success', 'Membership berhasil dinonaktifkan untuk ' . $pelanggan->NamaPelanggan);
     }
 
-    // Method baru untuk toggle status member
+    // Toggle status member (aktif ⇆ nonaktif) secara langsung
     public function updateStatus($id)
     {
         $pelanggan = Pelanggan::findOrFail($id);
@@ -74,10 +87,13 @@ class PelangganController extends Controller
         // Toggle status member
         $pelanggan->is_member = !$pelanggan->is_member;
 
-        // Jika diaktifkan, set expired date 1 BULAN dari sekarang
         if ($pelanggan->is_member) {
+            // Jika baru diaktifkan, set tanggal mulai dan expired
+            $pelanggan->member_start = now();
             $pelanggan->member_expired = \Carbon\Carbon::now()->addMonth();
         } else {
+            // Jika dinonaktifkan, hapus tanggal member_start dan expired
+            $pelanggan->member_start = null;
             $pelanggan->member_expired = null;
         }
 
@@ -86,19 +102,23 @@ class PelangganController extends Controller
         return back()->with('success', 'Status member berhasil diubah.');
     }
 
+
     public function create()
     {
+        // Tampilkan form tambah pelanggan
         return view('admin.pelanggan.create');
     }
 
     public function store(Request $request)
     {
+        // Validasi input pendaftaran pelanggan
         $request->validate([
             'NamaPelanggan' => 'required|string|max:255',
             'Alamat' => 'required|string',
             'NomorTelepon' => 'required|string|max:15',
         ]);
 
+        // Simpan data pelanggan baru ke database
         Pelanggan::create([
             'NamaPelanggan' => $request->NamaPelanggan,
             'Alamat' => $request->Alamat,
@@ -112,6 +132,7 @@ class PelangganController extends Controller
 
     public function edit($id)
     {
+        // Ambil data pelanggan untuk diedit
         $pelanggan = Pelanggan::findOrFail($id);
 
         return view('admin.pelanggan.edit', compact('pelanggan'));
@@ -119,12 +140,14 @@ class PelangganController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Validasi input update pelanggan
         $request->validate([
             'NamaPelanggan' => 'required|string|max:255',
             'Alamat' => 'required|string',
             'NomorTelepon' => 'required|string|max:15',
         ]);
 
+        // Update data di database
         $pelanggan = Pelanggan::findOrFail($id);
         $pelanggan->update([
             'NamaPelanggan' => $request->NamaPelanggan,
@@ -139,6 +162,7 @@ class PelangganController extends Controller
 
     public function destroy($id)
     {
+        // Hapus data pelanggan
         $pelanggan = Pelanggan::findOrFail($id);
         $pelanggan->delete();
 

@@ -44,7 +44,7 @@ class ProdukController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'NamaProduk' => 'required|string|max:255',
+            'NamaProduk' => 'required|string|max:255|unique:produk,NamaProduk',
             'Harga' => 'required|numeric|min:0',
             'Stok' => 'required|integer|min:0',
             'Satuan' => 'required|string|max:50',
@@ -53,7 +53,38 @@ class ProdukController extends Controller
             'DiskonPersen' => 'nullable|numeric|min:0|max:100',
             'TanggalMulaiPromosi' => 'nullable|date',
             'TanggalSelesaiPromosi' => 'nullable|date|after_or_equal:TanggalMulaiPromosi',
+        ], [
+            // Pesan error kustom dalam bahasa Indonesia
+            'NamaProduk.unique' => 'Nama produk sudah digunakan. Silakan gunakan nama yang berbeda.',
+            'NamaProduk.required' => 'Nama produk wajib diisi.',
+            'NamaProduk.max' => 'Nama produk maksimal 255 karakter.',
+            'Harga.required' => 'Harga wajib diisi.',
+            'Harga.numeric' => 'Harga harus berupa angka.',
+            'Harga.min' => 'Harga tidak boleh kurang dari 0.',
+            'Stok.required' => 'Stok wajib diisi.',
+            'Stok.integer' => 'Stok harus berupa bilangan bulat.',
+            'Stok.min' => 'Stok tidak boleh kurang dari 0.',
+            'Satuan.required' => 'Satuan wajib diisi.',
+            'Gambar.image' => 'File harus berupa gambar.',
+            'Gambar.mimes' => 'Gambar harus berformat jpg, jpeg, png, atau webp.',
+            'Gambar.max' => 'Ukuran gambar maksimal 2MB.',
+            'DiskonPersen.numeric' => 'Diskon harus berupa angka.',
+            'DiskonPersen.min' => 'Diskon tidak boleh kurang dari 0.',
+            'DiskonPersen.max' => 'Diskon tidak boleh lebih dari 100.',
+            'TanggalMulaiPromosi.date' => 'Tanggal mulai promosi harus berupa tanggal yang valid.',
+            'TanggalSelesaiPromosi.date' => 'Tanggal selesai promosi harus berupa tanggal yang valid.',
+            'TanggalSelesaiPromosi.after_or_equal' => 'Tanggal selesai promosi harus setelah atau sama dengan tanggal mulai.',
         ]);
+
+        // Validasi tambahan untuk mencegah nama produk yang sama (case insensitive)
+        $namaProduk = $validated['NamaProduk'];
+        $existingProduct = Produk::whereRaw('LOWER(NamaProduk) = ?', [strtolower($namaProduk)])->first();
+        
+        if ($existingProduct) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['NamaProduk' => 'Nama produk sudah digunakan. Silakan gunakan nama yang berbeda.']);
+        }
 
         // Simpan gambar
         if ($request->hasFile('Gambar')) {
@@ -81,10 +112,12 @@ class ProdukController extends Controller
     /**
      * Update produk.
      */
-    public function update(Request $request, Produk $produk)
+    public function update(Request $request, $id)
     {
+        $produk = Produk::findOrFail($id);
+
         $validated = $request->validate([
-            'NamaProduk' => 'required|string|max:255',
+            'NamaProduk' => 'required|string|max:255|unique:produk,NamaProduk,' . $produk->ProdukID . ',ProdukID',
             'Harga' => 'required|numeric|min:0',
             'Stok' => 'required|integer|min:0',
             'Promosi' => 'boolean',
@@ -93,7 +126,41 @@ class ProdukController extends Controller
             'TanggalSelesaiPromosi' => 'nullable|date|after_or_equal:TanggalMulaiPromosi',
             'Satuan' => 'required|string|max:50',
             'Gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ], [
+            // Pesan error kustom dalam bahasa Indonesia
+            'NamaProduk.unique' => 'Nama produk sudah digunakan. Silakan gunakan nama yang berbeda.',
+            'NamaProduk.required' => 'Nama produk wajib diisi.',
+            'NamaProduk.max' => 'Nama produk maksimal 255 karakter.',
+            'Harga.required' => 'Harga wajib diisi.',
+            'Harga.numeric' => 'Harga harus berupa angka.',
+            'Harga.min' => 'Harga tidak boleh kurang dari 0.',
+            'Stok.required' => 'Stok wajib diisi.',
+            'Stok.integer' => 'Stok harus berupa bilangan bulat.',
+            'Stok.min' => 'Stok tidak boleh kurang dari 0.',
+            'Satuan.required' => 'Satuan wajib diisi.',
+            'Gambar.image' => 'File harus berupa gambar.',
+            'Gambar.mimes' => 'Gambar harus berformat jpg, jpeg, png, atau webp.',
+            'Gambar.max' => 'Ukuran gambar maksimal 2MB.',
+            'DiskonPersen.numeric' => 'Diskon harus berupa angka.',
+            'DiskonPersen.min' => 'Diskon tidak boleh kurang dari 0.',
+            'DiskonPersen.max' => 'Diskon tidak boleh lebih dari 100.',
+            'TanggalMulaiPromosi.date' => 'Tanggal mulai promosi harus berupa tanggal yang valid.',
+            'TanggalSelesaiPromosi.date' => 'Tanggal selesai promosi harus berupa tanggal yang valid.',
+            'TanggalSelesaiPromosi.after_or_equal' => 'Tanggal selesai promosi harus setelah atau sama dengan tanggal mulai.',
         ]);
+
+        // Validasi tambahan untuk mencegah nama produk yang sama (case insensitive) saat update
+        $namaProduk = $validated['NamaProduk'];
+        $existingProduct = Produk::whereRaw('LOWER(NamaProduk) = ?', [strtolower($namaProduk)])
+            ->where('ProdukID', '!=', $produk->ProdukID)
+            ->first();
+        
+        if ($existingProduct) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['NamaProduk' => 'Nama produk sudah digunakan. Silakan gunakan nama yang berbeda.']);
+        }
+
         // Handle gambar
         if ($request->hasFile('Gambar')) {
             // Hapus gambar lama jika bukan default

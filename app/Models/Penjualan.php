@@ -23,7 +23,7 @@ class Penjualan extends Model
         'NamaPelanggan',
         'UangTunai',
         'Kembalian',
-        'MetodePembayaran',
+        'DiskonMember',
     ];
 
     public function user()

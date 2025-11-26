@@ -59,12 +59,11 @@
                     <div>
                         <x-input-label for="Satuan" :value="__('Satuan')" />
                         <select name="Satuan" id="Satuan" class="w-full border rounded p-2" required>
-                            <option value="pcs">Pcs</option>
-                            <option value="kg">Kg</option>
-                            <option value="pack">Pack</option>
-                            <option value="dus">Dus</option>
-                            <option value="sisir">Sisir</option>
-
+                            <option value="pcs" {{ old('Satuan', $produk->Satuan) == 'pcs' ? 'selected' : '' }}>Pcs</option>
+                            <option value="kg" {{ old('Satuan', $produk->Satuan) == 'kg' ? 'selected' : '' }}>Kg</option>
+                            <option value="pack" {{ old('Satuan', $produk->Satuan) == 'pack' ? 'selected' : '' }}>Pack</option>
+                            <option value="dus" {{ old('Satuan', $produk->Satuan) == 'dus' ? 'selected' : '' }}>Dus</option>
+                            <option value="sisir" {{ old('Satuan', $produk->Satuan) == 'sisir' ? 'selected' : '' }}>Sisir</option>
                         </select>
                         <x-input-error class="mt-2" :messages="$errors->get('Satuan')" />
                     </div>
@@ -137,4 +136,48 @@
             </div>
         </div>
     </div>
+
+    <!-- Tambahkan script ini di bagian paling bawah, sebelum penutup x-app-layout -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const namaProdukInput = document.getElementById('NamaProduk');
+        
+        if (namaProdukInput) {
+            // Format saat input kehilangan fokus
+            namaProdukInput.addEventListener('blur', function() {
+                formatNamaProduk(this);
+            });
+            
+            // Format saat pengguna menekan Enter
+            namaProdukInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    formatNamaProduk(this);
+                }
+            });
+            
+            // Format saat form disubmit
+            const form = namaProdukInput.closest('form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    formatNamaProduk(namaProdukInput);
+                });
+            }
+        }
+        
+        function formatNamaProduk(inputElement) {
+            let value = inputElement.value.trim();
+            
+            if (value) {
+                // Kapitalisasi setiap kata
+                value = value.toLowerCase()
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                
+                inputElement.value = value;
+            }
+        }
+    });
+    </script>
 </x-app-layout>

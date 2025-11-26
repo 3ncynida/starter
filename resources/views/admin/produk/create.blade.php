@@ -110,4 +110,48 @@
             </div>
         </div>
     </div>
+
+    <!-- Tambahkan script ini di bagian paling bawah, sebelum penutup x-app-layout -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const namaProdukInput = document.getElementById('NamaProduk');
+        
+        if (namaProdukInput) {
+            // Format saat input kehilangan fokus
+            namaProdukInput.addEventListener('blur', function() {
+                formatNamaProduk(this);
+            });
+            
+            // Format saat pengguna menekan Enter
+            namaProdukInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    formatNamaProduk(this);
+                }
+            });
+            
+            // Format saat form disubmit
+            const form = namaProdukInput.closest('form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    formatNamaProduk(namaProdukInput);
+                });
+            }
+        }
+        
+        function formatNamaProduk(inputElement) {
+            let value = inputElement.value.trim();
+            
+            if (value) {
+                // Kapitalisasi setiap kata
+                value = value.toLowerCase()
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                
+                inputElement.value = value;
+            }
+        }
+    });
+    </script>
 </x-app-layout>
