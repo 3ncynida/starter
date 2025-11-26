@@ -115,9 +115,7 @@
                     <!-- Gambar -->
                     <div>
                         <x-input-label for="Gambar" :value="__('Gambar Produk')" />
-                        <div class="mt-2">
-                            <img src="{{ asset('storage/' . $produk->Gambar) }}" alt="Preview Produk" class="w-32 h-32 object-cover rounded mb-2">
-                        </div>
+
                         <input id="Gambar" name="Gambar" type="file" class="mt-1 block w-full border rounded" accept="image/*" />
                         <p class="mt-1 text-sm text-gray-600">Biarkan kosong jika tidak ingin mengubah gambar</p>
                         <x-input-error class="mt-2" :messages="$errors->get('Gambar')" />
