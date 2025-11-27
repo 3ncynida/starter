@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Models\DetailPenjualan;
 
 class ProdukController extends Controller
 {
@@ -77,7 +78,7 @@ class ProdukController extends Controller
         // Validasi tambahan untuk mencegah nama produk yang sama (case insensitive)
         $namaProduk = $validated['NamaProduk'];
         $existingProduct = Produk::whereRaw('LOWER(NamaProduk) = ?', [strtolower($namaProduk)])->first();
-        
+
         if ($existingProduct) {
             return redirect()->back()
                 ->withInput()
@@ -150,12 +151,15 @@ class ProdukController extends Controller
         $existingProduct = Produk::whereRaw('LOWER(NamaProduk) = ?', [strtolower($namaProduk)])
             ->where('ProdukID', '!=', $produk->ProdukID)
             ->first();
-        
+
         if ($existingProduct) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['NamaProduk' => 'Nama produk sudah digunakan. Silakan gunakan nama yang berbeda.']);
         }
+
+        // Simpan nama produk lama untuk pengecekan
+        $namaProdukLama = $produk->NamaProduk;
 
         // Handle gambar
         if ($request->hasFile('Gambar')) {
@@ -166,8 +170,15 @@ class ProdukController extends Controller
             // Simpan gambar baru
             $validated['Gambar'] = $request->file('Gambar')->store('produk', 'public');
         }
+
         // Update produk
         $produk->update($validated);
+
+        // Update NamaProduk di tabel DetailPenjualan jika nama produk berubah
+        if ($namaProdukLama !== $validated['NamaProduk']) {
+            DetailPenjualan::where('ProdukID', $produk->ProdukID)
+                ->update(['NamaProduk' => $validated['NamaProduk']]);
+        }
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui.');
     }

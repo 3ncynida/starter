@@ -9,7 +9,7 @@
 
     <div class="py-8">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-
+            
             {{-- Toolbar: Tambah + Pencarian --}}
             <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <a href="{{ route('produk.create') }}"
@@ -38,8 +38,8 @@
             <div id="productGrid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 auto-rows-fr">
                 @foreach($produks as $produk)
                 @php
-                $isPromo = $produk->Promosi && now()->between($produk->TanggalMulaiPromosi, $produk->TanggalSelesaiPromosi);
-                $hargaPromo = $isPromo ? $produk->Harga - ($produk->Harga * $produk->DiskonPersen / 100) : null;
+                    $isPromo = $produk->Promosi && now()->between($produk->TanggalMulaiPromosi, $produk->TanggalSelesaiPromosi);
+                    $hargaPromo = $isPromo ? $produk->Harga - ($produk->Harga * $produk->DiskonPersen / 100) : null;
                 @endphp
 
                 <div class="flex flex-col h-full">
@@ -56,33 +56,31 @@
     </div>
 
     @php
-    $productsJson = json_encode($allProducts);
+        $productsJson = json_encode($allProducts);
     @endphp
 
     <script>
-        (function() {
+        (function () {
             const input = document.getElementById('product-search');
             const productGrid = document.getElementById('productGrid');
-            const products = {
-                !!$productsJson!!
-            };
+            const products = {!! $productsJson !!};
 
-            const template = product => {
-                const isPromo = product.Promosi &&
-                    new Date() >= new Date(product.TanggalMulaiPromosi) &&
-                    new Date() <= new Date(product.TanggalSelesaiPromosi);
+const template = product => {
+    const isPromo = product.Promosi &&
+        new Date() >= new Date(product.TanggalMulaiPromosi) &&
+        new Date() <= new Date(product.TanggalSelesaiPromosi);
 
-                const hargaPromo = isPromo ?
-                    product.Harga - (product.Harga * product.DiskonPersen / 100) :
-                    null;
+    const hargaPromo = isPromo
+        ? product.Harga - (product.Harga * product.DiskonPersen / 100)
+        : null;
 
-                const isOutOfStock = product.Stok <= 0;
-                const stokMenipis = product.Stok > 0 && product.Stok < 5;
+    const isOutOfStock = product.Stok <= 0;
+    const stokMenipis = product.Stok > 0 && product.Stok < 5;
 
-                // Hilangkan .00 dari persentase diskon
-                const diskonTampil = Math.round(product.DiskonPersen);
+    // Hilangkan .00 dari persentase diskon
+    const diskonTampil = Math.round(product.DiskonPersen);
 
-                return `
+return `
 <div class="flex flex-col h-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-lg hover:border-gray-300" data-name="${product.NamaProduk.toLowerCase()}">
     
     <!-- LABELS -->
@@ -112,7 +110,7 @@
     <div class="mt-4 flex-1 flex flex-col justify-start">
         <h3 class="h-[2.75rem] text-sm font-semibold text-gray-900 line-clamp-2">${product.NamaProduk}</h3>
         <p class="mt-2 text-xs text-gray-600">
-            Stok: <span class="font-bold ${isOutOfStock ? 'text-red-600' : stokMenipis ? 'text-yellow-600' : 'text-gray-900'}">${product.Stok}</span>
+            Stok: <span class="font-bold ${isOutOfStock ? 'text-red-600' : stokMenipis ? 'text-yellow-600' : 'text-gray-900'}">${product.Stok}</span> ${product.Satuan}
         </p>
         <p class="mt-3 text-lg font-bold text-gray-900">
             ${isPromo 
@@ -140,11 +138,11 @@
     </div>
 </div>
 `;
-            };
+};
             const filter = (term) => {
                 const q = term.toLowerCase().trim();
                 const paginationDiv = document.querySelector('.mt-8');
-
+                
                 if (paginationDiv) {
                     paginationDiv.style.display = 'none';
                 }
@@ -153,9 +151,9 @@
                     product.NamaProduk.toLowerCase().includes(q)
                 );
 
-                productGrid.innerHTML = filtered.length ?
-                    filtered.map(template).join('') :
-                    `<div class="col-span-full">
+                productGrid.innerHTML = filtered.length 
+                    ? filtered.map(template).join('')
+                    : `<div class="col-span-full">
                            <div class="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center">
                                <svg xmlns="http://www.w3.org/2000/svg" class="mb-3 h-12 w-12 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>

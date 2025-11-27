@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
 use Illuminate\Http\Request;
+use App\Models\Penjualan;
 
 class PelangganController extends Controller
 {
@@ -138,27 +139,37 @@ class PelangganController extends Controller
         return view('admin.pelanggan.edit', compact('pelanggan'));
     }
 
-    public function update(Request $request, $id)
-    {
-        // Validasi input update pelanggan
-        $request->validate([
-            'NamaPelanggan' => 'required|string|max:255',
-            'Alamat' => 'required|string',
-            'NomorTelepon' => 'required|string|max:15',
-        ]);
+public function update(Request $request, $id)
+{
+    // Validasi input update pelanggan
+    $request->validate([
+        'NamaPelanggan' => 'required|string|max:255',
+        'Alamat' => 'required|string',
+        'NomorTelepon' => 'required|string|max:15',
+    ]);
 
-        // Update data di database
-        $pelanggan = Pelanggan::findOrFail($id);
-        $pelanggan->update([
-            'NamaPelanggan' => $request->NamaPelanggan,
-            'Alamat' => $request->Alamat,
-            'NomorTelepon' => $request->NomorTelepon,
-        ]);
+    // Update data di database
+    $pelanggan = Pelanggan::findOrFail($id);
+    
+    // Simpan nama pelanggan lama untuk pengecekan
+    $namaPelangganLama = $pelanggan->NamaPelanggan;
 
-        return redirect()
-            ->route('pelanggan.index')
-            ->with('success', 'Pelanggan berhasil diperbarui');
+    $pelanggan->update([
+        'NamaPelanggan' => $request->NamaPelanggan,
+        'Alamat' => $request->Alamat,
+        'NomorTelepon' => $request->NomorTelepon,
+    ]);
+
+    // Update NamaPelanggan di tabel Penjualan jika nama pelanggan berubah
+    if ($namaPelangganLama !== $request->NamaPelanggan) {
+        Penjualan::where('PelangganID', $pelanggan->PelangganID)
+            ->update(['NamaPelanggan' => $request->NamaPelanggan]);
     }
+
+    return redirect()
+        ->route('pelanggan.index')
+        ->with('success', 'Pelanggan berhasil diperbarui');
+}
 
     public function destroy($id)
     {
