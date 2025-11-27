@@ -17,7 +17,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-green-50">
+    <div class="min-h-screen bg-blue-50">
         @include('layouts.navigation')
         <style>
             .swal2-confirm {
@@ -31,7 +31,7 @@
 
         <!-- Page Heading -->
         @isset($header)
-        <header class="bg-white/70 backdrop-blur border-b border-green-100 sticky top-0 z-30" role="banner" aria-label="Header">
+        <header class="bg-white/70 backdrop-blur border-b border-blue-100 sticky top-0 z-30" role="banner" aria-label="Header">
             <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                 {{ $header }}
             </div>

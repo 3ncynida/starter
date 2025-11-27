@@ -17,52 +17,50 @@
                     </div>
                     @endif
 
-{{-- ✅ Header + Pencarian --}}
-<div class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-    <h3 class="text-lg font-semibold text-gray-800">Daftar Transaksi</h3>
+                    {{-- ✅ Header + Pencarian --}}
+                    <div class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <h3 class="text-lg font-semibold text-gray-800">Daftar Transaksi</h3>
 
-    <div class="flex flex-col sm:flex-row gap-3 items-center w-full sm:w-auto">
-        {{-- Form Pilih Bulan untuk Cetak PDF --}}
-        <form action="{{ route('detail-penjualan.cetak-pdf-bulanan') }}" method="POST" class="flex items-center gap-2 w-full sm:w-auto">
-            @csrf
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-                <input 
-                    type="month" 
-                    name="bulan" 
-                    value="{{ date('Y-m') }}"
-                    class="w-full sm:w-auto rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-600 focus:outline-none"
-                    required
-                >
-                <button 
-                    type="submit"
-                    class="inline-flex items-center gap-2 rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 whitespace-nowrap"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2m2 4h6a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2Zm6-12V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v4h8Z"/>
-                    </svg>
-                    Cetak Laporan
-                </button>
-            </div>
-        </form>
+                        <div class="flex flex-col sm:flex-row gap-3 items-center w-full sm:w-auto">
+                            {{-- Form Pilih Bulan untuk Cetak PDF --}}
+                            <form action="{{ route('detail-penjualan.cetak-pdf-bulanan') }}" method="POST" class="flex items-center gap-2 w-full sm:w-auto">
+                                @csrf
+                                <div class="flex items-center gap-2 w-full sm:w-auto">
+                                    <input
+                                        type="month"
+                                        name="bulan"
+                                        value="{{ date('Y-m') }}"
+                                        class="w-full sm:w-auto rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-600 focus:outline-none"
+                                        required>
+                                    <button
+                                        type="submit"
+                                        class="inline-flex items-center gap-2 rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 whitespace-nowrap">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2m2 4h6a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2Zm6-12V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v4h8Z" />
+                                        </svg>
+                                        Cetak Laporan
+                                    </button>
+                                </div>
+                            </form>
 
-        {{-- Form Pencarian Existing --}}
-        <form action="{{ route('detail-penjualan.index') }}" method="GET" class="relative w-full sm:max-w-xs">
-            <input
-                id="search"
-                name="search"
-                type="text"
-                placeholder="Cari pelanggan atau produk"
-                value="{{ request('search') }}"
-                class="w-full rounded-lg border border-gray-300 bg-white px-12 py-2 text-sm placeholder:text-gray-400 focus:border-gray-600 focus:outline-none" />
-            <button type="submit" class="absolute inset-y-0 right-3 flex items-center text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m21 21-4.35-4.35M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" />
-                </svg>
-            </button>
-        </form>
-    </div>
-</div>
+                            {{-- Form Pencarian Existing --}}
+                            <form action="{{ route('detail-penjualan.index') }}" method="GET" class="relative w-full sm:max-w-xs">
+                                <input
+                                    id="search"
+                                    name="search"
+                                    type="text"
+                                    placeholder="Cari pelanggan atau produk"
+                                    value="{{ request('search') }}"
+                                    class="w-full rounded-lg border border-gray-300 bg-white px-12 py-2 text-sm placeholder:text-gray-400 focus:border-gray-600 focus:outline-none" />
+                                <button type="submit" class="absolute inset-y-0 right-3 flex items-center text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="m21 21-4.35-4.35M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
                     {{-- ✅ Table --}}
                     <div class="overflow-x-auto">
@@ -167,13 +165,13 @@
         }
     });
 
-        document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
         const formBulanan = document.querySelector('form[action*="cetak-pdf-bulanan"]');
-        
+
         if (formBulanan) {
             formBulanan.addEventListener('submit', function(e) {
                 const inputBulan = this.querySelector('input[name="bulan"]');
-                
+
                 if (!inputBulan.value) {
                     e.preventDefault();
                     alert('Pilih bulan terlebih dahulu!');
